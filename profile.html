@@ -82,6 +82,15 @@ body{font-family:"DM Sans",sans-serif;background:#0F1A0F;min-height:100dvh;paddi
 .bottom-nav__item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(247,244,239,.3);cursor:pointer;transition:color 180ms ease}
 .bottom-nav__item svg{width:20px;height:20px}
 .bottom-nav__item--active{color:#5AAF7A}
+/* ── JOKER DIALOG (za nagrade) ─── */
+.joker-dialog{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px}
+.joker-dialog__box{background:#1C2B1C;border:1px solid rgba(90,175,122,.25);border-radius:24px;padding:24px 20px;max-width:320px;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px}
+.joker-dialog__icon{font-size:2.5rem}
+.joker-dialog__title{font-family:"DM Serif Display",serif;font-size:1.2rem;color:#F7F4EF;text-align:center}
+.joker-dialog__body{font-size:.88rem;color:rgba(247,244,239,.7);text-align:center;line-height:1.5}
+.joker-dialog__btns{display:flex;gap:8px;width:100%;margin-top:4px}
+.joker-dialog__cancel{flex:1;padding:12px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(247,244,239,.6);font-size:.88rem;font-weight:600;cursor:pointer;font-family:"DM Sans",sans-serif}
+.joker-dialog__confirm{flex:2;padding:12px;border-radius:14px;background:rgba(45,125,82,.3);border:1px solid rgba(90,175,122,.4);color:#F7F4EF;font-size:.88rem;font-weight:700;cursor:pointer;font-family:"DM Sans",sans-serif}
 </style>
 </head>
 <body>
@@ -152,7 +161,7 @@ body{font-family:"DM Sans",sans-serif;background:#0F1A0F;min-height:100dvh;paddi
   <button class="bottom-nav__item" onclick="location.href='library.html'">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Knjižnica
   </button>
-  <button class="bottom-nav__item bottom-nav__item--active">
+  <button class="bottom-nav__item bottom-nav__item--active" aria-current="page">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil
   </button>
 </nav>

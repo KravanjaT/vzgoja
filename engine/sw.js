@@ -2,7 +2,7 @@
 //  LONA OS — sw.js  Service Worker (PWA)
 // ============================================================
 
-const CACHE = "lona-os-v1";
+const CACHE = "lona-os-v2";
 const ASSETS = [
   "./",
   "./home.html",
@@ -47,7 +47,15 @@ self.addEventListener("activate", e => {
 });
 
 self.addEventListener("fetch", e => {
-  e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request))
-  );
+  const url = e.request.url;
+  // HTML strani — vedno iz omrežja (svež localStorage), JS/CSS iz casha
+  if (e.request.destination === "document" || url.endsWith(".html")) {
+    e.respondWith(
+      fetch(e.request).catch(() => caches.match(e.request))
+    );
+  } else {
+    e.respondWith(
+      caches.match(e.request).then(cached => cached || fetch(e.request))
+    );
+  }
 });

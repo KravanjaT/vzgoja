@@ -935,6 +935,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (typeof initDoubleXpButton === "function") initDoubleXpButton();
     if (typeof renderCmdAgents === "function") renderCmdAgents();
 
+    // Ponovni render avatarja po 100ms — zagotovi da localStorage foto je brana
+    setTimeout(() => {
+      if (typeof renderCmdAgents === "function") renderCmdAgents();
+    }, 100);
+
     // Pokaži ime agenta v top baru
     const _agentEl = document.getElementById("current-agent-name");
     if (_agentEl) {
