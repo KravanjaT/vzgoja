@@ -147,7 +147,15 @@
   });
   </script>
   <script>
-    if ('serviceWorker' in navigator) {
+    // Osveži cmd panel ko se vrneš na stran (foto sprememba)
+  window.addEventListener('focus', () => {
+    if (typeof renderCmdAgents === 'function') renderCmdAgents();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && typeof renderCmdAgents === 'function') renderCmdAgents();
+  });
+
+  if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js').catch(() => {});
     }
   </script>

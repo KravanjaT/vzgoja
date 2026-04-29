@@ -915,6 +915,9 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("lona_current_agent", LONA_CONFIG.agents[0].id);
     }
 
+    // Osveži foto če je bila spremenjena na profilu
+    localStorage.removeItem("lona_photo_updated");
+
     if (typeof initGatekeeper === "function") initGatekeeper();
     if (typeof initActionPrompt === "function") initActionPrompt();
     if (typeof initCooldownTicker === "function") initCooldownTicker();
@@ -1356,8 +1359,9 @@ function renderCmdAgents() {
   const hi     = ranks[ci]?.minXp ?? lo + 300;
   const pct    = Math.min(100, Math.round(((maxXp - lo) / (hi - lo)) * 100));
 
-  const avatarHtml = a.photo
-    ? `<img src="${a.photo}" alt="${a.name}" style="width:100%;height:100%;object-fit:cover;object-position:center top;border-radius:50%">`
+  const _savedPhoto = localStorage.getItem("lona_photo_" + agentId);
+  const avatarHtml = (_savedPhoto || a.photo)
+    ? `<img src="${_savedPhoto || a.photo}" alt="${a.name}" style="width:100%;height:100%;object-fit:cover;object-position:center top;border-radius:50%">`
     : `<span style="font-size:3.5rem">${a.avatar}</span>`;
 
   const flameCount = Math.min(streak.count || 0, 7);

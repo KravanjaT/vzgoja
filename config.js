@@ -201,7 +201,7 @@ const LONA_CONFIG = {
       baseXp: 35, cooldownHrs: 72, location: "outdoor", duration: "medium",
       category: "money", state: "available",
     },
-    varčevanje: {
+    varcevanje: {
       id: "varcevanje", label: "Varčevalna Skrinjica", icon: "🐷",
       baseXp: 20, cooldownHrs: 168, location: "indoor", duration: "short",
       category: "money", state: "available",
@@ -404,7 +404,7 @@ const LONA_CONFIG = {
     },
 
     // ── HIGIENA & SKRB ZA SEBE ────────────────────────────
-    posteljа: {
+    postelja: {
       id: "postelja", label: "Naredi Posteljo", icon: "🛏️",
       baseXp: 10, cooldownHrs: 24, location: "indoor", duration: "short",
       category: "hygiene", state: "available",
@@ -478,7 +478,7 @@ const LONA_CONFIG = {
       baseXp: 15, cooldownHrs: 48, location: "indoor", duration: "short",
       category: "cleaning", state: "available",
     },
-    igrace: {
+    igrače: {
       id: "igrače", label: "Pospravi Igrače", icon: "🧸",
       baseXp: 10, cooldownHrs: 24, location: "indoor", duration: "short",
       category: "cleaning", state: "available",

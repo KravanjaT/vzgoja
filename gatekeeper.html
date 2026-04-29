@@ -258,9 +258,15 @@ if (typeof initXp === "function") initXp();
 const agent = LONA_CONFIG.agents.find(a => a.id === agentId);
 const cfg   = LONA_CONFIG.gatekeeper;
 
-// Pokaži agenta
-document.getElementById("gk-avatar").textContent = agent?.avatar || "⚡";
-document.getElementById("gk-name").textContent   = agent?.name || agentId;
+// Pokaži agenta + foto
+const _saved = localStorage.getItem("lona_photo_" + agentId);
+const _av = document.getElementById("gk-avatar");
+if (_saved) {
+  _av.innerHTML = `<img src="${_saved}" style="width:100%;height:100%;object-fit:cover;object-position:center top;border-radius:50%">`;
+} else {
+  _av.textContent = agent?.avatar || "⚡";
+}
+document.getElementById("gk-name").textContent = agent?.name || agentId;
 
 // Rang
 function getRankLocal(xp) {
