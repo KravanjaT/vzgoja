@@ -876,16 +876,61 @@ function buildMissionBtn(mission, agentId) {
     cooldownHtml = `<p class="mission-btn__cooldown">⏱ ${hrs}h</p>`;
   }
 
-  return `<button class="${cls}" data-mission="${mId}"
-    style="background:none;border:none;padding:0;--after-bg:${afterBg}">
-    <div class="mission-btn-inner" style="${innerStyle}">
-      <span class="mission-btn__icon">${mission.icon || "📋"}</span>
-      <div class="mission-btn__info">
-        <p class="mission-btn__name">${mission.label}</p>
-        ${cooldownHtml}
+  // Določi barvo za kategorijo
+  const catColor = onCooldown ? 'rgba(255,255,255,.04)' :
+    ({hygiene:'rgba(52,199,89,.1)',kitchen:'rgba(255,149,0,.1)',cleaning:'rgba(0,122,255,.1)',
+      organisation:'rgba(175,82,222,.1)',care:'rgba(255,45,85,.1)',outdoor:'rgba(45,185,100,.1)',
+      body:'rgba(255,59,48,.1)',safety:'rgba(255,59,48,.1)',money:'rgba(255,214,10,.1)',
+      social:'rgba(90,200,250,.1)',creativity:'rgba(255,149,0,.1)',custom:'rgba(175,82,222,.1)',
+      fear:'rgba(175,82,222,.1)',independence:'rgba(0,122,255,.1)',eq:'rgba(255,107,53,.1)'
+    }[mission.category] || 'rgba(45,125,82,.1)');
+
+  const catBorder = onCooldown ? 'rgba(255,255,255,.06)' :
+    ({hygiene:'rgba(52,199,89,.25)',kitchen:'rgba(255,149,0,.25)',cleaning:'rgba(0,122,255,.25)',
+      organisation:'rgba(175,82,222,.25)',care:'rgba(255,45,85,.25)',outdoor:'rgba(45,185,100,.25)',
+      body:'rgba(255,59,48,.25)',safety:'rgba(255,59,48,.25)',money:'rgba(255,214,10,.25)',
+      social:'rgba(90,200,250,.25)',creativity:'rgba(255,149,0,.25)',custom:'rgba(175,82,222,.25)',
+      fear:'rgba(175,82,222,.25)',independence:'rgba(0,122,255,.25)',eq:'rgba(255,107,53,.25)'
+    }[mission.category] || 'rgba(45,125,82,.25)');
+
+  const xpColor = onCooldown ? 'rgba(247,244,239,.25)' :
+    ({hygiene:'#34C759',kitchen:'#FF9500',cleaning:'#007AFF',
+      organisation:'#AF52DE',care:'#FF2D55',outdoor:'#34C759',
+      body:'#FF3B30',safety:'#FF3B30',money:'#FFD60A',
+      social:'#5AC8FA',creativity:'#FF9500',custom:'#AF52DE',
+      fear:'#AF52DE',independence:'#007AFF',eq:'#FF6B35'
+    }[mission.category] || '#5AAF7A');
+
+  const dot = !onCooldown ? `<div style="width:6px;height:6px;border-radius:50%;background:${xpColor};flex-shrink:0"></div>` : '';
+  const catLabel = mission.category ? ({
+    hygiene:'Higiena',kitchen:'Kuhinja',cleaning:'Čiščenje',organisation:'Organizacija',
+    care:'Skrb',outdoor:'Outdoor',body:'Telo',safety:'Varnost',money:'Denar',
+    social:'Socialne',creativity:'Ustvarjalnost',custom:'Moje',fear:'Strah',
+    independence:'Samostojnost',eq:'EQ'
+  }[mission.category] || mission.category) : '';
+
+  return `<button class="${cls}" data-mission="${mId}" style="
+    display:flex;align-items:center;gap:14px;
+    padding:14px 16px;width:100%;
+    background:${onCooldown ? 'rgba(255,255,255,.03)' : catColor};
+    border:1px solid ${onCooldown ? 'rgba(255,255,255,.06)' : catBorder};
+    border-radius:16px;cursor:${onCooldown ? 'not-allowed' : 'pointer'};
+    opacity:${onCooldown ? '.5' : '1'};
+    font-family:'DM Sans',sans-serif;
+    transition:all 150ms ease;
+    -webkit-tap-highlight-color:transparent;
+    text-align:left;box-sizing:border-box;">
+    <div style="width:44px;height:44px;border-radius:12px;background:${onCooldown ? 'rgba(255,255,255,.06)' : catColor.replace('.1)',',.2)')};display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${mission.icon || "📋"}</div>
+    <div style="flex:1;min-width:0">
+      <p style="font-size:14px;font-weight:700;color:#F7F4EF;margin:0 0 2px;line-height:1.2">${mission.label}</p>
+      <p style="font-size:11px;color:rgba(247,244,239,.4);margin:0">${onCooldown ? cooldownHtml.replace(/<[^>]+>/g,'') || '🔒 Cooldown' : catLabel}</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+      ${dot}
+      <div style="text-align:right">
+        <p style="font-size:15px;font-weight:800;color:${xpColor};margin:0;line-height:1">${mission.isProgressive ? '3×' : onCooldown ? '🔒' : '+'+xp}</p>
+        <p style="font-size:10px;color:rgba(247,244,239,.3);margin:0">${mission.isProgressive ? 'stopnje' : 'XP'}</p>
       </div>
-      <span class="mission-btn__xp">${xpLabel}</span>
-      ${!onCooldown ? '<span class="mission-btn__avail-dot"></span>' : ''}
     </div>
   </button>`;
 }

@@ -952,8 +952,9 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 /* Misije — 3D quest kartica stil */
 .missions-grid {
-  grid-template-columns: repeat(2, 1fr) !important;
-  gap: 12px !important;
+  grid-template-columns: 1fr !important;
+  gap: 8px !important;
+  overflow: visible !important;
 }
 
 .mission-btn {
