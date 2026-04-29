@@ -2,6 +2,8 @@
 <html lang="sl">
 <head>
 <meta charset="UTF-8"/>
+<link rel="icon" type="image/png" href="favicon.ico"/>
+
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
 <meta name="theme-color" content="#0F1A0F"/>
 <link rel="manifest" href="manifest.json"/>
@@ -209,7 +211,7 @@ body {
       <p class="agent-header__name" id="gk-name">Agent</p>
       <p class="agent-header__rank" id="gk-rank">Regrut I</p>
     </div>
-    <button class="agent-header__back" onclick="location.href='index.html'">⇄ Menjaj</button>
+    <button class="agent-header__back" onclick="location.replace('index.html')">⇄ Menjaj</button>
   </div>
 
   <!-- Standard 0 naslov -->
@@ -349,7 +351,7 @@ function toggle(id) {
 
 function goHome() {
   if (!isApproved()) return;
-  location.href = "home.html";
+  location.replace('home.html');
 }
 
 // ── PARTICLES ───────────────────────────────────────────

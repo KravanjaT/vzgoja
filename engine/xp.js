@@ -70,13 +70,16 @@ function addXp(agentId, amount) {
     lonaToast(`⚡ Dvojni XP! +${bonus} bonus`, "gold");
   }
 
-  // Posodobi UI
-  if (typeof renderCmdAgents === "function") renderCmdAgents();
-  if (typeof renderStreak    === "function") renderStreak(agentId);
-  if (typeof renderTreasury  === "function") renderTreasury();
-  if (typeof renderAttrsMini === "function") renderAttrsMini(agentId);
-  // Streak update
-  if (amount > 0 && typeof updateStreak === "function") updateStreak(agentId);
+  // Posodobi UI — samo funkcije ki obstajajo na tej strani
+  if (amount > 0 && typeof updateStreak  === "function") updateStreak(agentId);
+  setTimeout(() => {
+    if (typeof renderCmdAgents === "function") renderCmdAgents();
+    if (typeof renderStreak    === "function") renderStreak(agentId);
+    if (typeof renderTreasury  === "function") renderTreasury();
+    if (typeof renderAttrsMini === "function") renderAttrsMini(agentId);
+    // Posodobi profil stran če je odprta
+    if (typeof renderAll       === "function") renderAll();
+  }, 50);
 }
 
 function lonaReset() {

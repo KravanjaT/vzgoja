@@ -11,7 +11,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="style.css" />
-  <link rel="manifest" href="manifest.json"/>
+  <link rel="icon" type="image/png" href="favicon.png"/>
+<link rel="manifest" href="manifest.json"/>
   <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
@@ -26,7 +27,7 @@
     <div class="top-bar__logo">
       <span class="logo-bracket">[</span>LONA<span class="logo-accent">_OS</span><span class="logo-bracket">]</span>
     </div>
-    <div class="top-bar__meta" onclick="location.href='index.html'" style="cursor:pointer;gap:6px" title="Zamenjaj agenta">
+    <div class="top-bar__meta" onclick="location.replace('index.html')" style="cursor:pointer;gap:6px" title="Zamenjaj agenta">
       <span class="status-dot" aria-label="Online"></span>
       <span class="top-bar__title" id="current-agent-name">Agent</span>
       <span style="font-size:.7rem;opacity:.5">⇄</span>
@@ -84,19 +85,19 @@
 
   <!-- ── BOTTOM NAV ───────────────────────────────────────── -->
   <nav class="bottom-nav" aria-label="Navigacija">
-    <button class="bottom-nav__item bottom-nav__item--active" aria-current="page" onclick="location.href='home.html'">
+    <button class="bottom-nav__item bottom-nav__item--active" aria-current="page" onclick="location.replace('home.html')">
       🏠
       <span>Baza</span>
     </button>
-    <button class="bottom-nav__item" onclick="location.href='hub.html'">
+    <button class="bottom-nav__item" onclick="location.replace('hub.html')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
       Hub
     </button>
-    <button class="bottom-nav__item" onclick="location.href='library.html'">
+    <button class="bottom-nav__item" onclick="location.replace('library.html')">
       📚
       <span>Knjižnica</span>
     </button>
-    <button class="bottom-nav__item" onclick="location.href='profile.html'">
+    <button class="bottom-nav__item" onclick="location.replace('profile.html')">
       👤
       <span>Profil</span>
     </button>
@@ -147,12 +148,12 @@
   });
   </script>
   <script>
-    // Osveži cmd panel ko se vrneš na stran (foto sprememba)
-  window.addEventListener('focus', () => {
-    if (typeof renderCmdAgents === 'function') renderCmdAgents();
-  });
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && typeof renderCmdAgents === 'function') renderCmdAgents();
+    // Osveži UI ob vsaki vrnitvi na stran (back button, tab switch)
+  window.addEventListener('pageshow', (e) => {
+    if (typeof renderCmdAgents    === 'function') renderCmdAgents();
+    if (typeof renderMissionsGrid === 'function') renderMissionsGrid(window.currentCat || 'all');
+    if (typeof renderTreasury     === 'function') renderTreasury();
+    if (typeof updateMissionsBadge=== 'function') updateMissionsBadge();
   });
 
   if ('serviceWorker' in navigator) {
