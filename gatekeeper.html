@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="theme-color" content="#0F1A0F"/>
+<link rel="manifest" href="manifest.json"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>LONA OS — Standard 0</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #0F1A0F;
+  min-height: 100dvh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 24px;
+  position: relative; overflow: hidden;
+}
+
+.bg-particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.particle {
+  position: absolute; border-radius: 50%;
+  background: rgba(45,125,82,.12);
+  animation: float-particle linear infinite;
+}
+@keyframes float-particle {
+  0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: .3; }
+  100% { transform: translateY(-100px) scale(1); opacity: 0; }
+}
+
+.wrap {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column;
+  align-items: center; width: 100%; max-width: 340px; gap: 0;
+}
+
+/* Agent header */
+.agent-header {
+  display: flex; align-items: center; gap: 14px;
+  width: 100%; margin-bottom: 32px;
+}
+.agent-header__avatar {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(45,125,82,.15);
+  border: 2px solid rgba(90,175,122,.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; flex-shrink: 0;
+}
+.agent-header__info { flex: 1; }
+.agent-header__name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.3rem; color: #F7F4EF; line-height: 1.1;
+}
+.agent-header__rank {
+  font-size: .65rem; font-weight: 600; letter-spacing: .12em;
+  text-transform: uppercase; color: #5AAF7A; margin-top: 2px;
+}
+.agent-header__back {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px; padding: 8px 12px;
+  color: rgba(247,244,239,.5); font-size: .75rem;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+}
+.agent-header__back:hover { color: #F7F4EF; border-color: rgba(255,255,255,.2); }
+
+/* Standard 0 naslov */
+.std0-title {
+  width: 100%; margin-bottom: 8px;
+}
+.std0-title__eyebrow {
+  font-size: .58rem; font-weight: 700; letter-spacing: .18em;
+  text-transform: uppercase; color: rgba(90,175,122,.6);
+  margin-bottom: 6px;
+}
+.std0-title__heading {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.8rem; color: #F7F4EF; line-height: 1.1;
+}
+.std0-title__sub {
+  font-size: .78rem; color: rgba(247,244,239,.4);
+  margin-top: 6px; line-height: 1.5;
+}
+
+/* Check kartice */
+.checks {
+  width: 100%; display: flex; flex-direction: column;
+  gap: 10px; margin: 24px 0;
+}
+
+.check-card {
+  display: flex; align-items: center; gap: 16px;
+  padding: 18px 20px; border-radius: 18px;
+  background: rgba(255,255,255,.04);
+  border: 1.5px solid rgba(255,255,255,.08);
+  cursor: pointer; transition: all 200ms ease;
+  user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.check-card:active { transform: scale(.97); }
+.check-card--done {
+  background: rgba(45,125,82,.12);
+  border-color: rgba(90,175,122,.4);
+}
+
+.check-card__icon {
+  width: 48px; height: 48px; border-radius: 14px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.08);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; flex-shrink: 0;
+  transition: all 200ms ease;
+}
+.check-card--done .check-card__icon {
+  background: rgba(45,125,82,.2);
+  border-color: rgba(90,175,122,.3);
+}
+
+.check-card__label {
+  flex: 1;
+  font-size: 1rem; font-weight: 500; color: rgba(247,244,239,.7);
+  transition: color 200ms ease;
+}
+.check-card--done .check-card__label {
+  color: #F7F4EF;
+}
+
+.check-card__tick {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .85rem; flex-shrink: 0;
+  transition: all 200ms ease;
+}
+.check-card--done .check-card__tick {
+  background: #2D7D52;
+  border-color: #5AAF7A;
+  color: white;
+}
+
+/* Progress bar */
+.progress-wrap { width: 100%; margin-bottom: 24px; }
+.progress-bar {
+  height: 4px; background: rgba(255,255,255,.08);
+  border-radius: 2px; overflow: hidden;
+}
+.progress-bar__fill {
+  height: 100%; background: #5AAF7A;
+  border-radius: 2px;
+  transition: width .4s ease;
+}
+.progress-label {
+  display: flex; justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: .65rem; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: rgba(247,244,239,.3);
+}
+
+/* CTA gumb */
+.cta-btn {
+  width: 100%; padding: 18px;
+  border-radius: 18px; border: none;
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1rem; letter-spacing: .04em;
+  cursor: pointer; transition: all 250ms ease;
+  position: relative; overflow: hidden;
+}
+.cta-btn--locked {
+  background: rgba(255,255,255,.06);
+  color: rgba(247,244,239,.3);
+  cursor: not-allowed;
+}
+.cta-btn--ready {
+  background: linear-gradient(135deg, #2D7D52, #5AAF7A);
+  color: #F7F4EF;
+  box-shadow: 0 8px 32px rgba(45,125,82,.4);
+}
+.cta-btn--ready:active { transform: scale(.97); }
+
+/* Že odobreno banner */
+.approved-banner {
+  display: none;
+  width: 100%; padding: 14px 18px;
+  background: rgba(45,125,82,.12);
+  border: 1px solid rgba(90,175,122,.3);
+  border-radius: 14px; margin-bottom: 16px;
+  text-align: center;
+  font-size: .82rem; color: #5AAF7A; font-weight: 600;
+  letter-spacing: .06em;
+}
+</style>
+</head>
+<body>
+
+<div class="bg-particles" id="particles"></div>
+
+<div class="wrap">
+
+  <!-- Agent header -->
+  <div class="agent-header">
+    <div class="agent-header__avatar" id="gk-avatar">⚡</div>
+    <div class="agent-header__info">
+      <p class="agent-header__name" id="gk-name">Agent</p>
+      <p class="agent-header__rank" id="gk-rank">Regrut I</p>
+    </div>
+    <button class="agent-header__back" onclick="location.href='index.html'">⇄ Menjaj</button>
+  </div>
+
+  <!-- Standard 0 naslov -->
+  <div class="std0-title">
+    <p class="std0-title__eyebrow">Dnevni protokol</p>
+    <h1 class="std0-title__heading">Standard 0</h1>
+    <p class="std0-title__sub">Preden začnemo — potrdi jutranjo rutino.</p>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>Napredek</span>
+      <span id="gk-progress-label">0 / 3</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-bar__fill" id="gk-progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Že odobreno -->
+  <div class="approved-banner" id="approved-banner">✅ Standard 0 že odobren za danes!</div>
+
+  <!-- Check kartice -->
+  <div class="checks" id="gk-checks"></div>
+
+  <!-- CTA -->
+  <button class="cta-btn cta-btn--locked" id="gk-cta" onclick="goHome()">
+    Nadaljuj na misije →
+  </button>
+
+</div>
+
+<script src="config.js"></script>
+<script src="engine/xp.js"></script>
+<script src="engine/joker.js"></script>
+<script>
+
+// ── INIT ─────────────────────────────────────────────────
+const agentId = localStorage.getItem("lona_current_agent");
+if (!agentId) location.replace("index.html");
+
+// Inicializiraj XP
+if (typeof initXp === "function") initXp();
+
+const agent = LONA_CONFIG.agents.find(a => a.id === agentId);
+const cfg   = LONA_CONFIG.gatekeeper;
+
+// Pokaži agenta
+document.getElementById("gk-avatar").textContent = agent?.avatar || "⚡";
+document.getElementById("gk-name").textContent   = agent?.name || agentId;
+
+// Rang
+function getRankLocal(xp) {
+  const ranks = [...LONA_CONFIG.ranks].reverse();
+  return ranks.find(r => xp >= r.minXp)?.label || LONA_CONFIG.ranks[0].label;
+}
+const xp   = typeof getXp === "function" ? getXp(agentId) : 0;
+const rank = getRankLocal(typeof getMaxXp === "function" ? getMaxXp(agentId) : xp);
+document.getElementById("gk-rank").textContent = rank + " · " + xp + " XP";
+
+// ── GATEKEEPER STATE ────────────────────────────────────
+function gkKey() {
+  return "lona_gk_" + new Date().toDateString();
+}
+
+function getState() {
+  return JSON.parse(localStorage.getItem(gkKey()) || "{}");
+}
+
+function isApproved() {
+  const s = getState();
+  return cfg.checks.every(c => s[c.id]);
+}
+
+// ── RENDER ──────────────────────────────────────────────
+const ICONS = { zobje: "🦷", pizama: "🌙", miza: "🪑" };
+
+function render() {
+  const state   = getState();
+  const done    = cfg.checks.filter(c => state[c.id]).length;
+  const total   = cfg.checks.length;
+  const allDone = done === total;
+
+  // Progress
+  document.getElementById("gk-progress-label").textContent = done + " / " + total;
+  document.getElementById("gk-progress-fill").style.width  = Math.round(done / total * 100) + "%";
+
+  // Checks
+  const container = document.getElementById("gk-checks");
+  container.innerHTML = cfg.checks.map(c => `
+    <div class="check-card ${state[c.id] ? 'check-card--done' : ''}"
+      onclick="toggle('${c.id}')">
+      <div class="check-card__icon">${ICONS[c.id] || "✓"}</div>
+      <span class="check-card__label">${c.label}</span>
+      <div class="check-card__tick">${state[c.id] ? "✓" : ""}</div>
+    </div>
+  `).join("");
+
+  // CTA
+  const btn = document.getElementById("gk-cta");
+  if (allDone) {
+    btn.className = "cta-btn cta-btn--ready";
+  } else {
+    btn.className = "cta-btn cta-btn--locked";
+  }
+
+  // Že odobreno banner
+  if (isApproved()) {
+    document.getElementById("approved-banner").style.display = "block";
+  }
+}
+
+function toggle(id) {
+  const state = getState();
+  state[id] = !state[id];
+  localStorage.setItem(gkKey(), JSON.stringify(state));
+
+  // Taptic
+  if (navigator.vibrate) navigator.vibrate(state[id] ? [20] : [10, 5, 10]);
+
+  render();
+
+  // Če je vse done — kratka pavza potem redirect
+  if (isApproved()) {
+    setTimeout(() => {
+      document.getElementById("gk-cta").textContent = "Misije odklenjene! 🚀";
+    }, 300);
+  }
+}
+
+function goHome() {
+  if (!isApproved()) return;
+  location.href = "home.html";
+}
+
+// ── PARTICLES ───────────────────────────────────────────
+const pc = document.getElementById("particles");
+for (let i = 0; i < 8; i++) {
+  const p = document.createElement("div");
+  p.className = "particle";
+  const s = 40 + Math.random() * 120;
+  p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;
+    animation-duration:${8+Math.random()*12}s;
+    animation-delay:${Math.random()*8}s`;
+  pc.appendChild(p);
+}
+
+render();
+
+// Če je že odobreno — takoj pokaži gumb in ne zahtevaj ponovnega klikanja
+if (isApproved()) {
+  document.getElementById("gk-cta").className = "cta-btn cta-btn--ready";
+  document.getElementById("gk-cta").textContent = "Nadaljuj na misije →";
+}
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+</script>
+</body>
+</html>
