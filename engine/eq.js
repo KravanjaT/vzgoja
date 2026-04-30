@@ -93,14 +93,18 @@ function handleEqMission(agentId, mission) {
 function _finishEqMission(agentId, mission, flow) {
   const name = LONA_CONFIG.agents.find(a => a.id === agentId)?.name || agentId;
   const rew  = flow.reward;
+  const xpAmt = mission.baseXp || rew.amount || 30;
 
-  if (rew.type === "joker") {
-    earnJoker(agentId, rew.amount);
-    lonaToast(`${name} dobil ${rew.amount} Joker! 🃏`, "gold");
+  // Vedno XP
+  addXp(agentId, xpAmt);
+  if (typeof showXpFloat === "function") showXpFloat(xpAmt);
+
+  // EQ akcija → bonus joker
+  if (mission.eqType === "akcija" && mission.jokerReward) {
+    earnJoker(agentId, mission.jokerReward);
+    lonaToast(`${name} +${xpAmt} XP + 🃏 Joker!`, "gold");
   } else {
-    addXp(agentId, rew.amount);
-    if (typeof showXpFloat === "function") showXpFloat(rew.amount);
-    lonaToast(`${name} +${rew.amount} XP — EQ Operacija ✓`, "green");
+    lonaToast(`${name} +${xpAmt} XP — EQ ✓`, "green");
   }
 
   logMission(agentId, mission.id, rew.type === "xp" ? rew.amount : 0, { label: mission.label }, false);

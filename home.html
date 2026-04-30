@@ -1,189 +1,273 @@
 <!DOCTYPE html>
-<html lang="sl" >
+<html lang="sl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0F1A0F" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>LONA OS</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" type="image/png" href="favicon.png"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="theme-color" content="#0F1A0F"/>
 <link rel="manifest" href="manifest.json"/>
-  <meta name="mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-  <meta name="apple-mobile-web-app-title" content="LONA OS"/>
-  <meta name="theme-color" content="#0F1A0F"/>
+<link rel="icon" type="image/png" href="favicon.png"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="LONA OS"/>
+<title>LONA OS</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
-.bottom-nav{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:400px;display:flex;background:rgba(15,26,15,.92);border:1px solid rgba(90,175,122,.18);border-radius:24px;padding:8px 12px;gap:0;z-index:100;backdrop-filter:blur(16px);box-shadow:0 4px 24px rgba(0,0,0,.5)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0a120a;color:#F7F4EF;min-height:100dvh;padding-bottom:100px;overflow-x:hidden}
+
+/* TOP BAR */
+.top-bar{display:flex;align-items:center;gap:10px;padding:14px 16px;background:rgba(10,18,10,.95);border-bottom:1px solid rgba(90,175,122,.1);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
+.top-bar__logo{font-family:'DM Serif Display',serif;font-size:1rem;color:#F7F4EF;letter-spacing:.06em;flex-shrink:0}
+.logo-accent{color:#5AAF7A}
+.top-bar__agent{flex:1;display:flex;align-items:center;gap:6px;cursor:pointer;justify-content:center}
+.top-bar__agent-name{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(247,244,239,.45)}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#5AAF7A;flex-shrink:0}
+
+/* CMD PANEL */
+#cmd-panel-section{padding:0 16px}
+
+/* VIEW TABS */
+.view-tabs{display:flex;gap:0;padding:12px 16px 0;position:relative}
+.view-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 6px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s ease;-webkit-tap-highlight-color:transparent}
+.view-tab__icon{font-size:20px}
+.view-tab__label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(247,244,239,.3);transition:color .2s ease}
+.view-tab--active .view-tab__label{color:#F7F4EF}
+.view-tab--eq{border-bottom-color:transparent}.view-tab--eq.view-tab--active{border-bottom-color:#AF52DE}
+.view-tab--indoor{border-bottom-color:transparent}.view-tab--indoor.view-tab--active{border-bottom-color:#5AAF7A}
+.view-tab--outdoor{border-bottom-color:transparent}.view-tab--outdoor.view-tab--active{border-bottom-color:#34C759}
+.view-tab--all{border-bottom-color:transparent}.view-tab--all.view-tab--active{border-bottom-color:#5AC8FA}
+
+/* VIEWS */
+.view{display:none;animation:fadeIn .25s ease}
+.view.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* CAROUSEL */
+.cat-carousel{display:flex;gap:12px;padding:16px 16px 8px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.cat-carousel::-webkit-scrollbar{display:none}
+.cat-tile{flex-shrink:0;width:150px;height:90px;border-radius:18px;position:relative;overflow:hidden;scroll-snap-align:start;cursor:pointer;transition:transform .2s ease,filter .2s ease,box-shadow .2s ease;border:2px solid transparent;-webkit-tap-highlight-color:transparent}
+.cat-tile:active{transform:scale(.94)!important}
+.cat-tile.active{border-color:rgba(255,255,255,.3);box-shadow:0 8px 32px rgba(0,0,0,.6);transform:scale(1.04)}
+.cat-tile:not(.active){filter:brightness(.65);transform:scale(.96)}
+.cat-tile__bg{position:absolute;inset:0}
+.cat-tile__overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.8) 0%,transparent 65%)}
+.cat-tile__body{position:absolute;bottom:0;left:0;right:0;padding:10px 12px}
+.cat-tile__icon{font-size:16px;display:block;margin-bottom:2px}
+.cat-tile__name{font-size:12px;font-weight:800;color:#fff;margin:0}
+.cat-tile__count{font-size:10px;color:rgba(255,255,255,.5);margin:1px 0 0}
+
+/* DRAWER */
+.drawer{background:rgba(12,20,12,.98);border-radius:20px 20px 0 0;margin-top:4px;padding:0 16px 16px}
+.drawer-handle{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.12);margin:10px auto 14px}
+.drawer-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.drawer-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:#F7F4EF}
+.drawer-meta{display:flex;align-items:center;gap:8px}
+.daily-dots{display:flex;gap:4px;align-items:center}
+.daily-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);transition:background .3s ease}
+.daily-dot.done{background:#5AAF7A}
+.daily-dot.locked{background:#FF3B30}
+.shuffle-btn{padding:5px 12px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(247,244,239,.55);font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:transparent}
+.shuffle-btn:active{transform:scale(.95)}
+
+/* MISSION CARDS */
+.mission-list{display:flex;flex-direction:column;gap:7px}
+.mc{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:15px;cursor:pointer;transition:transform .15s ease,filter .15s ease;-webkit-tap-highlight-color:transparent;opacity:0;transform:translateY(10px)}
+.mc.mc-in{opacity:1;transform:translateY(0);transition:opacity .28s ease,transform .28s ease}
+.mc:active{transform:scale(.97);filter:brightness(1.1)}
+.mc.mc-locked{opacity:.38;cursor:not-allowed}
+.mc__icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.mc__body{flex:1;min-width:0}
+.mc__name{font-size:13px;font-weight:700;color:#F7F4EF;margin:0;line-height:1.2}
+.mc__desc{font-size:11px;color:rgba(247,244,239,.38);margin:2px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mc__right{flex-shrink:0;text-align:right}
+.mc__xp{font-size:14px;font-weight:800;margin:0;line-height:1}
+.mc__joker{font-size:10px;color:#FFD60A;margin:2px 0 0;font-weight:700}
+.mc__joker-btn{padding:4px 9px;border-radius:9px;background:rgba(255,209,102,.15);border:1px solid rgba(255,209,102,.35);color:#FFD60A;font-size:11px;font-weight:800;cursor:pointer;margin-top:4px;display:block;font-family:'DM Sans',sans-serif}
+.mc__joker-btn:active{transform:scale(.93)}
+
+/* RIBBON (vse misije) */
+.ribbon-wrap{padding:8px 16px 0}
+.ribbon{display:flex;flex-direction:column;gap:6px}
+.rb{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:13px;cursor:pointer;transition:transform .15s ease;-webkit-tap-highlight-color:transparent;opacity:0;transform:translateX(-6px)}
+.rb.rb-in{opacity:1;transform:translateX(0);transition:opacity .25s ease,transform .25s ease}
+.rb:nth-child(odd).rb-in{transform:translateX(0)}
+.rb:active{transform:scale(.97)}
+.rb__icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.rb__body{flex:1;min-width:0}
+.rb__name{font-size:13px;font-weight:700;color:#F7F4EF;margin:0}
+.rb__cat{font-size:10px;color:rgba(247,244,239,.38);margin:1px 0 0}
+.rb__xp{font-size:12px;font-weight:800;flex-shrink:0}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:400px;display:flex;background:rgba(10,18,10,.94);border:1px solid rgba(90,175,122,.18);border-radius:24px;padding:8px 12px;gap:0;z-index:100;backdrop-filter:blur(16px);box-shadow:0 4px 24px rgba(0,0,0,.5)}
 .bottom-nav__item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:7px 4px;cursor:pointer;position:relative;background:none;border:none;-webkit-tap-highlight-color:transparent}
 .bottom-nav__item svg{width:22px;height:22px}
 .bottom-nav__item span{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(247,244,239,.3)}
 .bottom-nav__item--active span{color:#5AAF7A;font-weight:800}
 .bottom-nav__item--active::after{content:"";position:absolute;bottom:-4px;width:4px;height:4px;border-radius:50%;background:#5AAF7A}
+
+/* SETTINGS */
+.settings-overlay{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center}
 </style>
 </head>
 <body>
 
+<header class="top-bar">
+  <div class="top-bar__logo">[LONA<span class="logo-accent">_OS</span>]</div>
+  <div class="top-bar__agent" onclick="location.replace('index.html')" title="Zamenjaj agenta">
+    <span class="status-dot"></span>
+    <span class="top-bar__agent-name" id="current-agent-name">Agent</span>
+    <span style="font-size:.65rem;opacity:.4">⇄</span>
+  </div>
+  <button onclick="document.getElementById('settings-panel').style.display='flex'"
+    style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(247,244,239,.5);font-size:14px;cursor:pointer;flex-shrink:0">⚙</button>
+</header>
 
-  <!-- ── HEADER ──────────────────────────────────────────── -->
-  <header class="top-bar">
-    <div class="top-bar__logo">
-      <span class="logo-bracket">[</span>LONA<span class="logo-accent">_OS</span><span class="logo-bracket">]</span>
+<main>
+  <section id="cmd-panel-section"></section>
+
+  <!-- VIEW TABS -->
+  <div class="view-tabs">
+    <div class="view-tab view-tab--eq view-tab--active" onclick="switchView('eq')">
+      <span class="view-tab__icon">⚡</span>
+      <span class="view-tab__label">EQ</span>
     </div>
-    <div class="top-bar__meta" onclick="location.replace('index.html')" style="cursor:pointer;gap:6px" title="Zamenjaj agenta">
-      <span class="status-dot" aria-label="Online"></span>
-      <span class="top-bar__title" id="current-agent-name">Agent</span>
-      <span style="font-size:.7rem;opacity:.5">⇄</span>
+    <div class="view-tab view-tab--indoor" onclick="switchView('indoor')">
+      <span class="view-tab__icon">🏠</span>
+      <span class="view-tab__label">V hiši</span>
     </div>
-    <button class="top-bar__alert" onclick="showSituationPicker()" title="Situacijska misija" style="margin-right:4px;background:#FF9500;border-color:#FF9500;color:white">📍</button>
-  </header>
-
-  <main class="main-scroll">
-
-  <!-- COMMANDER PANEL -->
-  <section id="cmd-panel-section">
-    <!-- Generira renderCmdAgents() -->
-  </section>
-
-  <!-- KATEGORIJE — horizontal scroll -->
-  <div class="cat-scroll-wrap">
-    <div class="cat-scroll" id="cat-scroll">
-      <button class="cat-pill cat-pill--active" data-cat="all">Vse</button>
-      <button class="cat-pill" data-cat="hygiene">Higiena</button>
-      <button class="cat-pill" data-cat="kitchen">Kuhinja</button>
-      <button class="cat-pill" data-cat="cleaning">Čiščenje</button>
-      <button class="cat-pill" data-cat="organisation">Organiz.</button>
-      <button class="cat-pill" data-cat="care">Skrb</button>
-      <button class="cat-pill" data-cat="outdoor">Outdoor</button>
-      <button class="cat-pill" data-cat="body">Telo</button>
-      <button class="cat-pill" data-cat="safety">Varnost</button>
-      <button class="cat-pill" data-cat="money">Denar</button>
-      <button class="cat-pill" data-cat="social">Socialne</button>
-      <button class="cat-pill" data-cat="creativity">Um</button>
-      <button class="cat-pill" data-cat="eq">EQ</button>
-      <button class="cat-pill" data-cat="fear">Strah</button>
-      <button class="cat-pill" data-cat="independence">Samostojnost</button>
-      <button class="cat-pill" data-cat="custom">Moje</button>
+    <div class="view-tab view-tab--outdoor" onclick="switchView('outdoor')">
+      <span class="view-tab__icon">🌲</span>
+      <span class="view-tab__label">Zunaj</span>
+    </div>
+    <div class="view-tab view-tab--all" onclick="switchView('all')">
+      <span class="view-tab__icon">🗂</span>
+      <span class="view-tab__label">Vse</span>
     </div>
   </div>
 
-  <!-- HEADER misij -->
-  <div class="section-header" style="margin-bottom:0">
-    <h3 class="section-header__title" id="missions-cat-title">⭐ Vse Misije</h3>
-    <div style="display:flex;gap:6px;align-items:center">
-      <button onclick="shuffleMissions()"
-        style="padding:5px 10px;border-radius:20px;background:#007AFF;color:white;font-family:'Nunito',sans-serif;font-size:.72rem;font-weight:900;border:none;cursor:pointer;box-shadow:0 2px 0 rgba(0,122,255,.4)">↻</button>
-      <button onclick="showSituationPicker()"
-        style="padding:5px 10px;border-radius:20px;background:#FF9500;color:white;font-family:'Nunito',sans-serif;font-size:.72rem;font-weight:900;border:none;cursor:pointer;box-shadow:0 2px 0 rgba(255,149,0,.4)">📍</button>
-      <span class="section-header__badge" id="missions-badge">0</span>
+  <!-- EQ VIEW -->
+  <div class="view active" id="view-eq">
+    <div class="cat-carousel" id="carousel-eq"></div>
+    <div class="drawer">
+      <div class="drawer-handle"></div>
+      <div class="drawer-header">
+        <p class="drawer-title" id="drawer-eq-title">⚡ EQ Akcija</p>
+        <div class="drawer-meta">
+          <div class="daily-dots" id="daily-dots-eq"></div>
+        </div>
+      </div>
+      <div class="mission-list" id="list-eq"></div>
     </div>
   </div>
 
-  <!-- MISSIONS GRID — dinamično -->
-  <section class="missions-wrapper">
-    <div class="missions-grid" id="missions-grid"></div>
-  </section>
+  <!-- INDOOR VIEW -->
+  <div class="view" id="view-indoor">
+    <div class="cat-carousel" id="carousel-indoor"></div>
+    <div class="drawer">
+      <div class="drawer-handle"></div>
+      <div class="drawer-header">
+        <p class="drawer-title" id="drawer-indoor-title">🧹 Čiščenje</p>
+        <div class="drawer-meta">
+          <div class="daily-dots" id="daily-dots-indoor"></div>
+          <button class="shuffle-btn" onclick="shuffleIndoor()">↻ Drugo</button>
+        </div>
+      </div>
+      <div class="mission-list" id="list-indoor"></div>
+    </div>
+  </div>
 
+  <!-- OUTDOOR VIEW -->
+  <div class="view" id="view-outdoor">
+    <div class="cat-carousel" id="carousel-outdoor"></div>
+    <div class="drawer">
+      <div class="drawer-handle"></div>
+      <div class="drawer-header">
+        <p class="drawer-title" id="drawer-outdoor-title">🌲 Outdoor</p>
+        <div class="drawer-meta">
+          <div class="daily-dots" id="daily-dots-outdoor"></div>
+          <button class="shuffle-btn" onclick="shuffleOutdoor()">↻ Drugo</button>
+        </div>
+      </div>
+      <div class="mission-list" id="list-outdoor"></div>
+    </div>
+  </div>
+
+  <!-- VSE VIEW — ribbon -->
+  <div class="view" id="view-all">
+    <div style="padding:12px 16px 8px;display:flex;align-items:center;justify-content:space-between">
+      <p style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(247,244,239,.35)">Vse misije</p>
+      <span style="font-size:11px;color:rgba(247,244,239,.3)" id="all-count"></span>
+    </div>
+    <div class="ribbon-wrap">
+      <div class="ribbon" id="ribbon-all"></div>
+    </div>
+  </div>
 </main>
 
-  <!-- ── BOTTOM NAV ───────────────────────────────────────── -->
-  
-
-  
-  
-
-  <!-- Settings panel -->
-  <div id="settings-panel" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center">
-    <div style="background:var(--bg-card);border:1px solid rgba(255,255,255,.12);border-radius:var(--r-lg);padding:24px 20px;max-width:320px;width:calc(100% - 32px);display:flex;flex-direction:column;gap:12px">
-      <p style="font-family:var(--font-display);font-size:1rem;font-weight:700;letter-spacing:.08em">⚙️ Nastavitve</p>
-      <button onclick="lonaReset()" style="padding:11px;border-radius:var(--r-md);background:rgba(255,60,90,.1);border:1px solid rgba(255,60,90,.3);color:var(--neon-red);font-size:.88rem;font-weight:600;font-family:var(--font-body)">🔄 Reset vse podatke</button>
-      <button onclick="lonaDebug();document.getElementById('settings-panel').style.display='none'" style="padding:11px;border-radius:var(--r-md);background:#EEF3FD;border:1px solid rgba(37,99,235,.2);color:#2563EB;font-size:.88rem;font-weight:600;font-family:var(--font-body)">🔍 Debug (konzola)</button>
-      <button onclick="document.getElementById('settings-panel').style.display='none'" style="padding:11px;border-radius:var(--r-md);border:1px solid rgba(255,255,255,.1);color:var(--text-secondary);font-size:.88rem;font-weight:600;font-family:var(--font-body)">Zapri</button>
-    </div>
+<!-- SETTINGS -->
+<div id="settings-panel" class="settings-overlay">
+  <div style="background:#1a2b1a;border:1px solid rgba(90,175,122,.2);border-radius:24px;padding:24px 20px;max-width:320px;width:calc(100% - 32px);display:flex;flex-direction:column;gap:10px">
+    <p style="font-family:'DM Serif Display',serif;font-size:1rem;color:#F7F4EF">⚙️ Nastavitve</p>
+    <button onclick="lonaReset()" style="padding:12px;border-radius:14px;background:rgba(255,60,90,.1);border:1px solid rgba(255,60,90,.3);color:#FF3B30;font-size:.88rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer">🔄 Reset vse podatke</button>
+    <button onclick="lonaDebug();document.getElementById('settings-panel').style.display='none'" style="padding:12px;border-radius:14px;background:rgba(0,122,255,.1);border:1px solid rgba(0,122,255,.25);color:#007AFF;font-size:.88rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer">🔍 Debug (konzola)</button>
+    <button onclick="document.getElementById('settings-panel').style.display='none'" style="padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.1);color:rgba(247,244,239,.5);font-size:.88rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer">Zapri</button>
   </div>
+</div>
 
-  <script src="config.js"></script>
-  <script src="engine/gatekeeper.js"></script>
-  <script src="engine/xp.js"></script>
-  <script src="engine/cooldown.js"></script>
-  <script src="engine/joker.js"></script>
-  <script src="engine/actionPrompt.js"></script>
-  <script src="engine/mastery.js"></script>
-  <script src="engine/season.js"></script>
-  <script src="engine/equipment.js"></script>
-  <script src="engine/eq.js"></script>
-  <script src="engine/bank.js"></script>
-  <script src="engine/attributes.js"></script>
-  <script src="engine/progressive.js"></script>
-  <script src="engine/streak.js"></script>
-  <script src="engine/custom_missions.js"></script>
-  <script src="engine/scholar.js"></script>
-  <script src="engine.js"></script>
+<script src="config.js"></script>
+<script src="engine/gatekeeper.js"></script>
+<script src="engine/xp.js"></script>
+<script src="engine/cooldown.js"></script>
+<script src="engine/joker.js"></script>
+<script src="engine/actionPrompt.js"></script>
+<script src="engine/mastery.js"></script>
+<script src="engine/season.js"></script>
+<script src="engine/equipment.js"></script>
+<script src="engine/eq.js"></script>
+<script src="engine/bank.js"></script>
+<script src="engine/attributes.js"></script>
+<script src="engine/progressive.js"></script>
+<script src="engine/streak.js"></script>
+<script src="engine/custom_missions.js"></script>
+<script src="engine/scholar.js"></script>
+<script src="engine.js"></script>
 
-  <script>
-  // Redirect na login če ni izbranega agenta
-  if (!localStorage.getItem("lona_current_agent")) {
-    location.replace("index.html");
-  }
+<script>
+if (!localStorage.getItem("lona_current_agent")) location.replace("index.html");
 
-  // Settings panel — zapri ob kliku zunaj
-  document.getElementById("settings-panel").addEventListener("click", (e) => {
-    if (e.target === document.getElementById("settings-panel")) {
-      document.getElementById("settings-panel").style.display = "none";
-    }
-  });
-  </script>
-  <script>
-    // Osveži UI ob vsaki vrnitvi na stran (back button, tab switch)
-  window.addEventListener('pageshow', (e) => {
-    if (typeof renderCmdAgents    === 'function') renderCmdAgents();
-    if (typeof renderMissionsGrid === 'function') renderMissionsGrid(window.currentCat || 'all');
-    if (typeof renderTreasury     === 'function') renderTreasury();
-    if (typeof updateMissionsBadge=== 'function') updateMissionsBadge();
-  });
+document.getElementById("settings-panel").addEventListener("click", e => {
+  if (e.target === document.getElementById("settings-panel"))
+    document.getElementById("settings-panel").style.display = "none";
+});
 
-  if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
-    }
-  </script>
+window.addEventListener('pageshow', () => {
+  if (typeof renderCmdAgents === 'function') renderCmdAgents();
+  _refreshCurrentView();
+});
 
-  <!-- DEBUG OVERLAY za mobilni -->
-  <div id="debug-overlay" style="display:none;position:fixed;bottom:90px;left:10px;right:10px;z-index:99999;background:rgba(0,0,0,.9);color:#0f0;font-size:.7rem;font-family:monospace;padding:10px;border-radius:10px;max-height:200px;overflow-y:auto;border:1px solid #0f0"></div>
-  <script>
-  // Pokaži overlay z dvojnim tapom
-  let taps = 0;
-  document.addEventListener('touchstart', () => {
-    taps++;
-    if (taps >= 5) {
-      document.getElementById('debug-overlay').style.display = 'block';
-      taps = 0;
-    }
-    setTimeout(() => taps = 0, 1000);
-  });
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
 
-  // Ujemi vse napake
-  window.onerror = function(msg, src, line, col, err) {
-    const el = document.getElementById('debug-overlay');
-    el.style.display = 'block';
-    el.innerHTML += '<div style="color:#f55;margin-bottom:4px">❌ ' + msg + '<br><span style="color:#888">' + (src||'').split('/').pop() + ':' + line + '</span></div>';
-    return false;
-  };
-  window.addEventListener('unhandledrejection', e => {
-    const el = document.getElementById('debug-overlay');
-    el.style.display = 'block';
-    el.innerHTML += '<div style="color:#fa0;margin-bottom:4px">⚠️ ' + (e.reason?.message || e.reason) + '</div>';
-  });
-  </script>
 <nav class="bottom-nav" aria-label="Navigacija">
-  <button class="bottom-nav__item bottom-nav__item--active" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="#5AAF7A" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Baza</span></button>
-  <button class="bottom-nav__item" onclick="location.replace('hub.html')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg><span>Hub</span></button>
-  <button class="bottom-nav__item" onclick="location.replace('library.html')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg><span>Knjižnica</span></button>
-  <button class="bottom-nav__item" onclick="location.replace('profile.html')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profil</span></button>
+  <button class="bottom-nav__item bottom-nav__item--active" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#5AAF7A" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+    <span>Baza</span>
+  </button>
+  <button class="bottom-nav__item" onclick="location.replace('hub.html')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+    <span>Hub</span>
+  </button>
+  <button class="bottom-nav__item" onclick="location.replace('library.html')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+    <span>Knjižnica</span>
+  </button>
+  <button class="bottom-nav__item" onclick="location.replace('profile.html')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Profil</span>
+  </button>
 </nav>
+
 </body>
 </html>

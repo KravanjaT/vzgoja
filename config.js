@@ -150,6 +150,7 @@ const LONA_CONFIG = {
       label:     "Izvidniški Bonus",
       icon:      "👁️",
       baseXp:    0,
+      cooldownHrs:  72,
       isScout:   true,
       category:  "cleaning",
       state:     "available",
@@ -159,6 +160,7 @@ const LONA_CONFIG = {
       label:     "Skupna Misija",
       icon:      "🤝",
       baseXp:    30,
+      cooldownHrs:  72,
       isShared:  true,
       category:  "cleaning",
       state:     "available",
@@ -312,7 +314,8 @@ const LONA_CONFIG = {
     // Aktivirajo se glede na situacijo — starš izbere situacijo
     cakanje_restavracija: {
       id: "cakanje_restavracija", label: "Tihi Agent", icon: "🍽️",
-      baseXp: 35, situation: "restavracija", duration: "medium",
+      baseXp: 35,
+      cooldownHrs:  72, situation: "restavracija", duration: "medium",
       desc: "Čakanje na hrano brez telefona — tiho, miren, aktiven opazovalec.",
       challenges: [
         "Preštej vse rdeče predmete v restavraciji",
@@ -323,7 +326,8 @@ const LONA_CONFIG = {
     },
     cakanje_zdravnik: {
       id: "cakanje_zdravnik", label: "Potrpežljiv Agent", icon: "🏥",
-      baseXp: 30, situation: "zdravnik", duration: "medium",
+      baseXp: 30,
+      cooldownHrs:  72, situation: "zdravnik", duration: "medium",
       desc: "Čakalna vrsta — brez joče, brez 'kdaj bomo šli'.",
       challenges: [
         "Preštej koliko ljudi čaka pred teboj",
@@ -334,7 +338,8 @@ const LONA_CONFIG = {
     },
     cakanje_vrsta: {
       id: "cakanje_vrsta", label: "Vrsta Mojster", icon: "🛒",
-      baseXp: 25, situation: "vrsta", duration: "short",
+      baseXp: 25,
+      cooldownHrs:  72, situation: "vrsta", duration: "short",
       desc: "Vrsta v trgovini — mirno, brez trganja za starša.",
       challenges: [
         "Preštej izdelke v košarici pred tabo",
@@ -344,7 +349,8 @@ const LONA_CONFIG = {
     },
     dolgocas: {
       id: "dolgocas", label: "Anti-Dolgočas", icon: "🧩",
-      baseXp: 20, situation: "dolgocas", duration: "short",
+      baseXp: 20,
+      cooldownHrs:  72, situation: "dolgocas", duration: "short",
       desc: "Ko je dolgčas — brez zaslona, sam poišči rešitev.",
       challenges: [
         "Iz papirja naredi letalo in ga 10x vrzi",
@@ -355,7 +361,8 @@ const LONA_CONFIG = {
     },
     avto: {
       id: "avto", label: "Avto Misija", icon: "🚗",
-      baseXp: 20, situation: "avto", duration: "short",
+      baseXp: 20,
+      cooldownHrs:  72, situation: "avto", duration: "short",
       desc: "Dolga vožnja — brez 'kdaj smo tam'.",
       challenges: [
         "Preštej rdeče avtomobile do 10",
@@ -624,43 +631,78 @@ const LONA_CONFIG = {
       ],
     },
 
-    // ── EQ OPERACIJE ──────────────────────────────────────
+    // ══════════════════════════════════════════════════════
+    //  EQ OPERACIJE — Akcijske (joker + XP)
+    // ══════════════════════════════════════════════════════
     nevtralizator: {
-      id:        "nevtralizator",
-      label:     "Nevtralizator",
-      icon:      "🧘",
-      baseXp:    0,       // Nagrada je Joker, ne XP
-      isEq:      true,
-      eqType:    "nevtralizator",
-      state:     "available",
+      id: "nevtralizator", label: "Nevtralizator", icon: "🧘",
+      baseXp: 40, isEq: true, eqType: "akcija",
+      jokerReward: 1,
+      cooldownHrs: 24,
+      category: "eq", location: "any", state: "available",
+      desc: "Upravljaj čustvo v realnem trenutku",
     },
+    narocanje: {
+      id: "narocanje", label: "Naroči Sam", icon: "🍽️",
+      baseXp: 50, isEq: true, eqType: "akcija",
+      jokerReward: 1,
+      cooldownHrs: 48,
+      category: "eq", location: "outdoor", state: "available",
+      desc: "Sam naroči v kavarni ali gostilni",
+    },
+    telefon_tujec: {
+      id: "telefon_tujec", label: "Telefonski Klic", icon: "📞",
+      baseXp: 60, isEq: true, eqType: "akcija",
+      jokerReward: 1,
+      cooldownHrs: 72,
+      category: "eq", location: "any", state: "available",
+      desc: "Pokliči tujca — zobozdravnik, restavracija...",
+    },
+    opravicilo: {
+      id: "opravicilo", label: "Opravičilo", icon: "🙏",
+      baseXp: 50, isEq: true, eqType: "akcija",
+      jokerReward: 1,
+      cooldownHrs: 48,
+      category: "eq", location: "any", state: "available",
+      desc: "Pristno se opraviči osebi ki si ji naredil krivico",
+    },
+    pohvala: {
+      id: "pohvala", label: "Pohvali Nekoga", icon: "⭐",
+      baseXp: 35, isEq: true, eqType: "akcija",
+      jokerReward: 1,
+      cooldownHrs: 24,
+      category: "eq", location: "any", state: "available",
+      desc: "Iskreno pohvali nekoga — ne samo 'super'",
+    },
+
+    // ── EQ REFLEKSIJSKE — Pogovor s starši (XP) ──────────
     debriefing: {
-      id:        "debriefing",
-      label:     "Debriefing",
-      icon:      "📋",
-      baseXp:    25,
-      isEq:      true,
-      eqType:    "debriefing",
-      state:     "available",
+      id: "debriefing", label: "Debriefing", icon: "📋",
+      baseXp: 30, isEq: true, eqType: "refleksija",
+      cooldownHrs: 24,
+      category: "eq", location: "any", state: "available",
+      desc: "Pogovor o tem kaj se je danes zgodilo",
     },
     intel_report: {
-      id:        "intel_report",
-      label:     "Intel Report",
-      icon:      "🤝",
-      baseXp:    20,
-      isEq:      true,
-      eqType:    "intel_report",
-      cooldownHrs: 168, // 1x na teden
-      state:     "available",
+      id: "intel_report", label: "Intel Report", icon: "🤝",
+      baseXp: 25, isEq: true, eqType: "refleksija",
+      cooldownHrs: 168,
+      category: "eq", location: "any", state: "available",
+      desc: "Zahvala — konkretna, ne samo hvala",
     },
     advokat: {
-      id:        "advokat",
-      label:     "Advokat",
-      icon:      "⚖️",
-      baseXp:    30,
-      isEq:      true,
-      eqType:    "advokat",
-      state:     "available",
+      id: "advokat", label: "Advokat", icon: "⚖️",
+      baseXp: 35, isEq: true, eqType: "refleksija",
+      cooldownHrs: 48,
+      category: "eq", location: "any", state: "available",
+      desc: "Vidik druge osebe — zakaj je imel prav?",
+    },
+    situacijski_izziv: {
+      id: "situacijski_izziv", label: "Situacijski Izziv", icon: "🎯",
+      baseXp: 45, isEq: true, eqType: "refleksija",
+      cooldownHrs: 72,
+      category: "eq", location: "any", state: "available",
+      desc: "Kako bi reagiral v tej situaciji?",
     },
 
     skrivna_wc: {

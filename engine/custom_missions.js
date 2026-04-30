@@ -6,7 +6,9 @@
 const CUSTOM_KEY = "lona_custom_missions";
 
 function customLoad() {
-  return JSON.parse(localStorage.getItem(CUSTOM_KEY) || "[]");
+  const raw = JSON.parse(localStorage.getItem(CUSTOM_KEY) || "[]");
+  if (Array.isArray(raw)) return raw;
+  return Object.values(raw);
 }
 
 function customSave(missions) {

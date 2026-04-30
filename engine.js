@@ -1,3 +1,16 @@
+const CAT_COLORS = {
+  hygiene:'#34C759',kitchen:'#FF9500',cleaning:'#007AFF',organisation:'#AF52DE',
+  care:'#FF2D55',outdoor:'#30D158',body:'#FF3B30',safety:'#FF3B30',
+  money:'#FFD60A',social:'#5AC8FA',creativity:'#FF9500',custom:'#5AAF7A',
+  fear:'#AF52DE',independence:'#007AFF',eq:'#AF52DE',
+};
+const CAT_NAMES = {
+  hygiene:'Higiena',kitchen:'Kuhinja',cleaning:'Čiščenje',organisation:'Organizacija',
+  care:'Skrb',outdoor:'Outdoor',body:'Telo',safety:'Varnost',money:'Denar',
+  social:'Socialne',creativity:'Ustvarjalnost',custom:'Moje',fear:'Strah',
+  independence:'Samostojnost',eq:'EQ',
+};
+
 // ============================================================
 //  LONA OS — engine.js  (v2.6)
 //  Vstopna točka — inicializira vse module
@@ -11,9 +24,18 @@ function logMission(agentId, missionId, xp, modifier, compromised) {
     modifier: modifier?.label || "—",
     date: new Date().toISOString(),
   });
-  // Max 100 vnosov
   if (log.length > 100) log.splice(0, log.length - 100);
   localStorage.setItem("lona_mission_log", JSON.stringify(log));
+
+  // Štej dnevne misije
+  if (typeof addDailyCount === "function") {
+    const count = addDailyCount(agentId);
+    if (typeof renderDailyProgress === "function") renderDailyProgress(agentId);
+    if (count >= DAILY_MAX) {
+      lonaToast("🔒 Dnevni limit dosežen! Odlično!", "gold");
+      setTimeout(() => renderLocationMissions(_currentLocation || "eq"), 200);
+    }
+  }
 }
 
 // ── CURRENT AGENT ─────────────────────────────────────────
@@ -642,14 +664,6 @@ const CAT_LABELS = {
   independence: "🎯 Samostojnost", custom: "✏️ Moje Misije",
 };
 
-const CAT_COLORS = {
-  hygiene: "#34C759", kitchen: "#FF9500", cleaning: "#007AFF",
-  organisation: "#AF52DE", care: "#FF2D55", outdoor: "#2DB84B",
-  body: "#FF3B30", safety: "#FF3B30", money: "#FFD60A",
-  social: "#5AC8FA", creativity: "#FF9500", eq: "#FF6B35",
-  fear: "#AF52DE", independence: "#007AFF", custom: "#AF52DE",
-};
-
 let currentCat = "all";
 
 function renderMissionsGrid(cat) {
@@ -688,24 +702,21 @@ function renderMissionsGrid(cat) {
     badgeEl.style.background = avail > 0 ? "var(--green)" : "var(--ink-4)";
   }
 
-  // Animacija
-  grid.classList.remove("missions-grid--switching");
-  void grid.offsetWidth;
-  grid.classList.add("missions-grid--switching");
+  // Render carousel
+  grid.innerHTML = filtered.map(m => buildMissionBtn(m, agentId)).join("");
 
-  // Render
-  grid.innerHTML = filtered.map(m => {
-    return buildMissionBtn(m, agentId);
-  }).join("");
-
-  // Event listenerji
-  grid.querySelectorAll(".mission-btn[data-mission]").forEach(btn => {
-    btn.addEventListener("click", (e) => { addRipple(btn, e); popBtn(btn); onMissionClick(btn); });
+  // Event listenerji — klik na kartico
+  grid.querySelectorAll(".mc-card[data-mission]").forEach(card => {
+    card.addEventListener("click", () => {
+      const idx = parseInt(card.dataset.carouselIdx || 0);
+      if (idx !== _mcState.cur) { _mcSnapTo(idx); return; }
+      if (navigator.vibrate) navigator.vibrate(15);
+      onMissionClick(card);
+    });
   });
 
-  // Carousel dots + drag scroll
-  initCarouselDots(grid, filtered.length);
-  initDragScroll(grid);
+  // Inicializiraj carousel
+  initMissionCarousel(grid);
 }
 
 // ── MOUSE DRAG SCROLL z inercijo ─────────────────────────────
@@ -876,63 +887,49 @@ function buildMissionBtn(mission, agentId) {
     cooldownHtml = `<p class="mission-btn__cooldown">⏱ ${hrs}h</p>`;
   }
 
-  // Določi barvo za kategorijo
-  const catColor = onCooldown ? 'rgba(255,255,255,.04)' :
-    ({hygiene:'rgba(52,199,89,.1)',kitchen:'rgba(255,149,0,.1)',cleaning:'rgba(0,122,255,.1)',
-      organisation:'rgba(175,82,222,.1)',care:'rgba(255,45,85,.1)',outdoor:'rgba(45,185,100,.1)',
-      body:'rgba(255,59,48,.1)',safety:'rgba(255,59,48,.1)',money:'rgba(255,214,10,.1)',
-      social:'rgba(90,200,250,.1)',creativity:'rgba(255,149,0,.1)',custom:'rgba(175,82,222,.1)',
-      fear:'rgba(175,82,222,.1)',independence:'rgba(0,122,255,.1)',eq:'rgba(255,107,53,.1)'
-    }[mission.category] || 'rgba(45,125,82,.1)');
+  // CAT_COLORS in CAT_NAMES so globalni (definirani na vrhu)
 
-  const catBorder = onCooldown ? 'rgba(255,255,255,.06)' :
-    ({hygiene:'rgba(52,199,89,.25)',kitchen:'rgba(255,149,0,.25)',cleaning:'rgba(0,122,255,.25)',
-      organisation:'rgba(175,82,222,.25)',care:'rgba(255,45,85,.25)',outdoor:'rgba(45,185,100,.25)',
-      body:'rgba(255,59,48,.25)',safety:'rgba(255,59,48,.25)',money:'rgba(255,214,10,.25)',
-      social:'rgba(90,200,250,.25)',creativity:'rgba(255,149,0,.25)',custom:'rgba(175,82,222,.25)',
-      fear:'rgba(175,82,222,.25)',independence:'rgba(0,122,255,.25)',eq:'rgba(255,107,53,.25)'
-    }[mission.category] || 'rgba(45,125,82,.25)');
+  const clr   = onCooldown ? 'rgba(247,244,239,.25)' : (CAT_COLORS[mission.category] || '#5AAF7A');
+  const bg    = onCooldown ? 'rgba(255,255,255,.04)' : clr.replace(')', ',.12)').replace('rgb(','rgba(');
+  const border= onCooldown ? 'rgba(255,255,255,.07)' : clr.replace(')', ',.25)').replace('rgb(','rgba(');
+  const iconBg= onCooldown ? 'rgba(255,255,255,.06)' : clr.replace(')', ',.18)').replace('rgb(','rgba(');
+  const catName = CAT_NAMES[mission.category] || '';
+  const isEqAction = mission.isEq && mission.eqType === 'akcija';
+  const xpTxt = onCooldown ? '🔒' : mission.isProgressive ? '3×' : `+${xp}`;
+  const desc  = mission.desc || catName;
 
-  const xpColor = onCooldown ? 'rgba(247,244,239,.25)' :
-    ({hygiene:'#34C759',kitchen:'#FF9500',cleaning:'#007AFF',
-      organisation:'#AF52DE',care:'#FF2D55',outdoor:'#34C759',
-      body:'#FF3B30',safety:'#FF3B30',money:'#FFD60A',
-      social:'#5AC8FA',creativity:'#FF9500',custom:'#AF52DE',
-      fear:'#AF52DE',independence:'#007AFF',eq:'#FF6B35'
-    }[mission.category] || '#5AAF7A');
+  const agentJokers = typeof getJokers === "function" ? getJokers(agentId) : 0;
+  const dailyLocked = typeof isDailyLocked === "function" ? isDailyLocked(agentId) : false;
 
-  const dot = !onCooldown ? `<div style="width:6px;height:6px;border-radius:50%;background:${xpColor};flex-shrink:0"></div>` : '';
-  const catLabel = mission.category ? ({
-    hygiene:'Higiena',kitchen:'Kuhinja',cleaning:'Čiščenje',organisation:'Organizacija',
-    care:'Skrb',outdoor:'Outdoor',body:'Telo',safety:'Varnost',money:'Denar',
-    social:'Socialne',creativity:'Ustvarjalnost',custom:'Moje',fear:'Strah',
-    independence:'Samostojnost',eq:'EQ'
-  }[mission.category] || mission.category) : '';
+  // Joker = preskoči misijo (cooldown ostane, ne šteje v 4)
+  const showJoker  = agentJokers > 0 && !mission.isEq && !dailyLocked && !onCooldown;
 
-  return `<button class="${cls}" data-mission="${mId}" style="
-    display:flex;align-items:center;gap:14px;
-    padding:14px 16px;width:100%;
-    background:${onCooldown ? 'rgba(255,255,255,.03)' : catColor};
-    border:1px solid ${onCooldown ? 'rgba(255,255,255,.06)' : catBorder};
-    border-radius:16px;cursor:${onCooldown ? 'not-allowed' : 'pointer'};
-    opacity:${onCooldown ? '.5' : '1'};
-    font-family:'DM Sans',sans-serif;
-    transition:all 150ms ease;
-    -webkit-tap-highlight-color:transparent;
-    text-align:left;box-sizing:border-box;">
-    <div style="width:44px;height:44px;border-radius:12px;background:${onCooldown ? 'rgba(255,255,255,.06)' : catColor.replace('.1)',',.2)')};display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${mission.icon || "📋"}</div>
-    <div style="flex:1;min-width:0">
-      <p style="font-size:14px;font-weight:700;color:#F7F4EF;margin:0 0 2px;line-height:1.2">${mission.label}</p>
-      <p style="font-size:11px;color:rgba(247,244,239,.4);margin:0">${onCooldown ? cooldownHtml.replace(/<[^>]+>/g,'') || '🔒 Cooldown' : catLabel}</p>
+  // Zaklenjeno stanje
+  const isLocked   = dailyLocked || onCooldown;
+  const lockReason = dailyLocked ? '🔒 Dnevni limit (4/4)' : onCooldown ? '⏱ 3-dnevni cooldown' : '';
+
+  const cardBg     = isLocked ? 'rgba(255,255,255,.03)' : bg;
+  const cardBorder = isLocked ? 'rgba(255,255,255,.06)' : border;
+  const cardOpacity= isLocked ? '.4' : '1';
+
+  return `<div class="mc-card ${isLocked ? 'mc-locked' : ''}" data-mission="${mId}"
+    style="background:${cardBg};border:1px solid ${cardBorder};opacity:${cardOpacity}">
+    <div class="mc-card__icon" style="background:${isLocked ? 'rgba(255,255,255,.06)' : iconBg}">${mission.icon||'📋'}</div>
+    <div class="mc-card__body">
+      <p class="mc-card__name">${mission.label}</p>
+      <p class="mc-card__desc">${isLocked ? lockReason : desc}</p>
     </div>
-    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
-      ${dot}
-      <div style="text-align:right">
-        <p style="font-size:15px;font-weight:800;color:${xpColor};margin:0;line-height:1">${mission.isProgressive ? '3×' : onCooldown ? '🔒' : '+'+xp}</p>
-        <p style="font-size:10px;color:rgba(247,244,239,.3);margin:0">${mission.isProgressive ? 'stopnje' : 'XP'}</p>
-      </div>
+    <div class="mc-card__right" style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+      ${showJoker
+        ? `<button onclick="event.stopPropagation();useJokerOnMission('${mId}')"
+            style="padding:5px 10px;border-radius:12px;background:rgba(255,209,102,.15);
+            border:1px solid rgba(255,209,102,.4);color:#FFD60A;font-size:12px;font-weight:800;
+            cursor:pointer;white-space:nowrap">🃏 Preskoči</button>`
+        : `<p class="mc-card__xp" style="color:${isLocked ? 'rgba(247,244,239,.25)' : clr};margin:0">${isLocked ? '—' : xpTxt + ' XP'}</p>`
+      }
+      ${isEqAction && !isLocked ? '<p class="mc-card__joker">+1 🃏</p>' : ''}
     </div>
-  </button>`;
+  </div>`;
 }
 
 // Kategorija klik
@@ -947,6 +944,564 @@ function initCategoryFilter() {
       if (navigator.vibrate) navigator.vibrate(15);
     });
   });
+}
+
+
+// ══════════════════════════════════════════════════════════
+//  MISSION CAROUSEL
+// ══════════════════════════════════════════════════════════
+
+const _mcState = { cur: 0, drag: false, sx: 0, ss: 0, vx: 0, lx: 0, lt: 0, raf: null, track: null };
+
+function _mcSnapTo(i) {
+  const { track } = _mcState;
+  if (!track) return;
+  const cards = [...track.querySelectorAll('.mc-card')];
+  _mcState.cur = Math.max(0, Math.min(i, cards.length - 1));
+  const c = cards[_mcState.cur];
+  if (!c) return;
+  const target = c.offsetLeft - (track.clientWidth - c.offsetWidth) / 2;
+  track.style.scrollBehavior = 'smooth';
+  track.scrollLeft = target;
+  _mcUpdateActive();
+}
+
+function _mcUpdateActive() {
+  const { track, cur } = _mcState;
+  if (!track) return;
+  const cards = [...track.querySelectorAll('.mc-card')];
+  cards.forEach((c, i) => {
+    c.classList.remove('mc-active', 'mc-adj');
+    c.dataset.carouselIdx = i;
+    if (i === cur) c.classList.add('mc-active');
+    else if (Math.abs(i - cur) === 1) c.classList.add('mc-adj');
+  });
+  // Dots
+  const dotsEl = track.parentElement?.querySelector('.mc-dots');
+  if (dotsEl) {
+    [...dotsEl.querySelectorAll('.mc-dot')].forEach((d, i) =>
+      d.classList.toggle('mc-dot--on', i === cur)
+    );
+  }
+}
+
+function initMissionCarousel(grid) {
+  // Wrapper
+  const wrapper = grid.parentElement;
+  wrapper.style.cssText = 'position:relative;overflow:hidden';
+
+  // Track = grid postane carousel track
+  grid.style.cssText = `
+    display:flex!important;gap:14px!important;
+    padding:20px calc(50% - 100px)!important;
+    overflow-x:scroll!important;scroll-snap-type:x mandatory!important;
+    -webkit-overflow-scrolling:touch!important;scrollbar-width:none!important;
+    cursor:grab!important;align-items:center!important;
+    grid-template-columns:unset!important;
+  `;
+
+  _mcState.track = grid;
+  _mcState.cur = 0;
+
+  // Dots
+  wrapper.querySelector('.mc-dots')?.remove();
+  const cards = [...grid.querySelectorAll('.mc-card')];
+  if (cards.length > 1) {
+    const dotsEl = document.createElement('div');
+    dotsEl.className = 'mc-dots';
+    cards.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'mc-dot' + (i === 0 ? ' mc-dot--on' : '');
+      dotsEl.appendChild(d);
+    });
+    wrapper.after(dotsEl);
+  }
+
+  // Scroll → parallax + active
+  grid.addEventListener('scroll', () => {
+    const tx = grid.scrollLeft + grid.clientWidth / 2;
+    let bi = 0, bd = Infinity;
+    cards.forEach((c, i) => {
+      // Parallax
+      const bg = c.querySelector('.mc-bg');
+      if (bg) {
+        const cx = c.offsetLeft + c.offsetWidth / 2;
+        bg.style.transform = `translateX(${(cx - tx) * -0.12}px)`;
+      }
+      // Closest
+      const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - tx);
+      if (d < bd) { bd = d; bi = i; }
+    });
+    if (bi !== _mcState.cur) { _mcState.cur = bi; _mcUpdateActive(); }
+  }, { passive: true });
+
+  // Mouse drag
+  grid.addEventListener('mousedown', e => {
+    _mcState.drag = true; _mcState.sx = e.pageX;
+    _mcState.ss = grid.scrollLeft; _mcState.lx = e.pageX;
+    _mcState.lt = Date.now(); _mcState.vx = 0;
+    grid.style.scrollBehavior = 'auto';
+    grid.style.cursor = 'grabbing';
+    cancelAnimationFrame(_mcState.raf);
+  });
+  window.addEventListener('mouseup', () => {
+    if (!_mcState.drag) return;
+    _mcState.drag = false;
+    grid.style.cursor = 'grab';
+    _mcSnapNearest();
+  });
+  window.addEventListener('mousemove', e => {
+    if (!_mcState.drag) return;
+    const now = Date.now();
+    _mcState.vx = (_mcState.lx - e.pageX) / (now - _mcState.lt || 1) * 14;
+    _mcState.lx = e.pageX; _mcState.lt = now;
+    grid.scrollLeft = _mcState.ss - (e.pageX - _mcState.sx);
+  });
+
+  // Touch
+  grid.addEventListener('touchstart', e => {
+    _mcState.sx = e.touches[0].pageX; _mcState.ss = grid.scrollLeft;
+    _mcState.lx = _mcState.sx; _mcState.lt = Date.now(); _mcState.vx = 0;
+    grid.style.scrollBehavior = 'auto';
+  }, { passive: true });
+  grid.addEventListener('touchend', () => _mcSnapNearest(), { passive: true });
+  grid.addEventListener('touchmove', e => {
+    const now = Date.now();
+    _mcState.vx = (_mcState.lx - e.touches[0].pageX) / (now - _mcState.lt || 1) * 14;
+    _mcState.lx = e.touches[0].pageX; _mcState.lt = now;
+    grid.scrollLeft = _mcState.ss - (e.touches[0].pageX - _mcState.sx);
+  }, { passive: true });
+
+  function _mcSnapNearest() {
+    const tx = grid.scrollLeft + grid.clientWidth / 2;
+    let bi = 0, bd = Infinity;
+    cards.forEach((c, i) => {
+      const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - tx);
+      if (d < bd) { bd = d; bi = i; }
+    });
+    _mcSnapTo(bi);
+  }
+
+  _mcUpdateActive();
+  setTimeout(() => _mcSnapTo(0), 80);
+}
+
+
+// ══════════════════════════════════════════════════════════
+//  LOCATION PICKER — EQ / Indoor / Outdoor
+// ══════════════════════════════════════════════════════════
+
+let _currentLocation = 'eq';
+
+function setLocation(loc) {
+  _currentLocation = loc;
+
+  // Posodobi aktivni gumb
+  ['eq','indoor','outdoor'].forEach(l => {
+    const btn = document.getElementById('loc-' + l);
+    if (btn) btn.classList.toggle('loc-btn--active', l === loc);
+  });
+
+  // Prikaži/skrij reshuffle gumb
+  const reshuffleBtn = document.getElementById('reshuffle-btn');
+  if (reshuffleBtn) reshuffleBtn.style.display = loc !== 'eq' ? 'block' : 'none';
+
+  // Posodobi naslov
+  const titleEl = document.getElementById('missions-cat-title');
+  if (titleEl) titleEl.textContent = {
+    eq: '⚡ EQ Misije',
+    indoor: '🏠 V hiši',
+    outdoor: '🌲 Zunaj',
+  }[loc];
+
+  // Render misije
+  renderLocationMissions(loc);
+}
+
+function renderLocationMissions(loc) {
+  const grid    = document.getElementById('missions-grid');
+  const agentId = getCurrentAgent();
+  if (!grid) return;
+
+  let missions = Object.values(LONA_CONFIG.missions);
+
+  if (loc === 'eq') {
+    missions = missions.filter(m => m.category === 'eq');
+  } else if (loc === 'indoor') {
+    missions = missions.filter(m =>
+      m.location === 'indoor' && m.category !== 'eq'
+    );
+    // Naključnih 5
+    missions = _shuffle(missions).slice(0, 5);
+  } else if (loc === 'outdoor') {
+    missions = missions.filter(m =>
+      (m.location === 'outdoor' || m.category === 'outdoor' ||
+       m.category === 'body' || m.category === 'social' ||
+       m.category === 'fear')
+      && m.category !== 'eq'
+    );
+    missions = _shuffle(missions).slice(0, 5);
+  }
+
+  grid.innerHTML = missions.map(m => buildMissionBtn(m, agentId)).join('');
+
+  // Event listenerji
+  grid.querySelectorAll('.mc-card[data-mission]').forEach(card => {
+    card.addEventListener('click', () => {
+      if (card.classList.contains('mc-locked')) return;
+      if (navigator.vibrate) navigator.vibrate(12);
+      onMissionClick(card);
+    });
+  });
+
+  // Staggered animacija
+  setTimeout(() => {
+    grid.querySelectorAll('.mc-card').forEach((c, i) => {
+      setTimeout(() => c.classList.add('mc-visible'), i * 60);
+    });
+  }, 30);
+}
+
+function reshuffleMissions() {
+  renderLocationMissions(_currentLocation);
+  if (navigator.vibrate) navigator.vibrate(8);
+}
+
+function _shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Override renderMissionsGrid — zdaj gre skozi location sistem
+function renderMissionsGrid(cat) {
+  setLocation(_currentLocation || 'eq');
+}
+
+
+// ── JOKER — otrok sam preskoči misijo ──────────────────
+function useJokerOnMission(missionId) {
+  const agentId = getCurrentAgent();
+  const jokers  = getJokers(agentId);
+  const mission = LONA_CONFIG.missions[missionId];
+  const name    = LONA_CONFIG.agents.find(a => a.id === agentId)?.name || agentId;
+
+  if (jokers <= 0) { lonaToast("Nimaš jokerjev! 🃏", "red"); return; }
+
+  const d = document.createElement("div");
+  d.className = "joker-dialog";
+  d.innerHTML = `<div class="joker-dialog__box" style="border-color:rgba(255,209,102,.5);box-shadow:0 0 40px rgba(255,209,102,.15)">
+    <div class="joker-dialog__icon" style="font-size:2.5rem">🃏</div>
+    <p class="joker-dialog__title" style="color:#FFD60A">Porabi Joker?</p>
+    <p class="joker-dialog__body">
+      <strong>${mission?.label}</strong> bo preskočena.<br>
+      <span style="font-size:.75rem;opacity:.6">Ostane ti ${jokers - 1} joker${jokers - 1 !== 1 ? 'jev' : ''}</span>
+    </p>
+    <div class="joker-dialog__btns">
+      <button class="joker-dialog__cancel">Ne</button>
+      <button class="joker-dialog__confirm" style="background:rgba(255,209,102,.15);border-color:rgba(255,209,102,.5);color:#FFD60A">Da, preskoči 🃏</button>
+    </div>
+  </div>`;
+  document.body.appendChild(d);
+
+  d.querySelector(".joker-dialog__cancel").addEventListener("click", () => d.remove());
+  d.querySelector(".joker-dialog__confirm").addEventListener("click", () => {
+    d.remove();
+    spendJoker(agentId);
+    // Joker = preskoči, ne šteje v dnevni limit, cooldown ostane
+    const log = JSON.parse(localStorage.getItem("lona_mission_log") || "[]");
+    log.push({ agentId, missionId, xp: 0, compromised: false,
+      modifier: "🃏 Preskočeno", date: new Date().toISOString() });
+    localStorage.setItem("lona_mission_log", JSON.stringify(log));
+    lonaToast(`🃏 ${name} preskočil ${mission?.label} — ne šteje v 4!`, "gold");
+    setTimeout(() => renderLocationMissions(_currentLocation || "eq"), 150);
+  });
+}
+
+
+// ══════════════════════════════════════════════════════════
+//  DAILY LIMIT — max 4 misije na dan
+// ══════════════════════════════════════════════════════════
+
+const DAILY_MAX = 4;
+
+function dailyKey(agentId) {
+  return `lona_daily_${agentId}_${new Date().toDateString()}`;
+}
+
+function getDailyCount(agentId) {
+  return parseInt(localStorage.getItem(dailyKey(agentId)) || "0");
+}
+
+function addDailyCount(agentId) {
+  const c = getDailyCount(agentId) + 1;
+  localStorage.setItem(dailyKey(agentId), String(c));
+  return c;
+}
+
+function isDailyLocked(agentId) {
+  return getDailyCount(agentId) >= DAILY_MAX;
+}
+
+function getDailyRemaining(agentId) {
+  return Math.max(0, DAILY_MAX - getDailyCount(agentId));
+}
+
+// Prikaži daily progress v header
+function renderDailyProgress(agentId) {
+  const el = document.getElementById('daily-progress');
+  if (!el) return;
+  const done = getDailyCount(agentId);
+  const locked = isDailyLocked(agentId);
+  el.innerHTML = Array.from({length: DAILY_MAX}, (_,i) =>
+    `<div style="width:10px;height:10px;border-radius:50%;background:${i < done ? '#5AAF7A' : 'rgba(255,255,255,.15)'}"></div>`
+  ).join('') + `<span style="font-size:11px;font-weight:700;color:${locked ? '#FF3B30' : 'rgba(247,244,239,.5)'}">
+    ${locked ? '🔒 Zaklenjeno' : done + '/' + DAILY_MAX}
+  </span>`;
+}
+
+
+// ══════════════════════════════════════════════════════════
+//  PS5/XBOX UI — Carousel + Drawer + Ribbon
+// ══════════════════════════════════════════════════════════
+
+const CAT_TILES = {
+  eq: [
+    { id:'eq_akcija',  label:'EQ Akcija',    icon:'⚡', sub:'Joker nagrada', grad:['#2d0050','#7700cc','#aa44ff'], filter: m => m.category==='eq' && m.eqType==='akcija' },
+    { id:'eq_ref',     label:'EQ Refleksija',icon:'📋', sub:'Pogovor',       grad:['#2d1500','#884400','#cc6600'], filter: m => m.category==='eq' && m.eqType==='refleksija' },
+  ],
+  indoor: [
+    { id:'cleaning',   label:'Čiščenje',     icon:'🧹', sub:'', grad:['#001a3d','#003d99','#0066ff'], filter: m => m.category==='cleaning' },
+    { id:'hygiene',    label:'Higiena',      icon:'🦷', sub:'', grad:['#1a2d00','#446600','#66aa00'], filter: m => m.category==='hygiene' },
+    { id:'kitchen',    label:'Kuhinja',      icon:'🍳', sub:'', grad:['#2d1a00','#7d4a00','#cc7a00'], filter: m => m.category==='kitchen' },
+    { id:'organisation',label:'Organizacija',icon:'📦', sub:'', grad:['#1a002d','#550080','#8800cc'], filter: m => m.category==='organisation' },
+  ],
+  outdoor: [
+    { id:'outdoor',    label:'Aktivnosti',   icon:'🏃', sub:'', grad:['#001a0d','#005530','#008844'], filter: m => m.category==='outdoor' || m.category==='body' },
+    { id:'social',     label:'Socialne',     icon:'🤝', sub:'', grad:['#001a2d','#004a7d','#0077cc'], filter: m => m.category==='social' },
+    { id:'fear',       label:'Strah',        icon:'⚡', sub:'', grad:['#1a0028','#550077','#880099'], filter: m => m.category==='fear' || m.category==='independence' },
+  ],
+};
+
+let _curView = 'eq';
+let _curTile  = { eq:0, indoor:0, outdoor:0 };
+
+function switchView(v) {
+  _curView = v;
+  document.querySelectorAll('.view-tab').forEach(t =>
+    t.classList.toggle('view-tab--active', t.classList.contains('view-tab--' + v))
+  );
+  document.querySelectorAll('.view').forEach(el =>
+    el.classList.toggle('active', el.id === 'view-' + v)
+  );
+  if (v === 'all') _renderRibbon();
+}
+
+function _refreshCurrentView() {
+  const v = _curView || 'eq';
+  if (v === 'all') _renderRibbon();
+  else _renderDrawer(v, _curTile[v] || 0);
+  _renderDailyDots();
+}
+
+function _mkClr(hex, a) {
+  try {
+    const h = hex.startsWith('#') ? hex : '#5AAF7A';
+    const r = parseInt(h.slice(1,3),16);
+    const g = parseInt(h.slice(3,5),16);
+    const b = parseInt(h.slice(5,7),16);
+    return `rgba(${r},${g},${b},${a})`;
+  } catch(e) { return `rgba(90,175,122,${a})`; }
+}
+
+// ── CAROUSEL ──────────────────────────────────────────────
+function _renderCarousel(view) {
+  const el = document.getElementById('carousel-' + view);
+  if (!el) return;
+  const tiles = CAT_TILES[view];
+  const agentId = getCurrentAgent();
+  el.innerHTML = tiles.map((t,i) => {
+    const missions = Object.values(LONA_CONFIG.missions).filter(t.filter);
+    const count = missions.length;
+    return `<div class="cat-tile ${i===(_curTile[view]||0)?'active':''}" onclick="_tileClick('${view}',${i})">
+      <div class="cat-tile__bg" style="background:linear-gradient(135deg,${t.grad[0]},${t.grad[1]},${t.grad[2]})"></div>
+      <div class="cat-tile__overlay"></div>
+      <div class="cat-tile__body">
+        <span class="cat-tile__icon">${t.icon}</span>
+        <p class="cat-tile__name">${t.label}</p>
+        <p class="cat-tile__count">${count} misij</p>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function _tileClick(view, idx) {
+  _curTile[view] = idx;
+  // Posodobi tile aktivno stanje
+  document.querySelectorAll(`#carousel-${view} .cat-tile`).forEach((t,i) =>
+    t.classList.toggle('active', i===idx)
+  );
+  _renderDrawer(view, idx);
+}
+
+// ── DRAWER ────────────────────────────────────────────────
+function _renderDrawer(view, tileIdx) {
+  const tiles   = CAT_TILES[view];
+  const tile    = tiles[tileIdx];
+  if (!tile) return;
+
+  const agentId = getCurrentAgent();
+  const jokers  = typeof getJokers === 'function' ? getJokers(agentId) : 0;
+  const daily   = typeof getDailyCount === 'function' ? getDailyCount(agentId) : 0;
+  const locked  = typeof isDailyLocked === 'function' ? isDailyLocked(agentId) : false;
+
+  const titleEl = document.getElementById('drawer-' + view + '-title');
+  if (titleEl) titleEl.textContent = tile.icon + ' ' + tile.label;
+
+  // Missions — za indoor/outdoor naključnih 5, za EQ vse
+  let missions = Object.values(LONA_CONFIG.missions).filter(tile.filter);
+  if (view !== 'eq') missions = _shuffle(missions).slice(0, 5);
+
+  const listEl = document.getElementById('list-' + view);
+  if (!listEl) return;
+
+  const clr = {
+    eq_akcija:'#CF8FFF', eq_ref:'#FF8C60',
+    cleaning:'#007AFF', hygiene:'#34C759', kitchen:'#FF9500',
+    organisation:'#AF52DE', outdoor:'#30D158', social:'#5AC8FA',
+    fear:'#AF52DE', independence:'#007AFF',
+  }[tile.id] || '#5AAF7A';
+
+  listEl.innerHTML = missions.map((m,i) => {
+    const onCD  = typeof isOnCooldown === 'function' && isOnCooldown(m.id);
+    const isLocked = locked || onCD;
+    const lockReason = locked ? '🔒 Dnevni limit' : onCD ? '⏱ 3-dnevni cooldown' : '';
+    const isEqAction = m.eqType === 'akcija';
+    const showJoker = jokers > 0 && !isLocked && !isEqAction;
+    const xp = m.baseXp || 0;
+
+    const bg  = isLocked ? 'rgba(255,255,255,.04)' : _mkClr(clr, .12);
+    const ibg = isLocked ? 'rgba(255,255,255,.07)' : _mkClr(clr, .2);
+    const xpClr = isLocked ? 'rgba(247,244,239,.25)' : clr;
+
+    return `<div class="mc ${isLocked?'mc-locked':''}" data-mission="${m.id}"
+      style="background:${bg};border:1px solid ${isLocked?'rgba(255,255,255,.06)':clr+'33'};transition-delay:${i*50}ms">
+      <div class="mc__icon" style="background:${ibg}">${m.icon||'📋'}</div>
+      <div class="mc__body">
+        <p class="mc__name">${m.label}</p>
+        <p class="mc__desc">${isLocked ? lockReason : (m.desc || CAT_NAMES[m.category] || '')}</p>
+      </div>
+      <div class="mc__right">
+        ${showJoker
+          ? `<p class="mc__xp" style="color:${xpClr}">+${xp} XP</p>
+             <button class="mc__joker-btn" onclick="event.stopPropagation();useJokerOnMission('${m.id}')">🃏 Preskoči</button>`
+          : `<p class="mc__xp" style="color:${xpClr}">${isLocked?'—':'+'+xp+' XP'}</p>
+             ${isEqAction && !isLocked ? '<p class="mc__joker">+1 🃏 Joker</p>' : ''}`
+        }
+      </div>
+    </div>`;
+  }).join('');
+
+  // Event listenerji
+  listEl.querySelectorAll('.mc[data-mission]:not(.mc-locked)').forEach(card => {
+    card.addEventListener('click', () => {
+      if (navigator.vibrate) navigator.vibrate(12);
+      onMissionClick(card);
+    });
+  });
+
+  // Staggered animacija
+  setTimeout(() => {
+    listEl.querySelectorAll('.mc').forEach(c => c.classList.add('mc-in'));
+  }, 30);
+}
+
+// ── RIBBON (vse misije) ───────────────────────────────────
+function _renderRibbon() {
+  const el = document.getElementById('ribbon-all');
+  if (!el) return;
+
+  const agentId = getCurrentAgent();
+  const daily   = typeof getDailyCount === 'function' ? getDailyCount(agentId) : 0;
+  const locked  = typeof isDailyLocked === 'function' ? isDailyLocked(agentId) : false;
+
+  const missions = Object.values({
+    ...LONA_CONFIG.missions,
+    ...(() => {
+      const c = typeof customLoad==='function' ? customLoad() : [];
+      return Object.fromEntries((Array.isArray(c)?c:Object.values(c)).map(m=>[m.id,m]));
+    })()
+  });
+
+  const cntEl = document.getElementById('all-count');
+  if (cntEl) cntEl.textContent = missions.length + ' misij';
+
+  el.innerHTML = missions.map((m,i) => {
+    const onCD = typeof isOnCooldown === 'function' && isOnCooldown(m.id);
+    const isLocked = locked || onCD;
+    const clr = (CAT_COLORS[m.category]) || '#5AAF7A';
+    const bg  = isLocked ? 'rgba(255,255,255,.04)' : _mkClr(clr, .1);
+    const ibg = isLocked ? 'rgba(255,255,255,.07)' : _mkClr(clr, .18);
+
+    return `<div class="rb ${isLocked?'mc-locked':''}" data-mission="${m.id}"
+      style="background:${bg};border:1px solid ${isLocked?'rgba(255,255,255,.06)':clr+'33'};transition-delay:${Math.min(i,20)*28}ms">
+      <div class="rb__icon" style="background:${ibg}">${m.icon||'📋'}</div>
+      <div class="rb__body">
+        <p class="rb__name">${m.label}</p>
+        <p class="rb__cat">${CAT_NAMES[m.category]||''}</p>
+      </div>
+      <span class="rb__xp" style="color:${isLocked?'rgba(247,244,239,.25)':clr}">${isLocked?'—':'+'+m.baseXp}</span>
+    </div>`;
+  }).join('');
+
+  listEl_addEvents(el, '.rb');
+
+  setTimeout(() => {
+    el.querySelectorAll('.rb').forEach((c,i) => {
+      setTimeout(() => c.classList.add('rb-in'), i * 22);
+    });
+  }, 30);
+}
+
+function listEl_addEvents(container, sel) {
+  container.querySelectorAll(sel + '[data-mission]:not(.mc-locked)').forEach(card => {
+    card.addEventListener('click', () => {
+      if (navigator.vibrate) navigator.vibrate(12);
+      onMissionClick(card);
+    });
+  });
+}
+
+// ── DAILY DOTS ────────────────────────────────────────────
+function _renderDailyDots() {
+  const agentId = getCurrentAgent();
+  const done    = typeof getDailyCount === 'function' ? getDailyCount(agentId) : 0;
+  const locked  = typeof isDailyLocked === 'function' ? isDailyLocked(agentId) : false;
+
+  ['eq','indoor','outdoor'].forEach(v => {
+    const el = document.getElementById('daily-dots-' + v);
+    if (!el) return;
+    el.innerHTML = Array.from({length: DAILY_MAX || 4}, (_,i) =>
+      `<div class="daily-dot ${i < done ? (locked && i === done-1 ? 'locked' : 'done') : ''}"></div>`
+    ).join('') + `<span style="font-size:10px;font-weight:700;color:${locked?'#FF3B30':'rgba(247,244,239,.35)'};margin-left:4px">${done}/${DAILY_MAX||4}</span>`;
+  });
+}
+
+function shuffleIndoor()  { _renderDrawer('indoor',  _curTile.indoor  || 0); }
+function shuffleOutdoor() { _renderDrawer('outdoor', _curTile.outdoor || 0); }
+
+function _shuffle(arr) {
+  const a = [...arr];
+  for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+// Override renderMissionsGrid
+function renderMissionsGrid() {
+  _refreshCurrentView();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -980,10 +1535,21 @@ document.addEventListener("DOMContentLoaded", () => {
     if (typeof initDoubleXpButton === "function") initDoubleXpButton();
     if (typeof renderCmdAgents === "function") renderCmdAgents();
 
-    // Ponovni render avatarja po 100ms — zagotovi da localStorage foto je brana
+    // Ponovni render avatarja po 100ms
     setTimeout(() => {
       if (typeof renderCmdAgents === "function") renderCmdAgents();
     }, 100);
+
+    // PS5 UI init
+    if (typeof _renderCarousel === "function") {
+      _renderCarousel('eq');
+      _renderCarousel('indoor');
+      _renderCarousel('outdoor');
+      _renderDrawer('eq', 0);
+      _renderDrawer('indoor', 0);
+      _renderDrawer('outdoor', 0);
+      _renderDailyDots();
+    }
 
     // Pokaži ime agenta v top baru
     const _agentEl = document.getElementById("current-agent-name");
