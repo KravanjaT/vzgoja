@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="theme-color" content="#0F1A0F"/>
+<link rel="icon" type="image/png" href="favicon.png"/>
+<link rel="manifest" href="manifest.json"/>
+<title>LONA OS — Commander</title>
+<link rel="stylesheet" href="shared.css"/>
+<style>
+body { padding-bottom: 40px; }
+
+.cmd-header {
+  padding: 20px 16px 12px;
+  display: flex; align-items: center; gap: 12px;
+}
+.cmd-header__icon { font-size: 1.8rem; }
+.cmd-header__title {
+  font-family: var(--font-display);
+  font-size: 1.4rem; color: var(--text); line-height: 1.1;
+}
+.cmd-header__sub {
+  font-size: .72rem; color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Agent cards */
+.agents-row {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; padding: 0 16px;
+}
+.agent-cmd-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl); padding: 14px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.agent-cmd-card__top {
+  display: flex; align-items: center; gap: 10px;
+}
+.agent-cmd-card__avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  overflow: hidden; background: rgba(255,255,255,.08);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; flex-shrink: 0;
+  border: 2px solid rgba(90,175,122,.3);
+}
+.agent-cmd-card__avatar img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top;
+}
+.agent-cmd-card__name {
+  font-size: .95rem; font-weight: 800; color: var(--text); margin: 0;
+}
+.agent-cmd-card__rank {
+  font-size: .6rem; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--gold); margin: 0;
+}
+.stat-row {
+  display: flex; gap: 6px;
+}
+.stat-pill {
+  flex: 1; text-align: center; padding: 6px 4px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+}
+.stat-pill__val {
+  font-size: .95rem; font-weight: 800; color: var(--text);
+  line-height: 1; margin: 0;
+}
+.stat-pill__lbl {
+  font-size: .55rem; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: .08em;
+  margin: 2px 0 0;
+}
+
+/* Sections */
+.cmd-section {
+  padding: 16px 16px 0;
+}
+.cmd-section__title {
+  font-family: var(--font-display);
+  font-size: 1rem; color: var(--text);
+  margin-bottom: 10px;
+}
+
+/* Mission list (commander view) */
+.cmd-mission-list {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.cmd-mission-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  transition: all .15s ease;
+}
+.cmd-mission-row--hidden {
+  opacity: .4;
+  border-style: dashed;
+}
+.cmd-mission-row__icon { font-size: 1.1rem; flex-shrink: 0; }
+.cmd-mission-row__body { flex: 1; min-width: 0; }
+.cmd-mission-row__name {
+  font-size: .85rem; font-weight: 700; color: var(--text); margin: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cmd-mission-row__meta {
+  font-size: .65rem; color: var(--text-muted); margin: 1px 0 0;
+}
+.cmd-mission-row__actions {
+  display: flex; gap: 5px; flex-shrink: 0;
+}
+.cmd-action-btn {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .75rem; font-weight: 700;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  cursor: pointer; transition: all .15s ease;
+}
+.cmd-action-btn--hide  { color: rgba(247,244,239,.4); }
+.cmd-action-btn--show  { color: var(--green); border-color: rgba(90,175,122,.3); }
+.cmd-action-btn--del   { color: var(--red); border-color: rgba(255,59,48,.2); }
+
+/* Add form */
+.add-form {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl); padding: 16px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.add-form__row {
+  display: grid; gap: 8px;
+}
+.add-form__row--2 { grid-template-columns: 1fr 1fr; }
+.add-form__row--3 { grid-template-columns: 60px 1fr 80px; }
+.form-label {
+  font-size: .65rem; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 4px; display: block;
+}
+.form-input {
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  color: var(--text); padding: 10px 12px;
+  font-size: .88rem; font-family: var(--font-body);
+  outline: none; width: 100%;
+}
+.form-input:focus { border-color: rgba(90,175,122,.4); }
+.form-select {
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  color: var(--text); padding: 10px 12px;
+  font-size: .88rem; font-family: var(--font-body);
+  outline: none; width: 100%;
+}
+.form-select option { background: #1a2b1a; }
+
+.add-btn {
+  width: 100%; padding: 13px;
+  background: rgba(45,125,82,.2);
+  border: 1px solid rgba(90,175,122,.35);
+  border-radius: var(--r-md);
+  color: var(--green); font-size: .9rem; font-weight: 800;
+  font-family: var(--font-body); cursor: pointer;
+  transition: all .2s ease;
+}
+.add-btn:active { transform: scale(.97); }
+
+/* Reward list */
+.cmd-reward-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+.cmd-reward-row__icon { font-size: 1.2rem; }
+.cmd-reward-row__body { flex: 1; }
+.cmd-reward-row__name { font-size: .85rem; font-weight: 700; color: var(--text); margin: 0; }
+.cmd-reward-row__cost { font-size: .65rem; color: var(--gold); margin: 1px 0 0; }
+
+/* Back button */
+.back-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.back-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--bg-card); border: 1px solid var(--border);
+  color: var(--text-dim); font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.back-title {
+  font-size: .8rem; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--text-muted);
+}
+
+/* Tabs */
+.cmd-tabs {
+  display: flex; gap: 0;
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+}
+.cmd-tab {
+  padding: 10px 16px; font-size: .8rem; font-weight: 700;
+  color: var(--text-muted); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all .2s ease;
+}
+.cmd-tab--active { color: var(--green); border-bottom-color: var(--green); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+</style>
+</head>
+<body>
+
+<div class="back-bar">
+  <button class="back-btn" onclick="history.back()">←</button>
+  <span class="back-title">Commander Panel</span>
+</div>
+
+<!-- Agent pregled -->
+<div class="cmd-header">
+  <span class="cmd-header__icon">🎖️</span>
+  <div>
+    <p class="cmd-header__title">Pregled Agentov</p>
+    <p class="cmd-header__sub">Točke, kovanci, jokerji</p>
+  </div>
+</div>
+
+<div class="agents-row" id="agents-row"></div>
+
+<!-- Tabs -->
+<div class="cmd-tabs" style="margin-top:16px">
+  <div class="cmd-tab cmd-tab--active" onclick="switchTab('missions')">⚔️ Misije</div>
+  <div class="cmd-tab" onclick="switchTab('rewards')">🏆 Nagrade</div>
+  <div class="cmd-tab" onclick="switchTab('add-mission')">+ Misija</div>
+  <div class="cmd-tab" onclick="switchTab('add-reward')">+ Nagrada</div>
+</div>
+
+<!-- TAB: Misije -->
+<div class="tab-content active cmd-section" id="tab-missions">
+  <div style="margin-bottom:10px">
+    <input class="form-input" id="mission-search" placeholder="🔍 Išči misije..." oninput="renderMissionList()"/>
+  </div>
+  <div class="cmd-mission-list" id="cmd-mission-list"></div>
+</div>
+
+<!-- TAB: Nagrade -->
+<div class="tab-content cmd-section" id="tab-rewards">
+  <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:10px">Osebne nagrade</p>
+  <div class="cmd-mission-list" id="cmd-rewards-personal"></div>
+  <p style="font-size:.8rem;color:var(--text-muted);margin:14px 0 10px">Skupne nagrade</p>
+  <div class="cmd-mission-list" id="cmd-rewards-shared"></div>
+</div>
+
+<!-- TAB: Dodaj misijo -->
+<div class="tab-content cmd-section" id="tab-add-mission">
+  <div class="add-form">
+    <p class="cmd-section__title" style="margin-bottom:0">Nova misija</p>
+    <div class="add-form__row add-form__row--3">
+      <div>
+        <label class="form-label">Ikona</label>
+        <input class="form-input" id="m-icon" placeholder="🌟" style="text-align:center;font-size:1.3rem"/>
+      </div>
+      <div>
+        <label class="form-label">Naziv</label>
+        <input class="form-input" id="m-label" placeholder="Npr. Pomagaj sosedu"/>
+      </div>
+      <div>
+        <label class="form-label">XP</label>
+        <input class="form-input" id="m-xp" type="number" placeholder="20" value="20"/>
+      </div>
+    </div>
+    <div class="add-form__row add-form__row--2">
+      <div>
+        <label class="form-label">Kovanci 🪙</label>
+        <input class="form-input" id="m-coins" type="number" placeholder="8" value="8"/>
+      </div>
+      <div>
+        <label class="form-label">Kategorija</label>
+        <select class="form-select" id="m-category">
+          <option value="hygiene">Higiena</option>
+          <option value="cleaning">Čiščenje</option>
+          <option value="kitchen">Kuhinja</option>
+          <option value="organisation">Organizacija</option>
+          <option value="fitness">Telovadba</option>
+          <option value="outdoor">Outdoor</option>
+          <option value="eq">EQ</option>
+          <option value="fear">Strah</option>
+          <option value="creativity">Branje</option>
+          <option value="custom" selected>Moje</option>
+        </select>
+      </div>
+    </div>
+    <div class="add-form__row add-form__row--2">
+      <div>
+        <label class="form-label">Lokacija</label>
+        <select class="form-select" id="m-location">
+          <option value="indoor">V hiši 🏠</option>
+          <option value="outdoor">Zunaj 🌲</option>
+          <option value="any" selected>Kjerkoli</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Cooldown (ure)</label>
+        <input class="form-input" id="m-cooldown" type="number" placeholder="24" value="24"/>
+      </div>
+    </div>
+    <div>
+      <label class="form-label">Opis (neobvezno)</label>
+      <input class="form-input" id="m-desc" placeholder="Kratko navodilo..."/>
+    </div>
+    <button class="add-btn" onclick="addMission()">✓ Dodaj Misijo</button>
+  </div>
+</div>
+
+<!-- TAB: Dodaj nagrado -->
+<div class="tab-content cmd-section" id="tab-add-reward">
+  <div class="add-form">
+    <p class="cmd-section__title" style="margin-bottom:0">Nova nagrada</p>
+    <div class="add-form__row add-form__row--3">
+      <div>
+        <label class="form-label">Ikona</label>
+        <input class="form-input" id="r-icon" placeholder="🎁" style="text-align:center;font-size:1.3rem"/>
+      </div>
+      <div>
+        <label class="form-label">Naziv</label>
+        <input class="form-input" id="r-label" placeholder="Npr. Pizza večer"/>
+      </div>
+      <div>
+        <label class="form-label">🪙 Cena</label>
+        <input class="form-input" id="r-cost" type="number" placeholder="50" value="50"/>
+      </div>
+    </div>
+    <div>
+      <label class="form-label">Tip</label>
+      <select class="form-select" id="r-type">
+        <option value="personal">Osebno (1 agent)</option>
+        <option value="shared">Skupaj (oba agenta)</option>
+      </select>
+    </div>
+    <button class="add-btn" onclick="addReward()">✓ Dodaj Nagrado</button>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="engine/xp.js"></script>
+<script src="engine/joker.js"></script>
+<script src="engine/cooldown.js"></script>
+<script src="engine/custom_missions.js"></script>
+
+<script>
+if(typeof initXp==="function") initXp();
+if(typeof initJokers==="function") initJokers();
+if(typeof initCoins==="function") initCoins();
+
+// ── TABS ──────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.cmd-tab').forEach(t => t.classList.remove('cmd-tab--active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('cmd-tab--active');
+}
+
+// ── AGENTS ────────────────────────────────────────────────
+function renderAgents() {
+  const el = document.getElementById('agents-row');
+  el.innerHTML = LONA_CONFIG.agents.map(a => {
+    const xp     = typeof getXp    === "function" ? getXp(a.id)    : 0;
+    const maxXp  = typeof getMaxXp === "function" ? getMaxXp(a.id) : 0;
+    const coins  = typeof getCoins === "function" ? getCoins(a.id) : 0;
+    const jokers = typeof getJokers=== "function" ? getJokers(a.id): 0;
+    const rank   = LONA_CONFIG.ranks.slice().reverse().find(r => maxXp >= r.minXp)?.label || LONA_CONFIG.ranks[0].label;
+    const photo  = localStorage.getItem('lona_photo_' + a.id);
+    const avHtml = photo
+      ? `<img src="${photo}">`
+      : `<span>${a.avatar}</span>`;
+
+    return `<div class="agent-cmd-card">
+      <div class="agent-cmd-card__top">
+        <div class="agent-cmd-card__avatar">${avHtml}</div>
+        <div>
+          <p class="agent-cmd-card__name">${a.name}</p>
+          <p class="agent-cmd-card__rank">${rank}</p>
+        </div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-pill">
+          <p class="stat-pill__val" style="color:#5AAF7A">${xp}</p>
+          <p class="stat-pill__lbl">XP prosto</p>
+        </div>
+        <div class="stat-pill">
+          <p class="stat-pill__val" style="color:#FFD60A">${coins}</p>
+          <p class="stat-pill__lbl">🪙 Kovanci</p>
+        </div>
+        <div class="stat-pill">
+          <p class="stat-pill__val" style="color:#CF8FFF">${jokers}</p>
+          <p class="stat-pill__lbl">🃏 Jokerji</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button onclick="giveBonus('${a.id}',25,'xp')"
+          style="flex:1;padding:7px;border-radius:var(--r-sm);background:rgba(90,175,122,.12);border:1px solid rgba(90,175,122,.25);color:#5AAF7A;font-size:.75rem;font-weight:800;cursor:pointer">+25 XP</button>
+        <button onclick="giveBonus('${a.id}',10,'coins')"
+          style="flex:1;padding:7px;border-radius:var(--r-sm);background:rgba(255,214,10,.1);border:1px solid rgba(255,214,10,.25);color:#FFD60A;font-size:.75rem;font-weight:800;cursor:pointer">+10 🪙</button>
+        <button onclick="giveBonus('${a.id}',1,'joker')"
+          style="flex:1;padding:7px;border-radius:var(--r-sm);background:rgba(207,143,255,.1);border:1px solid rgba(207,143,255,.25);color:#CF8FFF;font-size:.75rem;font-weight:800;cursor:pointer">+1 🃏</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function giveBonus(agentId, amount, type) {
+  if(type === 'xp') {
+    if(typeof addXp === "function") addXp(agentId, amount);
+    showMsg(`+${amount} XP za ${LONA_CONFIG.agents.find(a=>a.id===agentId)?.name}! ✓`);
+  } else if(type === 'coins') {
+    if(typeof addCoins === "function") addCoins(agentId, amount);
+    showMsg(`+${amount} 🪙 za ${LONA_CONFIG.agents.find(a=>a.id===agentId)?.name}! ✓`);
+  } else if(type === 'joker') {
+    if(typeof earnJoker === "function") earnJoker(agentId, amount);
+    showMsg(`+${amount} 🃏 za ${LONA_CONFIG.agents.find(a=>a.id===agentId)?.name}! ✓`);
+  }
+  renderAgents();
+}
+
+// ── MISSION LIST ──────────────────────────────────────────
+function getHiddenMissions() {
+  return JSON.parse(localStorage.getItem('lona_hidden_missions') || '[]');
+}
+function setHidden(id, hide) {
+  const hidden = getHiddenMissions();
+  if(hide && !hidden.includes(id)) hidden.push(id);
+  if(!hide) { const i = hidden.indexOf(id); if(i>=0) hidden.splice(i,1); }
+  localStorage.setItem('lona_hidden_missions', JSON.stringify(hidden));
+  renderMissionList();
+}
+
+function renderMissionList() {
+  const el     = document.getElementById('cmd-mission-list');
+  const search = document.getElementById('mission-search')?.value.toLowerCase() || '';
+  const hidden = getHiddenMissions();
+
+  const customs = typeof customLoad === "function"
+    ? (Array.isArray(customLoad()) ? customLoad() : Object.values(customLoad()))
+    : [];
+
+  const all = [
+    ...Object.values(LONA_CONFIG.missions),
+    ...customs,
+  ].filter(m => !search || m.label.toLowerCase().includes(search));
+
+  el.innerHTML = all.map(m => {
+    const isHidden  = hidden.includes(m.id);
+    const isCustom  = !LONA_CONFIG.missions[m.id];
+    const catName   = {hygiene:'Higiena',cleaning:'Čiščenje',kitchen:'Kuhinja',
+      organisation:'Organizacija',fitness:'Telovadba',outdoor:'Outdoor',
+      eq:'EQ',fear:'Strah',creativity:'Branje',custom:'Moje',
+      social:'Socialne',money:'Denar',body:'Telo',safety:'Varnost'}[m.category] || m.category;
+    return `<div class="cmd-mission-row ${isHidden ? 'cmd-mission-row--hidden' : ''}">
+      <span class="cmd-mission-row__icon">${m.icon || '📋'}</span>
+      <div class="cmd-mission-row__body">
+        <p class="cmd-mission-row__name">${m.label}</p>
+        <p class="cmd-mission-row__meta">${catName} · +${m.xp || m.baseXp || 0} XP · 🪙${m.coins || 0}</p>
+      </div>
+      <div class="cmd-mission-row__actions">
+        <button class="cmd-action-btn ${isHidden ? 'cmd-action-btn--show' : 'cmd-action-btn--hide'}"
+          onclick="setHidden('${m.id}', ${!isHidden})" title="${isHidden ? 'Pokaži' : 'Skrij'}">
+          ${isHidden ? '👁' : '🙈'}
+        </button>
+        ${isCustom ? `<button class="cmd-action-btn cmd-action-btn--del"
+          onclick="deleteCustom('${m.id}')" title="Izbriši">🗑</button>` : ''}
+      </div>
+    </div>`;
+  }).join('') || '<p style="color:var(--text-muted);font-size:.82rem;text-align:center;padding:20px">Ni misij.</p>';
+}
+
+function deleteCustom(id) {
+  if(!confirm('Izbriši misijo?')) return;
+  if(typeof customDelete === "function") customDelete(id);
+  renderMissionList();
+}
+
+// ── REWARDS LIST ──────────────────────────────────────────
+function renderRewardsList() {
+  const mkRow = r => `<div class="cmd-reward-row">
+    <span class="cmd-reward-row__icon">${r.icon}</span>
+    <div class="cmd-reward-row__body">
+      <p class="cmd-reward-row__name">${r.label}</p>
+      <p class="cmd-reward-row__cost">🪙 ${r.cost} kovancev</p>
+    </div>
+    <button class="cmd-action-btn cmd-action-btn--del"
+      onclick="deleteReward('${r.id}', '${r.shared ? 'shared' : 'personal'}')" title="Izbriši">🗑</button>
+  </div>`;
+
+  document.getElementById('cmd-rewards-personal').innerHTML =
+    (LONA_CONFIG.rewards.personal || []).map(mkRow).join('') ||
+    '<p style="color:var(--text-muted);font-size:.82rem;padding:8px">Ni osebnih nagrad.</p>';
+
+  document.getElementById('cmd-rewards-shared').innerHTML =
+    (LONA_CONFIG.rewards.shared || []).map(mkRow).join('') ||
+    '<p style="color:var(--text-muted);font-size:.82rem;padding:8px">Ni skupnih nagrad.</p>';
+}
+
+function deleteReward(id, type) {
+  if(!confirm('Izbriši nagrado?')) return;
+  const key = type === 'shared' ? 'shared' : 'personal';
+  LONA_CONFIG.rewards[key] = LONA_CONFIG.rewards[key].filter(r => r.id !== id);
+  // Shrani v localStorage
+  localStorage.setItem('lona_custom_rewards', JSON.stringify(LONA_CONFIG.rewards));
+  renderRewardsList();
+  showMsg('Nagrada izbrisana.');
+}
+
+// ── ADD MISSION ───────────────────────────────────────────
+function addMission() {
+  const icon     = document.getElementById('m-icon').value.trim() || '⭐';
+  const label    = document.getElementById('m-label').value.trim();
+  const xp       = parseInt(document.getElementById('m-xp').value) || 20;
+  const coins    = parseInt(document.getElementById('m-coins').value) || 8;
+  const category = document.getElementById('m-category').value;
+  const location = document.getElementById('m-location').value;
+  const cooldown = parseInt(document.getElementById('m-cooldown').value) || 24;
+  const desc     = document.getElementById('m-desc').value.trim();
+
+  if(!label) { showMsg('Vnesi naziv misije!', true); return; }
+
+  const id = 'custom_' + Date.now();
+  const mission = { id, label, icon, xp, coins, category, location,
+    cooldownHrs: cooldown, desc, season:'osnovno', visible:true, state:'available' };
+
+  if(typeof customLoad === "function") {
+    const existing = Array.isArray(customLoad()) ? customLoad() : Object.values(customLoad());
+    existing.push(mission);
+    localStorage.setItem('lona_custom_missions', JSON.stringify(existing));
+  }
+
+  showMsg(`✓ "${label}" dodana!`);
+  document.getElementById('m-label').value = '';
+  document.getElementById('m-icon').value  = '';
+  document.getElementById('m-desc').value  = '';
+  renderMissionList();
+  switchTab('missions');
+}
+
+// ── ADD REWARD ────────────────────────────────────────────
+function addReward() {
+  const icon  = document.getElementById('r-icon').value.trim() || '🎁';
+  const label = document.getElementById('r-label').value.trim();
+  const cost  = parseInt(document.getElementById('r-cost').value) || 50;
+  const type  = document.getElementById('r-type').value;
+
+  if(!label) { showMsg('Vnesi naziv nagrade!', true); return; }
+
+  const id = 'reward_' + Date.now();
+  LONA_CONFIG.rewards[type === 'shared' ? 'shared' : 'personal'].push({ id, label, icon, cost });
+  localStorage.setItem('lona_custom_rewards', JSON.stringify(LONA_CONFIG.rewards));
+
+  showMsg(`✓ "${label}" dodana!`);
+  document.getElementById('r-label').value = '';
+  document.getElementById('r-icon').value  = '';
+  renderRewardsList();
+  switchTab('rewards');
+}
+
+// ── MSG ───────────────────────────────────────────────────
+function showMsg(msg, isError) {
+  const el = document.createElement('div');
+  el.textContent = msg;
+  el.style.cssText = `position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+    padding:10px 18px;border-radius:30px;font-size:.85rem;font-weight:700;
+    background:${isError ? 'rgba(255,59,48,.2)' : 'rgba(45,125,82,.3)'};
+    border:1px solid ${isError ? 'rgba(255,59,48,.4)' : 'rgba(90,175,122,.4)'};
+    color:${isError ? '#FF6B6B' : '#5AAF7A'};
+    z-index:9999;backdrop-filter:blur(8px);white-space:nowrap`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2500);
+}
+
+// ── INIT ──────────────────────────────────────────────────
+// Naloži shranjene nagrade
+const savedRewards = localStorage.getItem('lona_custom_rewards');
+if(savedRewards) {
+  try { Object.assign(LONA_CONFIG.rewards, JSON.parse(savedRewards)); } catch(e) {}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderAgents();
+  renderMissionList();
+  renderRewardsList();
+});
+</script>
+</body>
+</html>

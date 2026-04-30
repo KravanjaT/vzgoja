@@ -2,158 +2,206 @@
 <html lang="sl">
 <head>
 <meta charset="UTF-8"/>
-<link rel="icon" type="image/png" href="favicon.ico"/>
-
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
 <meta name="theme-color" content="#0F1A0F"/>
 <link rel="manifest" href="manifest.json"/>
+<link rel="icon" type="image/png" href="favicon.png"/>
 <meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <title>LONA OS — Hub</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="style.css"/>
 <style>
-/* Hub specifični stili */
-.hub-hero {
-  background: linear-gradient(135deg, #1A1714 0%, #2D3B2A 100%);
-  border-radius: var(--r-xl);
-  padding: 24px 20px;
-  color: white;
-  display: flex; flex-direction: column; gap: 8px;
-}
-.hub-hero__eyebrow {
-  font-size: .6rem; font-weight: 700; letter-spacing: .16em;
-  text-transform: uppercase; color: rgba(255,255,255,.5);
-}
-.hub-hero__title {
-  font-family: var(--font-serif); font-size: 1.6rem;
-  color: white; line-height: 1.2;
-}
-.hub-hero__sub { font-size: .82rem; color: rgba(255,255,255,.6); line-height: 1.5; }
-.hub-hero__stats {
-  display: flex; gap: 16px; margin-top: 8px; padding-top: 14px;
-  border-top: 1px solid rgba(255,255,255,.1);
-}
-.hub-stat { display: flex; flex-direction: column; gap: 2px; }
-.hub-stat__val {
-  font-family: var(--font-serif); font-size: 1.4rem;
-  color: #5AAF7A; font-weight: 700;
-}
-.hub-stat__lbl {
-  font-size: .6rem; font-weight: 600; letter-spacing: .1em;
-  text-transform: uppercase; color: rgba(255,255,255,.4);
-}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0a120a;color:#F7F4EF;min-height:100dvh;padding-bottom:100px;overflow-x:hidden}
 
-/* Tedenski urnik */
-.weekly-plan {
-  background: #fff; border: 1px solid #C4BFB8;
-  border-radius: var(--r-xl); padding: 18px;
-}
-.weekly-plan__title {
-  font-family: var(--font-serif); font-size: 1rem;
-  color: var(--ink-1); margin-bottom: 14px;
-  display: flex; align-items: center; gap: 8px;
-}
-.day-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 0; border-bottom: 1px solid #F0EDE7;
-}
-.day-row:last-child { border-bottom: none; }
-.day-row__name {
-  font-size: .72rem; font-weight: 700; color: var(--ink-3);
-  width: 30px; flex-shrink: 0; text-transform: uppercase;
-  letter-spacing: .06em;
-}
-.day-row__name--today { color: var(--green); }
-.day-row__missions {
-  display: flex; gap: 5px; flex: 1; flex-wrap: wrap;
-}
-.day-mission-chip {
-  font-size: .68rem; font-weight: 600; padding: 3px 8px;
-  border-radius: 20px; cursor: pointer;
-  background: #EAF4EE; color: #2D7D52;
-  border: 1px solid rgba(45,125,82,.2);
-  transition: all 150ms ease;
-}
-.day-mission-chip:hover { background: #D5ECD9; }
-.day-mission-chip--remove { background: #FDECEA; color: #C4352A; border-color: rgba(196,53,42,.2); }
-.day-row__add {
-  font-size: .7rem; color: var(--ink-4); cursor: pointer;
-  padding: 3px 8px; border-radius: 20px;
-  border: 1px dashed #C4BFB8;
-  transition: all 150ms ease; white-space: nowrap;
-}
-.day-row__add:hover { border-color: var(--green); color: var(--green); }
+/* TOP BAR */
+.top-bar{display:flex;align-items:center;gap:10px;padding:14px 16px;background:rgba(10,18,10,.95);border-bottom:1px solid rgba(90,175,122,.1);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
+.top-bar__logo{font-family:'DM Serif Display',serif;font-size:1rem;color:#F7F4EF;letter-spacing:.06em;flex-shrink:0}
+.logo-accent{color:#5AAF7A}
+.top-bar__agent{flex:1;display:flex;align-items:center;gap:6px;cursor:pointer;justify-content:center}
+.top-bar__agent-name{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(247,244,239,.45)}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#5AAF7A;flex-shrink:0}
 
-/* Misija banka */
-.mission-bank {
-  background: #fff; border: 1px solid #C4BFB8;
-  border-radius: var(--r-xl); padding: 18px;
-}
-.mission-bank__title {
-  font-family: var(--font-serif); font-size: 1rem;
-  color: var(--ink-1); margin-bottom: 14px;
-}
-.bank-grid { display: flex; flex-direction: column; gap: 6px; }
-.bank-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 10px 12px; border-radius: var(--r-md);
-  border: 1px solid #C4BFB8; cursor: pointer;
-  transition: all 150ms ease; background: var(--bg-subtle);
-}
-.bank-item:hover { background: #EAF4EE; border-color: var(--green); }
-.bank-item__icon { font-size: 1.1rem; flex-shrink: 0; }
-.bank-item__info { flex: 1; }
-.bank-item__name { font-size: .82rem; font-weight: 600; color: var(--ink-1); }
-.bank-item__xp   { font-size: .65rem; color: var(--green); font-weight: 600; }
-.bank-item__add  {
-  font-size: .75rem; font-weight: 700; color: var(--ink-4);
-  width: 24px; height: 24px; border-radius: 50%;
-  border: 1.5px solid #C4BFB8; display: flex;
-  align-items: center; justify-content: center;
-  transition: all 150ms ease; flex-shrink: 0;
-}
-.bank-item:hover .bank-item__add { border-color: var(--green); color: var(--green); }
+/* CMD PANEL */
+#cmd-panel-section{padding:0 16px}
 
-/* Brifing gumb */
-.briefing-btn {
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  padding: 16px; border-radius: var(--r-lg);
-  background: #1A1714; color: white;
-  font-family: var(--font-sans); font-size: 1rem; font-weight: 600;
-  border: none; cursor: pointer; transition: all 200ms ease;
-  width: 100%;
-}
-.briefing-btn:hover { background: #2D3B2A; transform: translateY(-1px); }
-.briefing-btn:active { transform: scale(.98); }
+/* VIEW TABS */
+.view-tabs{display:flex;gap:0;padding:12px 16px 0;position:relative}
+.view-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 6px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s ease;-webkit-tap-highlight-color:transparent}
+.view-tab__icon{font-size:20px}
+.view-tab__label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(247,244,239,.3);transition:color .2s ease}
+.view-tab--active .view-tab__label{color:#F7F4EF}
+.view-tab--eq{border-bottom-color:transparent}.view-tab--eq.view-tab--active{border-bottom-color:#AF52DE}
+.view-tab--indoor{border-bottom-color:transparent}.view-tab--indoor.view-tab--active{border-bottom-color:#5AAF7A}
+.view-tab--outdoor{border-bottom-color:transparent}.view-tab--outdoor.view-tab--active{border-bottom-color:#34C759}
+.view-tab--all{border-bottom-color:transparent}.view-tab--all.view-tab--active{border-bottom-color:#5AC8FA}
 
-/* Season teaser */
-.season-teaser {
-  background: #FDF3E3; border: 1.5px solid rgba(196,125,26,.3);
-  border-radius: var(--r-xl); padding: 16px;
-  display: flex; align-items: center; gap: 14px;
-}
-.season-teaser__icon { font-size: 2rem; flex-shrink: 0; }
-.season-teaser__info { flex: 1; }
-.season-teaser__title {
-  font-family: var(--font-serif); font-size: .95rem;
-  color: var(--ink-1); margin-bottom: 3px;
-}
-.season-teaser__sub { font-size: .72rem; color: var(--amber); font-weight: 600; }
+/* VIEWS */
+.view{display:none;animation:fadeIn .25s ease}
+.view.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-.bottom-nav{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:400px;display:flex;background:rgba(15,26,15,.92);border:1px solid rgba(90,175,122,.18);border-radius:24px;padding:8px 12px;gap:0;z-index:100;backdrop-filter:blur(16px);box-shadow:0 4px 24px rgba(0,0,0,.5)}
+/* CAROUSEL */
+.cat-carousel{display:flex;gap:12px;padding:16px 16px 8px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.cat-carousel::-webkit-scrollbar{display:none}
+.cat-tile{flex-shrink:0;width:150px;height:90px;border-radius:18px;position:relative;overflow:hidden;scroll-snap-align:start;cursor:pointer;transition:transform .2s ease,filter .2s ease,box-shadow .2s ease;border:2px solid transparent;-webkit-tap-highlight-color:transparent}
+.cat-tile:active{transform:scale(.94)!important}
+.cat-tile.active{border-color:rgba(255,255,255,.3);box-shadow:0 8px 32px rgba(0,0,0,.6);transform:scale(1.04)}
+.cat-tile:not(.active){filter:brightness(.65);transform:scale(.96)}
+.cat-tile__bg{position:absolute;inset:0}
+.cat-tile__overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.8) 0%,transparent 65%)}
+.cat-tile__body{position:absolute;bottom:0;left:0;right:0;padding:10px 12px}
+.cat-tile__icon{font-size:16px;display:block;margin-bottom:2px}
+.cat-tile__name{font-size:12px;font-weight:800;color:#fff;margin:0}
+.cat-tile__count{font-size:10px;color:rgba(255,255,255,.5);margin:1px 0 0}
+
+/* DRAWER */
+.drawer{background:rgba(12,20,12,.98);border-radius:20px 20px 0 0;margin-top:4px;padding:0 16px 16px}
+.drawer-handle{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.12);margin:10px auto 14px}
+.drawer-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.drawer-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:#F7F4EF}
+.drawer-meta{display:flex;align-items:center;gap:8px}
+.daily-dots{display:flex;gap:4px;align-items:center}
+.daily-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);transition:background .3s ease}
+.daily-dot.done{background:#5AAF7A}
+.daily-dot.locked{background:#FF3B30}
+.shuffle-btn{padding:5px 12px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(247,244,239,.55);font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:transparent}
+.shuffle-btn:active{transform:scale(.95)}
+
+/* MISSION CARDS */
+.mission-list{display:flex;flex-direction:column;gap:7px}
+.mc{display:flex!important;align-items:center;gap:12px;padding:12px 14px;border-radius:15px;cursor:pointer;-webkit-tap-highlight-color:transparent;opacity:0;transform:translateY(10px);animation:none!important}
+.mc.mc-in{opacity:1!important;transform:translateY(0)!important;transition:opacity .28s ease,transform .28s ease}
+.mc:active{transform:scale(.97);filter:brightness(1.1)}
+.mc.mc-locked{opacity:.38;cursor:not-allowed}
+.mc__icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.mc__body{flex:1;min-width:0}
+.mc__name{font-size:13px;font-weight:700;color:#F7F4EF;margin:0;line-height:1.2}
+.mc__desc{font-size:11px;color:rgba(247,244,239,.38);margin:2px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mc__right{flex-shrink:0;text-align:right}
+.mc__xp{font-size:14px;font-weight:800;margin:0;line-height:1}
+.mc__joker{font-size:10px;color:#FFD60A;margin:2px 0 0;font-weight:700}
+.mc__joker-btn{padding:4px 9px;border-radius:9px;background:rgba(255,209,102,.15);border:1px solid rgba(255,209,102,.35);color:#FFD60A;font-size:11px;font-weight:800;cursor:pointer;margin-top:4px;display:block;font-family:'DM Sans',sans-serif}
+.mc__joker-btn:active{transform:scale(.93)}
+
+/* RIBBON (vse misije) */
+.ribbon-wrap{padding:8px 16px 0}
+.ribbon{display:flex;flex-direction:column;gap:6px}
+.rb{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:13px;cursor:pointer;transition:transform .15s ease;-webkit-tap-highlight-color:transparent;opacity:0;transform:translateX(-6px)}
+.rb.rb-in{opacity:1;transform:translateX(0);transition:opacity .25s ease,transform .25s ease}
+.rb:nth-child(odd).rb-in{transform:translateX(0)}
+.rb:active{transform:scale(.97)}
+.rb__icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.rb__body{flex:1;min-width:0}
+.rb__name{font-size:13px;font-weight:700;color:#F7F4EF;margin:0}
+.rb__cat{font-size:10px;color:rgba(247,244,239,.38);margin:1px 0 0}
+.rb__xp{font-size:12px;font-weight:800;flex-shrink:0}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:400px;display:flex;background:rgba(10,18,10,.94);border:1px solid rgba(90,175,122,.18);border-radius:24px;padding:8px 12px;gap:0;z-index:100;backdrop-filter:blur(16px);box-shadow:0 4px 24px rgba(0,0,0,.5)}
 .bottom-nav__item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:7px 4px;cursor:pointer;position:relative;background:none;border:none;-webkit-tap-highlight-color:transparent}
-.bottom-nav__item svg{width:22px;height:22px;transition:all 200ms ease}
-.bottom-nav__item span{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(247,244,239,.3);transition:color 200ms ease}
+.bottom-nav__item svg{width:22px;height:22px}
+.bottom-nav__item span{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(247,244,239,.3)}
 .bottom-nav__item--active span{color:#5AAF7A;font-weight:800}
-.bottom-nav__item--active svg{stroke:#5AAF7A}
 .bottom-nav__item--active::after{content:"";position:absolute;bottom:-4px;width:4px;height:4px;border-radius:50%;background:#5AAF7A}
+
+/* SETTINGS */
+.settings-overlay{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center}
+
+/* ── LOCATION PICKER ─────────────────────────────────── */
+.loc-pick-wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 16px 0}
+.loc-pick-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;
+  border-radius:16px;border:1.5px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s ease;
+  -webkit-tap-highlight-color:transparent;font-family:var(--font-body)}
+.loc-pick-btn:active{transform:scale(.93)}
+.loc-pick-btn__icon{font-size:22px;line-height:1}
+.loc-pick-btn__label{font-size:10px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;color:rgba(247,244,239,.4)}
+.loc-pick-btn--active{transform:scale(1.04)}
+.loc-pick-btn--eq.loc-pick-btn--active{background:rgba(175,82,222,.18);border-color:rgba(175,82,222,.5)}
+.loc-pick-btn--eq.loc-pick-btn--active .loc-pick-btn__label{color:#CF8FFF}
+.loc-pick-btn--indoor.loc-pick-btn--active{background:rgba(90,175,122,.15);border-color:rgba(90,175,122,.4)}
+.loc-pick-btn--indoor.loc-pick-btn--active .loc-pick-btn__label{color:#5AAF7A}
+.loc-pick-btn--outdoor.loc-pick-btn--active{background:rgba(52,199,89,.12);border-color:rgba(52,199,89,.35)}
+.loc-pick-btn--outdoor.loc-pick-btn--active .loc-pick-btn__label{color:#34C759}
+.loc-pick-btn--all.loc-pick-btn--active{background:rgba(90,200,250,.1);border-color:rgba(90,200,250,.3)}
+.loc-pick-btn--all.loc-pick-btn--active .loc-pick-btn__label{color:#5AC8FA}
+
+/* ── RANDOM MISSION CARD ─────────────────────────────── */
+.rmc{border-radius:20px;overflow:hidden;position:relative;
+  min-height:160px;display:flex;flex-direction:column;justify-content:flex-end;
+  animation:rmc-in .35s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes rmc-in{from{opacity:0;transform:scale(.9) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.rmc__bg{position:absolute;inset:0}
+.rmc__overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.1) 60%,transparent 100%)}
+.rmc__body{position:relative;padding:16px 18px 14px}
+.rmc__icon{font-size:2.2rem;display:block;margin-bottom:6px}
+.rmc__name{font-family:var(--font-display);font-size:1.4rem;color:#fff;margin:0 0 3px;line-height:1.2}
+.rmc__desc{font-size:.78rem;color:rgba(255,255,255,.55);margin:0 0 12px}
+.rmc__actions{display:flex;gap:8px}
+.rmc__btn{flex:1;padding:11px;border-radius:13px;font-size:.85rem;font-weight:800;
+  font-family:var(--font-body);cursor:pointer;transition:all .15s ease;border:none;
+  -webkit-tap-highlight-color:transparent}
+.rmc__btn:active{transform:scale(.95)}
+.rmc__btn--do{background:rgba(255,255,255,.95);color:#0a120a}
+.rmc__btn--skip{background:rgba(255,209,102,.2);border:1px solid rgba(255,209,102,.4)!important;color:#FFD60A}
+.rmc__btn--next{background:rgba(255,255,255,.12);color:rgba(255,255,255,.7)}
+.rmc__xp{font-size:.78rem;font-weight:700;color:#fff;opacity:.7;text-align:right;margin-bottom:4px}
+
+
+/* Hub/Library specifično */
+.top-bar__meta{flex:1;display:flex;align-items:center;gap:6px;justify-content:center}
+.top-bar__title{font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(247,244,239,.4)}
+.top-bar__alert{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(247,244,239,.5);font-size:14px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.main-scroll{padding:16px;display:flex;flex-direction:column;gap:12px;max-width:480px;margin:0 auto}
+.card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:16px}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:4px 2px;margin-bottom:8px}
+.section-header__title{font-family:'DM Serif Display',serif;font-size:.95rem;color:rgba(247,244,239,.7);font-weight:400}
+.section-header__badge{font-size:.65rem;font-weight:600;color:rgba(247,244,239,.35);padding:3px 8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:20px}
+h2,h3{font-family:'DM Serif Display',serif;color:#F7F4EF;font-weight:400}
+p,span,label{color:#F7F4EF}
+select,input,textarea{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#F7F4EF;padding:8px 10px;font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none}
+select option{background:#1a2b1a}
+button{font-family:'DM Sans',sans-serif}
+/* Mastery */
+.mastery-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;margin-bottom:8px}
+.mastery-section{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;margin-bottom:8px}
+/* Hub specifično */
+.hub-stat__val{font-family:'DM Serif Display',serif;font-size:1.4rem;color:#5AAF7A}
+.hub-stat__lbl{font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(247,244,239,.4)}
+.day-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.day-row:last-child{border-bottom:none}
+.day-row__name{font-size:.72rem;font-weight:700;color:rgba(247,244,239,.5);width:30px;flex-shrink:0;text-transform:uppercase;letter-spacing:.06em}
+.day-row__name--today{color:#5AAF7A}
+.day-row__missions{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.day-mission-chip{font-size:.68rem;font-weight:600;padding:3px 8px;border-radius:20px;cursor:pointer;background:rgba(45,125,82,.12);color:#5AAF7A;border:1px solid rgba(45,125,82,.2)}
+.day-mission-chip--remove{background:rgba(255,59,48,.1);color:#FF6B6B;border-color:rgba(255,59,48,.2)}
+.day-row__add{font-size:.7rem;color:rgba(247,244,239,.4);cursor:pointer;padding:3px 8px;border-radius:20px;border:1px dashed rgba(255,255,255,.15);white-space:nowrap}
+.bank-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.08);cursor:pointer;background:rgba(255,255,255,.04);margin-bottom:6px}
+.bank-item:hover{background:rgba(45,125,82,.12);border-color:#5AAF7A}
+.bank-item__icon{font-size:1.1rem;flex-shrink:0}
+.bank-item__name{font-size:.82rem;font-weight:600;color:#F7F4EF}
+.bank-item__xp{font-size:.65rem;color:#5AAF7A;font-weight:600}
+.bank-item__add{font-size:.75rem;font-weight:700;color:rgba(247,244,239,.3);width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.season-teaser{background:rgba(255,149,0,.08);border:1px solid rgba(255,149,0,.2);border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px}
+.briefing-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;border-radius:14px;background:rgba(255,255,255,.06);color:#F7F4EF;font-size:1rem;font-weight:600;border:1px solid rgba(255,255,255,.1);cursor:pointer;width:100%}
+.briefing-btn:hover{background:rgba(45,125,82,.12);border-color:#5AAF7A}
+/* Library */
+.mastery-card__header{display:flex;align-items:center;gap:10px;cursor:pointer}
+.mastery-card__caret{margin-left:auto;color:rgba(247,244,239,.4)}
+.mastery-card__body{display:none;padding-top:12px}
+.mastery-card--open .mastery-card__body{display:block}
+.mastery-level{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.mastery-level:last-child{border-bottom:none}
+
 </style>
 </head>
 <body>
 
 <!-- TOP BAR -->
 <header class="top-bar">
-  <p class="top-bar__logo"><span class="logo-bracket">[</span>LONA<span class="logo-accent">_OS</span><span class="logo-bracket">]</span></p>
+  <p class="top-bar__logo" onclick="location.replace('index.html')" style="cursor:pointer"><span class="logo-bracket">[</span>LONA<span class="logo-accent">_OS</span><span class="logo-bracket">]</span></p>
   <div class="top-bar__meta">
     <span class="status-dot"></span>
     <span class="top-bar__title">Globalni Hub</span>
@@ -163,95 +211,41 @@
 
 <main class="main-scroll">
 
-  <!-- Hero -->
-  <div class="hub-hero">
-    <p class="hub-hero__eyebrow">Samo za Poveljnike</p>
-    <h1 class="hub-hero__title">Globalni Hub</h1>
-    <p class="hub-hero__sub">Kulturne operacije · Tedenski brifing · Misijska banka</p>
-    <div class="hub-hero__stats">
-      <div class="hub-stat">
-        <span class="hub-stat__val" id="hub-total-xp">0</span>
-        <span class="hub-stat__lbl">Skupni XP</span>
-      </div>
-      <div class="hub-stat">
-        <span class="hub-stat__val" id="hub-missions-done">0</span>
-        <span class="hub-stat__lbl">Misij ta teden</span>
-      </div>
-      <div class="hub-stat">
-        <span class="hub-stat__val" id="hub-season-xp">0</span>
-        <span class="hub-stat__lbl">Sezonski XP</span>
-      </div>
+  <!-- AGENTI PREGLED -->
+  <div id="hub-agents"></div>
+
+  <!-- DNEVNI NAPREDEK -->
+  <div class="card">
+    <div class="section-header">
+      <h3 class="section-header__title">📅 Danes</h3>
+      <span class="section-header__badge" id="hub-daily-badge">0/4</span>
     </div>
+    <div id="hub-daily-dots" style="display:flex;gap:8px;align-items:center;margin-bottom:12px"></div>
+    <div id="hub-today-missions" style="font-size:.82rem;color:rgba(247,244,239,.4);text-align:center;padding:8px 0">Danes še ni opravljenih misij.</div>
   </div>
 
-  <!-- Tabs -->
-  <div class="hub-tabs" id="hub-tabs">
-    <button class="hub-tab hub-tab--active" data-tab="cultural">🌍 Kulturne Ops</button>
-    <button class="hub-tab" data-tab="weekly">📅 Tedenski Brifing</button>
-    <button class="hub-tab" data-tab="bank">🗄️ Misijska Banka</button>
+  <!-- TEDENSKA LESTVICA -->
+  <div class="card">
+    <div class="section-header">
+      <h3 class="section-header__title">🏆 Ta teden</h3>
+      <span class="section-header__badge" id="hub-week-badge"></span>
+    </div>
+    <div id="hub-leaderboard"></div>
   </div>
 
-  <!-- TAB: Kulturne Operacije -->
-  <div class="hub-tab-content" id="tab-cultural">
-
-    <div class="cultural-sector">
-      <div class="cultural-sector__header">
-        <span class="cultural-sector__flag">🇯🇵</span>
-        <div>
-          <p class="cultural-sector__name">Japonski Sektor</p>
-          <p class="cultural-sector__sub">Fina motorika · Potrpežljivost · Fokus</p>
-        </div>
-      </div>
-      <div class="cultural-missions" id="sector-japan"></div>
+  <!-- ZADNJE MISIJE -->
+  <div class="card">
+    <div class="section-header">
+      <h3 class="section-header__title">📋 Zgodovina</h3>
+      <span class="section-header__badge" id="hub-log-count"></span>
     </div>
-
-    <div class="cultural-sector">
-      <div class="cultural-sector__header">
-        <span class="cultural-sector__flag">🇸🇮</span>
-        <div>
-          <p class="cultural-sector__name">Slovenski Sektor</p>
-          <p class="cultural-sector__sub">Alpinizem · Iznajdljivost · Narava</p>
-        </div>
-      </div>
-      <div class="cultural-missions" id="sector-slo"></div>
-    </div>
-
-    <div class="cultural-sector">
-      <div class="cultural-sector__header">
-        <span class="cultural-sector__flag">🇸🇪</span>
-        <div>
-          <p class="cultural-sector__name">Skandinavski Sektor</p>
-          <p class="cultural-sector__sub">Friluftsliv · Odpornost · Zunanji svet</p>
-        </div>
-      </div>
-      <div class="cultural-missions" id="sector-scan"></div>
-    </div>
-
+    <div id="hub-log"></div>
   </div>
 
-  <!-- TAB: Tedenski Brifing -->
-  <div class="hub-tab-content" id="tab-weekly" style="display:none">
-    <div class="weekly-plan">
-      <p class="weekly-plan__title">📅 Tedenski urnik</p>
-      <div id="weekly-schedule"></div>
-      <button class="briefing-btn" style="margin-top:14px" onclick="lockWeeklyPlan()">
-        🔒 Zakleni urnik za ta teden
-      </button>
-    </div>
-    <div class="mission-bank">
-      <p class="mission-bank__title">🗄️ Dodaj misijo v urnik</p>
-      <div class="bank-grid" id="mission-bank"></div>
-    </div>
-  </div>
-
-  <!-- TAB: Misijska Banka -->
-  <div class="hub-tab-content" id="tab-bank" style="display:none">
-    <div class="hub-bank-info" style="background:#fff;border:2.5px solid rgba(0,0,0,.07);border-radius:22px;padding:18px;box-shadow:0 4px 0 rgba(0,0,0,.08)">
-      <p style="font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;color:#1C1C1E;margin-bottom:4px">📊 Arhiv misij</p>
-      <p style="font-size:.78rem;font-weight:600;color:#8E8E93;margin-bottom:14px">Vse opravljene misije obeh agentov</p>
-      <div id="hub-mission-log"></div>
-    </div>
-  </div>
+  <!-- COMMANDER BLIŽNJICA -->
+  <button onclick="location.href='commander.html'" style="width:100%;padding:16px;border-radius:16px;background:rgba(175,82,222,.12);border:1px solid rgba(175,82,222,.25);color:#CF8FFF;font-size:.95rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+    🎖️ Commander Panel
+  </button>
 
 </main>
 
@@ -260,262 +254,161 @@
 
 <script src="config.js"></script>
 <script src="engine/xp.js"></script>
-<script src="engine/cooldown.js"></script>
 <script src="engine/joker.js"></script>
-<script src="engine/mastery.js"></script>
-<script src="engine/season.js"></script>
+<script src="engine/cooldown.js"></script>
 <script src="engine/streak.js"></script>
-<script src="engine/custom_missions.js"></script>
 <script>
+if(typeof initXp==="function") initXp();
+if(typeof initJokers==="function") initJokers();
+if(typeof initCoins==="function") initCoins();
 
-// ── KULTURNE MISIJE ─────────────────────────────────────
-const CULTURAL_MISSIONS = {
-  japan: [
-    { id:"origami",    label:"Origami Mojster",   icon:"🦢", xp:30, desc:"Zloži vsaj 3 origami figure brez pomoči.", stars:4.8, reviews:124 },
-    { id:"zrna",       label:"Zlaganje Zrn",       icon:"🌾", xp:20, desc:"Razporedi 100 zrn riža v 5 vrst. Brez razsula.", stars:4.6, reviews:89  },
-    { id:"calligraphy",label:"Kaligrafija",        icon:"🖋️", xp:35, desc:"Napiši svoje ime v japonskem stilu — 3x.", stars:4.9, reviews:201 },
-    { id:"bonsai",     label:"Skrb za Bonsai",     icon:"🌿", xp:25, desc:"Zalij in reži rastlino po navodilih.", stars:4.7, reviews:156 },
-  ],
-  slo: [
-    { id:"gorska",     label:"Gorska Šola",        icon:"🏔️", xp:40, desc:"Najdi smer v gozdu z le soncem in senco.", stars:4.9, reviews:67  },
-    { id:"ogenj",      label:"Zakuri Ogenj",       icon:"🔥", xp:50, desc:"Z vžigalicami in naravnimi materiali.", stars:4.8, reviews:45  },
-    { id:"zelisce",    label:"Zelišče Detektiv",   icon:"🌿", xp:30, desc:"Identificiraj 5 divjih zelišč na sprehodu.", stars:4.5, reviews:78  },
-    { id:"vreme",      label:"Vremenski Opazovalec",icon:"🌦️",xp:20, desc:"3 dni opazuj vreme in napiši poročilo.", stars:4.3, reviews:92  },
-  ],
-  scan: [
-    { id:"dez",        label:"Trojni Sloj",        icon:"🌧️", xp:30, desc:"Sam se obleci v 3 sloje in 15 min zunaj na dežju.", stars:4.7, reviews:203 },
-    { id:"mraz",       label:"Zimski Junak",       icon:"❄️", xp:40, desc:"10 min zunaj brez jakne (ko je nad 5°C).", stars:4.5, reviews:134 },
-    { id:"narava",     label:"Friluftsliv Ura",    icon:"🌲", xp:35, desc:"1 ura brez zaslona — samo narava.", stars:4.9, reviews:312 },
-    { id:"orientacija",label:"Nord Orientacija",   icon:"🧭", xp:45, desc:"Najdi sever brez kompasa — 3 metode.", stars:4.8, reviews:88  },
-  ],
-};
-
-function renderStars(n) {
-  return '★'.repeat(Math.round(n)) + '☆'.repeat(5-Math.round(n));
+function weekKey() {
+  const d = new Date();
+  const w = Math.floor((d - new Date(d.getFullYear(),0,1)) / 604800000);
+  return `lona_season_${d.getFullYear()}_w${w}`;
 }
 
-function renderCulturalMissions() {
-  const sectors = {
-    japan: document.getElementById("sector-japan"),
-    slo:   document.getElementById("sector-slo"),
-    scan:  document.getElementById("sector-scan"),
-  };
+function getWeekXp(agentId) {
+  return JSON.parse(localStorage.getItem(weekKey()) || '{}')[agentId] || 0;
+}
 
-  Object.entries(CULTURAL_MISSIONS).forEach(([key, missions]) => {
-    const el = sectors[key];
-    if (!el) return;
-    el.innerHTML = missions.map(m => `
-      <div class="cultural-mission-card">
-        <div class="cmc-top">
-          <span class="cmc-icon">${m.icon}</span>
-          <div class="cmc-info">
-            <p class="cmc-name">${m.label}</p>
-            <p class="cmc-stars" style="color:#FF9500">${renderStars(m.stars)} <span style="color:#8E8E93;font-size:.62rem">(${m.reviews})</span></p>
+function getDailyCount(agentId) {
+  return parseInt(localStorage.getItem(`lona_daily_${agentId}_${new Date().toDateString()}`) || '0');
+}
+
+function renderHub() {
+  // Agenti
+  const agentsEl = document.getElementById('hub-agents');
+  agentsEl.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
+    LONA_CONFIG.agents.map(a => {
+      const xp     = typeof getXp    === "function" ? getXp(a.id)    : 0;
+      const maxXp  = typeof getMaxXp === "function" ? getMaxXp(a.id) : 0;
+      const coins  = typeof getCoins === "function" ? getCoins(a.id) : 0;
+      const jokers = typeof getJokers=== "function" ? getJokers(a.id): 0;
+      const rank   = LONA_CONFIG.ranks.slice().reverse().find(r => maxXp >= r.minXp)?.label || LONA_CONFIG.ranks[0].label;
+      const photo  = localStorage.getItem("lona_photo_" + a.id);
+      const daily  = getDailyCount(a.id);
+      const av     = photo ? `<img src="${photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : a.avatar;
+      return `<div class="card" style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:40px;height:40px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;border:2px solid rgba(90,175,122,.3)">${av}</div>
+          <div>
+            <p style="font-weight:800;font-size:.95rem;margin:0">${a.name}</p>
+            <p style="font-size:.6rem;color:#FFD60A;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:0">${rank}</p>
           </div>
-          <span class="cmc-xp">+${m.xp} XP</span>
         </div>
-        <p class="cmc-desc">${m.desc}</p>
-        <button class="cmc-add-btn" onclick="addCulturalMission('${key}','${m.id}')">
-          + Dodaj v urnik
-        </button>
-      </div>
-    `).join("");
-  });
-}
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+          <div style="text-align:center;padding:6px;background:rgba(90,175,122,.08);border-radius:10px;border:1px solid rgba(90,175,122,.15)">
+            <p style="font-size:1.1rem;font-weight:800;color:#5AAF7A;margin:0">${xp}</p>
+            <p style="font-size:.55rem;color:rgba(247,244,239,.4);margin:0;text-transform:uppercase">XP</p>
+          </div>
+          <div style="text-align:center;padding:6px;background:rgba(255,214,10,.06);border-radius:10px;border:1px solid rgba(255,214,10,.15)">
+            <p style="font-size:1.1rem;font-weight:800;color:#FFD60A;margin:0">${coins}</p>
+            <p style="font-size:.55rem;color:rgba(247,244,239,.4);margin:0;text-transform:uppercase">🪙</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:4px;align-items:center">
+          ${Array.from({length:4},(_,i)=>`<div style="width:10px;height:10px;border-radius:50%;background:${i<daily?'#5AAF7A':'rgba(255,255,255,.12)'}"></div>`).join("")}
+          <span style="font-size:.65rem;color:rgba(247,244,239,.4);margin-left:4px">${daily}/4 danes</span>
+        </div>
+      </div>`;
+    }).join('') + '</div>';
 
-function addCulturalMission(sector, missionId) {
-  const m = CULTURAL_MISSIONS[sector]?.find(x => x.id === missionId);
-  if (!m) return;
+  // Dnevni napredek — skupaj
+  const agentId = LONA_CONFIG.agents[0].id;
+  const daily = getDailyCount(agentId);
+  document.getElementById('hub-daily-badge').textContent = daily + '/4';
+  const dotsEl = document.getElementById('hub-daily-dots');
+  dotsEl.innerHTML = Array.from({length:4},(_,i) =>
+    `<div style="width:12px;height:12px;border-radius:50%;background:${i<daily?'#5AAF7A':'rgba(255,255,255,.12)'}"></div>`
+  ).join('') + (daily >= 4 ? '<span style="font-size:.8rem;color:#5AAF7A;font-weight:700;margin-left:6px">🏆 Limit dosežen!</span>' : '');
 
-  // Dodaj v weekly plan za danes
-  const plan  = JSON.parse(localStorage.getItem("lona_weekly_plan") || "{}");
-  const today = new Date().getDay();
-  if (!plan[today]) plan[today] = [];
-
-  const customKey = "cultural_" + sector + "_" + missionId;
-  if (!plan[today].includes(customKey)) plan[today].push(customKey);
-  localStorage.setItem("lona_weekly_plan", JSON.stringify(plan));
-
-  // Shrani kulturno misijo v custom missions
-  const customs = JSON.parse(localStorage.getItem("lona_custom_missions") || "{}");
-  customs[customKey] = { ...m, id: customKey, isCultural: true, sector };
-  localStorage.setItem("lona_custom_missions", JSON.stringify(customs));
-
-  // Feedback
-  const btn = event.target;
-  btn.textContent = "✓ Dodano!";
-  btn.style.background = "#34C759";
-  btn.style.color = "#fff";
-  setTimeout(() => {
-    btn.textContent = "+ Dodaj v urnik";
-    btn.style.background = "";
-    btn.style.color = "";
-  }, 2000);
-}
-
-// ── TABS ────────────────────────────────────────────────
-document.querySelectorAll(".hub-tab").forEach(tab => {
-  tab.addEventListener("click", () => {
-    document.querySelectorAll(".hub-tab").forEach(t => t.classList.remove("hub-tab--active"));
-    document.querySelectorAll(".hub-tab-content").forEach(c => c.style.display = "none");
-    tab.classList.add("hub-tab--active");
-    document.getElementById("tab-" + tab.dataset.tab).style.display = "block";
-  });
-});
-
-// ── WEEKLY SCHEDULE ────────────────────────────────────
-const DAYS_FULL = ["Nedelja","Ponedeljek","Torek","Sreda","Četrtek","Petek","Sobota"];
-const DAYS_SHORT = ["Ned","Pon","Tor","Sre","Čet","Pet","Sob"];
-
-function getMissionLabel(id) {
-  const custom = JSON.parse(localStorage.getItem("lona_custom_missions") || "{}");
-  if (custom[id]) return custom[id].icon + " " + custom[id].label;
-  const m = LONA_CONFIG.missions[id];
-  return m?.label || id;
-}
-
-function renderWeeklySchedule() {
-  const el   = document.getElementById("weekly-schedule");
-  if (!el) return;
-  const plan  = JSON.parse(localStorage.getItem("lona_weekly_plan") || "{}");
-  const today = new Date().getDay();
-  const days  = [1,2,3,4,5,6,0];
-
-  el.innerHTML = days.map(d => {
-    const missions = plan[d] || [];
-    const isToday  = d === today;
-    const chips = missions.map(mId =>
-      `<span class="day-mission-chip" onclick="removeMissionFromDay(${d},'${mId}')">${getMissionLabel(mId)} ×</span>`
-    ).join("");
-    return `<div class="day-row">
-      <span class="day-row__name ${isToday ? 'day-row__name--today' : ''}">${DAYS_SHORT[d]}</span>
-      <div class="day-row__missions">${chips}</div>
-      <span class="day-row__add" onclick="showAddMission(${d})">+</span>
-    </div>`;
-  }).join("");
-}
-
-function showAddMission(day) {
-  const missions = Object.values(LONA_CONFIG.missions).filter(m => !m.isHidden);
-  const d = document.createElement("div");
-  d.className = "joker-dialog";
-  const mBtns = missions.map(m =>
-    `<button class="funnel-btn" onclick="addMissionToDay(${day},'${m.id}');this.closest('.joker-dialog').remove()">
-      ${m.label} (+${m.baseXp} XP)
-    </button>`
-  ).join("");
-  d.innerHTML = `<div class="joker-dialog__box">
-    <p class="joker-dialog__title">Dodaj — ${DAYS_FULL[day]}</p>
-    <div class="funnel-grid" style="max-height:300px;overflow-y:auto">${mBtns}</div>
-    <button class="joker-dialog__cancel" style="margin-top:8px;width:100%" onclick="this.closest('.joker-dialog').remove()">Prekliči</button>
-  </div>`;
-  document.body.appendChild(d);
-}
-
-function addMissionToDay(day, missionId) {
-  const plan = JSON.parse(localStorage.getItem("lona_weekly_plan") || "{}");
-  if (!plan[day]) plan[day] = [];
-  if (!plan[day].includes(missionId)) plan[day].push(missionId);
-  localStorage.setItem("lona_weekly_plan", JSON.stringify(plan));
-  renderWeeklySchedule();
-}
-
-function removeMissionFromDay(day, missionId) {
-  const plan = JSON.parse(localStorage.getItem("lona_weekly_plan") || "{}");
-  if (!plan[day]) return;
-  plan[day] = plan[day].filter(m => m !== missionId);
-  localStorage.setItem("lona_weekly_plan", JSON.stringify(plan));
-  renderWeeklySchedule();
-}
-
-function lockWeeklyPlan() {
-  const plan  = JSON.parse(localStorage.getItem("lona_weekly_plan") || "{}");
-  const total = Object.values(plan).flat().length;
-  if (total === 0) { alert("Dodaj vsaj eno misijo!"); return; }
-  localStorage.setItem("lona_weekly_locked", "1");
-  alert("✓ Urnik zaklenjen! " + total + " misij za ta teden.");
-}
-
-function renderMissionBank() {
-  const el = document.getElementById("mission-bank");
-  if (!el) return;
-  const icons = {sesanje:"🌬️",posoda:"🍽️",perilo:"🧺",wc:"🚽",kuhanje:"🍳",izvidnik:"👁️",skupna:"🤝",skrivna_wc:"🎲"};
-  el.innerHTML = Object.values(LONA_CONFIG.missions).filter(m => !m.isHidden).map(m => `
-    <div class="bank-item" onclick="showAddMission(new Date().getDay())">
-      <span class="bank-item__icon">${icons[m.id]||"📋"}</span>
-      <div class="bank-item__info">
-        <p class="bank-item__name">${m.label}</p>
-        <p class="bank-item__xp">+${m.baseXp} XP</p>
-      </div>
-      <span class="bank-item__add">+</span>
-    </div>
-  `).join("");
-}
-
-// ── MISSION LOG ────────────────────────────────────────
-function renderMissionLog() {
-  const el  = document.getElementById("hub-mission-log");
-  if (!el) return;
-  const log = JSON.parse(localStorage.getItem("lona_mission_log") || "[]").reverse().slice(0, 30);
-  if (!log.length) { el.innerHTML = '<p style="color:#8E8E93;font-size:.82rem;text-align:center;padding:16px">Še ni opravljenih misij.</p>'; return; }
-  el.innerHTML = log.map(e => {
-    const agent = LONA_CONFIG.agents.find(a => a.id === e.agentId);
-    const date  = new Date(e.date).toLocaleDateString("sl-SI", {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
-    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #F2F2F7">
-      <span style="font-size:1.1rem">${agent?.avatar||"?"}</span>
-      <div style="flex:1">
-        <p style="font-size:.8rem;font-weight:800;color:#1C1C1E">${e.missionId}</p>
-        <p style="font-size:.65rem;color:#8E8E93">${date}</p>
-      </div>
-      <span style="font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:900;color:${e.compromised?'#FF3B30':'#34C759'}">+${e.xp} XP</span>
-    </div>`;
-  }).join("");
-}
-
-// ── STATS ───────────────────────────────────────────────
-function initHubStats() {
-  const state = JSON.parse(localStorage.getItem("lona_xp_state") || "{}");
-  const total = Object.values(state).reduce((s,v) => s+v, 0);
-  const log   = JSON.parse(localStorage.getItem("lona_mission_log") || "[]");
-
-  const now  = new Date();
-  const jan1 = new Date(now.getFullYear(),0,1);
-  const wk   = Math.ceil(((now-jan1)/86400000+jan1.getDay()+1)/7);
-  const key  = now.getFullYear()+"-W"+wk;
-  const wkLog = log.filter(e => e.week === key);
-
-  const seasonXp = LONA_CONFIG.agents.reduce((s,a) => {
-    const sState = JSON.parse(localStorage.getItem("lona_season_xp")||"{}");
-    return s + (sState[a.id]||0);
-  }, 0);
-
-  const el1 = document.getElementById("hub-total-xp");
-  const el2 = document.getElementById("hub-missions-done");
-  const el3 = document.getElementById("hub-season-xp");
-  if (el1) el1.textContent = total;
-  if (el2) el2.textContent = wkLog.length;
-  if (el3) el3.textContent = seasonXp;
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  initHubStats();
-  renderCulturalMissions();
-  renderWeeklySchedule();
-  renderMissionBank();
-  renderMissionLog();
-});
-</script>
-
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  // Danes opravljene misije
+  const log = JSON.parse(localStorage.getItem('lona_mission_log') || '[]');
+  const today = new Date().toDateString();
+  const todayLog = log.filter(e => new Date(e.date).toDateString() === today).reverse();
+  const todayEl = document.getElementById('hub-today-missions');
+  if (todayLog.length) {
+    todayEl.innerHTML = todayLog.map(e => {
+      const m = LONA_CONFIG.missions[e.missionId];
+      const agent = LONA_CONFIG.agents.find(a => a.id === e.agentId);
+      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+        <span style="font-size:1rem">${m?.icon||'📋'}</span>
+        <div style="flex:1">
+          <p style="font-size:.82rem;font-weight:700;margin:0">${m?.label||e.missionId}</p>
+          <p style="font-size:.65rem;color:rgba(247,244,239,.4);margin:0">${agent?.name||e.agentId}</p>
+        </div>
+        <span style="font-size:.82rem;font-weight:800;color:#5AAF7A">+${e.xp} XP</span>
+      </div>`;
+    }).join('');
+  } else {
+    todayEl.innerHTML = '<p style="font-size:.82rem;color:rgba(247,244,239,.35);text-align:center;padding:12px 0">Danes še ni opravljenih misij.</p>';
   }
+
+  // Tedenska lestvica
+  const weekEl = document.getElementById('hub-leaderboard');
+  const board = LONA_CONFIG.agents
+    .map(a => ({ ...a, weekXp: getWeekXp(a.id) }))
+    .sort((a,b) => b.weekXp - a.weekXp);
+  const weekBadge = document.getElementById('hub-week-badge');
+  weekBadge.textContent = board.map(a => a.weekXp + ' XP').join(' · ');
+  weekEl.innerHTML = board.map((a,i) => {
+    const photo = localStorage.getItem("lona_photo_" + a.id);
+    const av = photo ? `<img src="${photo}" style="width:32px;height:32px;border-radius:50%;object-fit:cover">` : `<span style="font-size:1.1rem">${a.avatar}</span>`;
+    const medals = ['🥇','🥈','🥉'];
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+      <span style="font-size:1.2rem;width:24px">${medals[i]||''}</span>
+      <div style="width:32px;height:32px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0">${av}</div>
+      <p style="flex:1;font-weight:700;margin:0">${a.name}</p>
+      <p style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:#5AAF7A;margin:0">${a.weekXp} XP</p>
+    </div>`;
+  }).join('');
+
+  // Zgodovina — zadnjih 15
+  const logEl = document.getElementById('hub-log');
+  const logCount = document.getElementById('hub-log-count');
+  logCount.textContent = log.length + ' skupaj';
+  if (!log.length) {
+    logEl.innerHTML = '<p style="font-size:.82rem;color:rgba(247,244,239,.35);text-align:center;padding:12px 0">Še ni zgodovine.</p>';
+    return;
+  }
+  logEl.innerHTML = [...log].reverse().slice(0,15).map(e => {
+    const m = LONA_CONFIG.missions[e.missionId];
+    const agent = LONA_CONFIG.agents.find(a => a.id === e.agentId);
+    const date = new Date(e.date).toLocaleDateString('sl-SI',{day:'numeric',month:'short'});
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)">
+      <span style="font-size:1rem;flex-shrink:0">${m?.icon||'📋'}</span>
+      <div style="flex:1;min-width:0">
+        <p style="font-size:.82rem;font-weight:600;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m?.label||e.missionId}</p>
+        <p style="font-size:.62rem;color:rgba(247,244,239,.4);margin:0">${agent?.name||e.agentId} · ${date}</p>
+      </div>
+      <p style="font-size:.82rem;font-weight:800;color:${e.compromised?'#FF6B6B':'#5AAF7A'};margin:0;flex-shrink:0">${e.compromised?'⚠️':'+'}${e.xp} XP</p>
+    </div>`;
+  }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', renderHub);
+window.addEventListener('pageshow', renderHub);
 </script>
+
 <nav class="bottom-nav" aria-label="Navigacija">
-  <button class="bottom-nav__item" onclick="location.replace('home.html')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Baza</span></button>
-  <button class="bottom-nav__item bottom-nav__item--active" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="#5AAF7A" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg><span>Hub</span></button>
-  <button class="bottom-nav__item" onclick="location.replace('library.html')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg><span>Knjižnica</span></button>
-  <button class="bottom-nav__item" onclick="location.replace('profile.html')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profil</span></button>
+  <button class="bottom-nav__item" onclick="location.replace('home.html')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+    <span>Baza</span>
+  </button>
+  <button class="bottom-nav__item bottom-nav__item--active" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#5AAF7A" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+    <span>Hub</span>
+  </button>
+  <button class="bottom-nav__item " onclick="location.replace('library.html')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+    <span>Knjižnica</span>
+  </button>
+  <button class="bottom-nav__item" onclick="location.replace('profile.html')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Profil</span>
+  </button>
 </nav>
+
 </body>
 </html>

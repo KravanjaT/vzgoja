@@ -1,29 +1,200 @@
 <!DOCTYPE html>
 <html lang="sl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0F1A0F" />
-  <title>LONA OS — Knjižnica</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="library.css" />
-  <link rel="icon" type="image/png" href="favicon.png"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="theme-color" content="#0F1A0F"/>
 <link rel="manifest" href="manifest.json"/>
-  <meta name="mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-  <meta name="apple-mobile-web-app-title" content="LONA OS"/>
-  <meta name="theme-color" content="#0F1A0F"/>
+<link rel="icon" type="image/png" href="favicon.png"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>LONA OS — Knjižnica</title>
 <style>
-.bottom-nav{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:400px;display:flex;background:rgba(15,26,15,.92);border:1px solid rgba(90,175,122,.18);border-radius:24px;padding:8px 12px;gap:0;z-index:100;backdrop-filter:blur(16px);box-shadow:0 4px 24px rgba(0,0,0,.5)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0a120a;color:#F7F4EF;min-height:100dvh;padding-bottom:100px;overflow-x:hidden}
+
+/* TOP BAR */
+.top-bar{display:flex;align-items:center;gap:10px;padding:14px 16px;background:rgba(10,18,10,.95);border-bottom:1px solid rgba(90,175,122,.1);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
+.top-bar__logo{font-family:'DM Serif Display',serif;font-size:1rem;color:#F7F4EF;letter-spacing:.06em;flex-shrink:0}
+.logo-accent{color:#5AAF7A}
+.top-bar__agent{flex:1;display:flex;align-items:center;gap:6px;cursor:pointer;justify-content:center}
+.top-bar__agent-name{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(247,244,239,.45)}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#5AAF7A;flex-shrink:0}
+
+/* CMD PANEL */
+#cmd-panel-section{padding:0 16px}
+
+/* VIEW TABS */
+.view-tabs{display:flex;gap:0;padding:12px 16px 0;position:relative}
+.view-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 6px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s ease;-webkit-tap-highlight-color:transparent}
+.view-tab__icon{font-size:20px}
+.view-tab__label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(247,244,239,.3);transition:color .2s ease}
+.view-tab--active .view-tab__label{color:#F7F4EF}
+.view-tab--eq{border-bottom-color:transparent}.view-tab--eq.view-tab--active{border-bottom-color:#AF52DE}
+.view-tab--indoor{border-bottom-color:transparent}.view-tab--indoor.view-tab--active{border-bottom-color:#5AAF7A}
+.view-tab--outdoor{border-bottom-color:transparent}.view-tab--outdoor.view-tab--active{border-bottom-color:#34C759}
+.view-tab--all{border-bottom-color:transparent}.view-tab--all.view-tab--active{border-bottom-color:#5AC8FA}
+
+/* VIEWS */
+.view{display:none;animation:fadeIn .25s ease}
+.view.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* CAROUSEL */
+.cat-carousel{display:flex;gap:12px;padding:16px 16px 8px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.cat-carousel::-webkit-scrollbar{display:none}
+.cat-tile{flex-shrink:0;width:150px;height:90px;border-radius:18px;position:relative;overflow:hidden;scroll-snap-align:start;cursor:pointer;transition:transform .2s ease,filter .2s ease,box-shadow .2s ease;border:2px solid transparent;-webkit-tap-highlight-color:transparent}
+.cat-tile:active{transform:scale(.94)!important}
+.cat-tile.active{border-color:rgba(255,255,255,.3);box-shadow:0 8px 32px rgba(0,0,0,.6);transform:scale(1.04)}
+.cat-tile:not(.active){filter:brightness(.65);transform:scale(.96)}
+.cat-tile__bg{position:absolute;inset:0}
+.cat-tile__overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.8) 0%,transparent 65%)}
+.cat-tile__body{position:absolute;bottom:0;left:0;right:0;padding:10px 12px}
+.cat-tile__icon{font-size:16px;display:block;margin-bottom:2px}
+.cat-tile__name{font-size:12px;font-weight:800;color:#fff;margin:0}
+.cat-tile__count{font-size:10px;color:rgba(255,255,255,.5);margin:1px 0 0}
+
+/* DRAWER */
+.drawer{background:rgba(12,20,12,.98);border-radius:20px 20px 0 0;margin-top:4px;padding:0 16px 16px}
+.drawer-handle{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.12);margin:10px auto 14px}
+.drawer-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.drawer-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:#F7F4EF}
+.drawer-meta{display:flex;align-items:center;gap:8px}
+.daily-dots{display:flex;gap:4px;align-items:center}
+.daily-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);transition:background .3s ease}
+.daily-dot.done{background:#5AAF7A}
+.daily-dot.locked{background:#FF3B30}
+.shuffle-btn{padding:5px 12px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(247,244,239,.55);font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:transparent}
+.shuffle-btn:active{transform:scale(.95)}
+
+/* MISSION CARDS */
+.mission-list{display:flex;flex-direction:column;gap:7px}
+.mc{display:flex!important;align-items:center;gap:12px;padding:12px 14px;border-radius:15px;cursor:pointer;-webkit-tap-highlight-color:transparent;opacity:0;transform:translateY(10px);animation:none!important}
+.mc.mc-in{opacity:1!important;transform:translateY(0)!important;transition:opacity .28s ease,transform .28s ease}
+.mc:active{transform:scale(.97);filter:brightness(1.1)}
+.mc.mc-locked{opacity:.38;cursor:not-allowed}
+.mc__icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.mc__body{flex:1;min-width:0}
+.mc__name{font-size:13px;font-weight:700;color:#F7F4EF;margin:0;line-height:1.2}
+.mc__desc{font-size:11px;color:rgba(247,244,239,.38);margin:2px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mc__right{flex-shrink:0;text-align:right}
+.mc__xp{font-size:14px;font-weight:800;margin:0;line-height:1}
+.mc__joker{font-size:10px;color:#FFD60A;margin:2px 0 0;font-weight:700}
+.mc__joker-btn{padding:4px 9px;border-radius:9px;background:rgba(255,209,102,.15);border:1px solid rgba(255,209,102,.35);color:#FFD60A;font-size:11px;font-weight:800;cursor:pointer;margin-top:4px;display:block;font-family:'DM Sans',sans-serif}
+.mc__joker-btn:active{transform:scale(.93)}
+
+/* RIBBON (vse misije) */
+.ribbon-wrap{padding:8px 16px 0}
+.ribbon{display:flex;flex-direction:column;gap:6px}
+.rb{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:13px;cursor:pointer;transition:transform .15s ease;-webkit-tap-highlight-color:transparent;opacity:0;transform:translateX(-6px)}
+.rb.rb-in{opacity:1;transform:translateX(0);transition:opacity .25s ease,transform .25s ease}
+.rb:nth-child(odd).rb-in{transform:translateX(0)}
+.rb:active{transform:scale(.97)}
+.rb__icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.rb__body{flex:1;min-width:0}
+.rb__name{font-size:13px;font-weight:700;color:#F7F4EF;margin:0}
+.rb__cat{font-size:10px;color:rgba(247,244,239,.38);margin:1px 0 0}
+.rb__xp{font-size:12px;font-weight:800;flex-shrink:0}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:400px;display:flex;background:rgba(10,18,10,.94);border:1px solid rgba(90,175,122,.18);border-radius:24px;padding:8px 12px;gap:0;z-index:100;backdrop-filter:blur(16px);box-shadow:0 4px 24px rgba(0,0,0,.5)}
 .bottom-nav__item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:7px 4px;cursor:pointer;position:relative;background:none;border:none;-webkit-tap-highlight-color:transparent}
 .bottom-nav__item svg{width:22px;height:22px}
 .bottom-nav__item span{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(247,244,239,.3)}
 .bottom-nav__item--active span{color:#5AAF7A;font-weight:800}
 .bottom-nav__item--active::after{content:"";position:absolute;bottom:-4px;width:4px;height:4px;border-radius:50%;background:#5AAF7A}
+
+/* SETTINGS */
+.settings-overlay{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center}
+
+/* ── LOCATION PICKER ─────────────────────────────────── */
+.loc-pick-wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 16px 0}
+.loc-pick-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;
+  border-radius:16px;border:1.5px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s ease;
+  -webkit-tap-highlight-color:transparent;font-family:var(--font-body)}
+.loc-pick-btn:active{transform:scale(.93)}
+.loc-pick-btn__icon{font-size:22px;line-height:1}
+.loc-pick-btn__label{font-size:10px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;color:rgba(247,244,239,.4)}
+.loc-pick-btn--active{transform:scale(1.04)}
+.loc-pick-btn--eq.loc-pick-btn--active{background:rgba(175,82,222,.18);border-color:rgba(175,82,222,.5)}
+.loc-pick-btn--eq.loc-pick-btn--active .loc-pick-btn__label{color:#CF8FFF}
+.loc-pick-btn--indoor.loc-pick-btn--active{background:rgba(90,175,122,.15);border-color:rgba(90,175,122,.4)}
+.loc-pick-btn--indoor.loc-pick-btn--active .loc-pick-btn__label{color:#5AAF7A}
+.loc-pick-btn--outdoor.loc-pick-btn--active{background:rgba(52,199,89,.12);border-color:rgba(52,199,89,.35)}
+.loc-pick-btn--outdoor.loc-pick-btn--active .loc-pick-btn__label{color:#34C759}
+.loc-pick-btn--all.loc-pick-btn--active{background:rgba(90,200,250,.1);border-color:rgba(90,200,250,.3)}
+.loc-pick-btn--all.loc-pick-btn--active .loc-pick-btn__label{color:#5AC8FA}
+
+/* ── RANDOM MISSION CARD ─────────────────────────────── */
+.rmc{border-radius:20px;overflow:hidden;position:relative;
+  min-height:160px;display:flex;flex-direction:column;justify-content:flex-end;
+  animation:rmc-in .35s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes rmc-in{from{opacity:0;transform:scale(.9) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.rmc__bg{position:absolute;inset:0}
+.rmc__overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.1) 60%,transparent 100%)}
+.rmc__body{position:relative;padding:16px 18px 14px}
+.rmc__icon{font-size:2.2rem;display:block;margin-bottom:6px}
+.rmc__name{font-family:var(--font-display);font-size:1.4rem;color:#fff;margin:0 0 3px;line-height:1.2}
+.rmc__desc{font-size:.78rem;color:rgba(255,255,255,.55);margin:0 0 12px}
+.rmc__actions{display:flex;gap:8px}
+.rmc__btn{flex:1;padding:11px;border-radius:13px;font-size:.85rem;font-weight:800;
+  font-family:var(--font-body);cursor:pointer;transition:all .15s ease;border:none;
+  -webkit-tap-highlight-color:transparent}
+.rmc__btn:active{transform:scale(.95)}
+.rmc__btn--do{background:rgba(255,255,255,.95);color:#0a120a}
+.rmc__btn--skip{background:rgba(255,209,102,.2);border:1px solid rgba(255,209,102,.4)!important;color:#FFD60A}
+.rmc__btn--next{background:rgba(255,255,255,.12);color:rgba(255,255,255,.7)}
+.rmc__xp{font-size:.78rem;font-weight:700;color:#fff;opacity:.7;text-align:right;margin-bottom:4px}
+
+
+/* Hub/Library specifično */
+.top-bar__meta{flex:1;display:flex;align-items:center;gap:6px;justify-content:center}
+.top-bar__title{font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(247,244,239,.4)}
+.top-bar__alert{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(247,244,239,.5);font-size:14px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.main-scroll{padding:16px;display:flex;flex-direction:column;gap:12px;max-width:480px;margin:0 auto}
+.card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:16px}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:4px 2px;margin-bottom:8px}
+.section-header__title{font-family:'DM Serif Display',serif;font-size:.95rem;color:rgba(247,244,239,.7);font-weight:400}
+.section-header__badge{font-size:.65rem;font-weight:600;color:rgba(247,244,239,.35);padding:3px 8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:20px}
+h2,h3{font-family:'DM Serif Display',serif;color:#F7F4EF;font-weight:400}
+p,span,label{color:#F7F4EF}
+select,input,textarea{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#F7F4EF;padding:8px 10px;font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none}
+select option{background:#1a2b1a}
+button{font-family:'DM Sans',sans-serif}
+/* Mastery */
+.mastery-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;margin-bottom:8px}
+.mastery-section{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;margin-bottom:8px}
+/* Hub specifično */
+.hub-stat__val{font-family:'DM Serif Display',serif;font-size:1.4rem;color:#5AAF7A}
+.hub-stat__lbl{font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(247,244,239,.4)}
+.day-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.day-row:last-child{border-bottom:none}
+.day-row__name{font-size:.72rem;font-weight:700;color:rgba(247,244,239,.5);width:30px;flex-shrink:0;text-transform:uppercase;letter-spacing:.06em}
+.day-row__name--today{color:#5AAF7A}
+.day-row__missions{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.day-mission-chip{font-size:.68rem;font-weight:600;padding:3px 8px;border-radius:20px;cursor:pointer;background:rgba(45,125,82,.12);color:#5AAF7A;border:1px solid rgba(45,125,82,.2)}
+.day-mission-chip--remove{background:rgba(255,59,48,.1);color:#FF6B6B;border-color:rgba(255,59,48,.2)}
+.day-row__add{font-size:.7rem;color:rgba(247,244,239,.4);cursor:pointer;padding:3px 8px;border-radius:20px;border:1px dashed rgba(255,255,255,.15);white-space:nowrap}
+.bank-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.08);cursor:pointer;background:rgba(255,255,255,.04);margin-bottom:6px}
+.bank-item:hover{background:rgba(45,125,82,.12);border-color:#5AAF7A}
+.bank-item__icon{font-size:1.1rem;flex-shrink:0}
+.bank-item__name{font-size:.82rem;font-weight:600;color:#F7F4EF}
+.bank-item__xp{font-size:.65rem;color:#5AAF7A;font-weight:600}
+.bank-item__add{font-size:.75rem;font-weight:700;color:rgba(247,244,239,.3);width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.season-teaser{background:rgba(255,149,0,.08);border:1px solid rgba(255,149,0,.2);border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px}
+.briefing-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;border-radius:14px;background:rgba(255,255,255,.06);color:#F7F4EF;font-size:1rem;font-weight:600;border:1px solid rgba(255,255,255,.1);cursor:pointer;width:100%}
+.briefing-btn:hover{background:rgba(45,125,82,.12);border-color:#5AAF7A}
+/* Library */
+.mastery-card__header{display:flex;align-items:center;gap:10px;cursor:pointer}
+.mastery-card__caret{margin-left:auto;color:rgba(247,244,239,.4)}
+.mastery-card__body{display:none;padding-top:12px}
+.mastery-card--open .mastery-card__body{display:block}
+.mastery-level{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.mastery-level:last-child{border-bottom:none}
+
 </style>
 <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/index.js"></script>
 </head>
@@ -32,7 +203,7 @@
 
   <!-- ── HEADER ──────────────────────────────────────────── -->
   <header class="top-bar">
-    <div class="top-bar__logo">
+    <div class="top-bar__logo" onclick="location.replace('index.html')" style="cursor:pointer">
       <span class="logo-bracket">[</span>LONA<span class="logo-accent">_OS</span><span class="logo-bracket">]</span>
     </div>
     <div class="top-bar__meta">
@@ -46,470 +217,24 @@
 
   <main class="main-scroll">
 
-    <!-- ══════════════════════════════════════════════════════
-         SECTION 1 — STOPNJE MOJSTRSTVA
-    ══════════════════════════════════════════════════════ -->
-    <section aria-label="Stopnje mojstrstva">
-      <div class="section-header">
-        <h3 class="section-header__title"><i class="ph-bold ph-medal"></i> Stopnje Mojstrstva</h3>
-        <span class="section-header__badge">3 veščine</span>
-      </div>
+  <!-- MOJSTRSTVO -->
+  <div class="section-header">
+    <h3 class="section-header__title">⚔️ Mojstrstvo</h3>
+    <span class="section-header__badge" id="lib-agent-name"></span>
+  </div>
 
-      <!-- MASTERY SKILL CARD — Kuhanje -->
-      <!-- ── SURVIVAL MISIJE ────────────────────────────────── -->
-      <div class="section-header" style="margin-bottom:10px">
-        <h3 class="section-header__title">🆘 Preživetje</h3>
-        <span class="section-header__badge" style="color:#C4352A;background:#FDECEA;border-color:rgba(196,53,42,.2)">Survival</span>
-      </div>
+  <!-- Agent switcher -->
+  <div style="display:flex;gap:6px" id="lib-agent-sw"></div>
 
-      <article class="mastery-card" data-skill="voda">
-        <div class="mastery-card__head mastery-card__head--toggle" role="button" tabindex="0">
-          <span class="mastery-card__emoji">💧</span>
-          <div>
-            <p class="mastery-card__title">Gospodar Vode</p>
-            <p class="mastery-card__current-level">🔍 Poišči ventil</p>
-          </div>
-          <span class="mastery-card__caret"><i class="ph-bold ph-caret-down"></i></span>
-        </div>
-        <div class="mastery-track mastery-track--hidden">
-          <div class="mastery-step mastery-step--active" data-level="0">
-            <div class="mastery-step__node">
-              <span class="mastery-step__icon">🔍</span>
-              <div class="mastery-step__connector mastery-step__connector--active"></div>
-            </div>
-            <div class="mastery-step__body">
-              <p class="mastery-step__label">Poišči ventil</p>
-              <p class="mastery-step__desc">S starším poišči glavni ventil za vodo v hiši.</p>
-              <div class="mastery-step__meta">
-                <span class="mastery-step__reward">+20 XP</span>
-                <span class="mastery-step__autonomy">skupaj</span>
-              </div>
-            </div>
-            <span class="mastery-step__pulse"></span>
-          </div>
-          <div class="mastery-step mastery-step--locked" data-level="1">
-            <div class="mastery-step__node">
-              <span class="mastery-step__icon">🔧</span>
-              <div class="mastery-step__connector mastery-step__connector--active"></div>
-            </div>
-            <div class="mastery-step__body">
-              <p class="mastery-step__label">Zapri ventil</p>
-              <p class="mastery-step__desc">Sam poišči in zapri ventil ko starš reče.</p>
-              <div class="mastery-step__meta">
-                <span class="mastery-step__reward">+30 XP</span>
-                <span class="mastery-step__autonomy">z nadzorom</span>
-              </div>
-            </div>
-            <span class="mastery-step__lock">🔒</span>
-          </div>
-          <div class="mastery-step mastery-step--locked" data-level="2">
-            <div class="mastery-step__node">
-              <span class="mastery-step__icon">⭐</span>
-            </div>
-            <div class="mastery-step__body">
-              <p class="mastery-step__label">Mojster</p>
-              <p class="mastery-step__desc">Zapri in odpri v 30 sekundah. Brez pomoči.</p>
-              <div class="mastery-step__meta">
-                <span class="mastery-step__reward">+50 XP</span>
-                <span class="mastery-step__autonomy">samostojno</span>
-              </div>
-            </div>
-            <span class="mastery-step__lock">🔒</span>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:14px;align-items:center">
-          <select class="mastery-agent-select" data-skill="voda" style="flex:1;padding:8px 10px;border-radius:8px;background:#F7F4EF;border:1px solid #C4BFB8;color:#1A1714;font-size:.85rem">
-            <option value="lea">⚡ Lea</option>
-            <option value="nejc">🛡️ Nejc</option>
-          </select>
-          <button class="mastery-advance-btn btn-primary" data-skill="voda" data-agent="lea" style="margin-top:0;flex:2">
-            Potrdi stopnjo ✓
-          </button>
-        </div>
-      </article>
+  <div id="lib-mastery"></div>
 
-      <article class="mastery-card" data-skill="blackout">
-        <div class="mastery-card__head mastery-card__head--toggle" role="button" tabindex="0">
-          <span class="mastery-card__emoji">🔦</span>
-          <div>
-            <p class="mastery-card__title">Blackout Protokol</p>
-            <p class="mastery-card__current-level">🔦 Z lučko</p>
-          </div>
-          <span class="mastery-card__caret"><i class="ph-bold ph-caret-down"></i></span>
-        </div>
-        <div class="mastery-track mastery-track--hidden">
-          <div class="mastery-step mastery-step--active" data-level="0">
-            <div class="mastery-step__node">
-              <span class="mastery-step__icon">🔦</span>
-              <div class="mastery-step__connector mastery-step__connector--active"></div>
-            </div>
-            <div class="mastery-step__body">
-              <p class="mastery-step__label">Z lučko</p>
-              <p class="mastery-step__desc">Z naglavno lučko najdi pot do varovalke skupaj s starším.</p>
-              <div class="mastery-step__meta">
-                <span class="mastery-step__reward">+20 XP</span>
-                <span class="mastery-step__autonomy">skupaj</span>
-              </div>
-            </div>
-            <span class="mastery-step__pulse"></span>
-          </div>
-          <div class="mastery-step mastery-step--locked" data-level="1">
-            <div class="mastery-step__node">
-              <span class="mastery-step__icon">🗣️</span>
-              <div class="mastery-step__connector mastery-step__connector--active"></div>
-            </div>
-            <div class="mastery-step__body">
-              <p class="mastery-step__label">Glasovno vodenje</p>
-              <p class="mastery-step__desc">Brez lučke. Starš usmerja samo z besedami.</p>
-              <div class="mastery-step__meta">
-                <span class="mastery-step__reward">+30 XP</span>
-                <span class="mastery-step__autonomy">z vodenjem</span>
-              </div>
-            </div>
-            <span class="mastery-step__lock">🔒</span>
-          </div>
-          <div class="mastery-step mastery-step--locked" data-level="2">
-            <div class="mastery-step__node">
-              <span class="mastery-step__icon">⭐</span>
-            </div>
-            <div class="mastery-step__body">
-              <p class="mastery-step__label">Mojster</p>
-              <p class="mastery-step__desc">Sam, v temi, do varovalke in nazaj v 60 sekundah.</p>
-              <div class="mastery-step__meta">
-                <span class="mastery-step__reward">+50 XP</span>
-                <span class="mastery-step__autonomy">samostojno</span>
-              </div>
-            </div>
-            <span class="mastery-step__lock">🔒</span>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:14px;align-items:center">
-          <select class="mastery-agent-select" data-skill="blackout" style="flex:1;padding:8px 10px;border-radius:8px;background:#F7F4EF;border:1px solid #C4BFB8;color:#1A1714;font-size:.85rem">
-            <option value="lea">⚡ Lea</option>
-            <option value="nejc">🛡️ Nejc</option>
-          </select>
-          <button class="mastery-advance-btn btn-primary" data-skill="blackout" data-agent="lea" style="margin-top:0;flex:2">
-            Potrdi stopnjo ✓
-          </button>
-        </div>
-      </article>
+  <!-- RANGI -->
+  <div class="section-header" style="margin-top:4px">
+    <h3 class="section-header__title">🏅 Rangi</h3>
+  </div>
+  <div id="lib-ranks"></div>
 
-      <article class="mastery-card" data-skill="diplomat">
-        <div class="mastery-card__head mastery-card__head--toggle" role="button" tabindex="0">
-          <span class="mastery-card__emoji">🎩</span>
-          <div>
-            <p class="mastery-card__title">Diplomat</p>
-            <p class="mastery-card__current-level">🛒 Vprašaj v trgovini</p>
-          </div>
-          <span class="mastery-card__caret"><i class="ph-bold ph-caret-down"></i></span>
-        </div>
-        <div class="mastery-track mastery-track--hidden">
-          <div class="mastery-step mastery-step--active" data-level="0">
-            <div class="mastery-step__node">
-              <span class="mastery-step__icon">🛒</span>
-              <div class="mastery-step__connector mastery-step__connector--active"></div>
-            </div>
-            <div class="mastery-step__body">
-              <p class="mastery-step__label">Vprašaj v trgovini</p>
-              <p class="mastery-step__desc">Sam pristopi k prodajalcu in vprašaj kje je artikel.</p>
-              <div class="mastery-step__meta">
-                <span class="mastery-step__reward">+25 XP</span>
-                <span class="mastery-step__autonomy">z nadzorom</span>
-              </div>
-            </div>
-            <span class="mastery-step__pulse"></span>
-          </div>
-          <div class="mastery-step mastery-step--locked" data-level="1">
-            <div class="mastery-step__node">
-              <span class="mastery-step__icon">🍽️</span>
-              <div class="mastery-step__connector mastery-step__connector--active"></div>
-            </div>
-            <div class="mastery-step__body">
-              <p class="mastery-step__label">Naroči v restavraciji</p>
-              <p class="mastery-step__desc">Sam naroči hrano za celo mizo. Pozdrav, naročilo, hvala.</p>
-              <div class="mastery-step__meta">
-                <span class="mastery-step__reward">+35 XP</span>
-                <span class="mastery-step__autonomy">z nadzorom</span>
-              </div>
-            </div>
-            <span class="mastery-step__lock">🔒</span>
-          </div>
-          <div class="mastery-step mastery-step--locked" data-level="2">
-            <div class="mastery-step__node">
-              <span class="mastery-step__icon">⭐</span>
-            </div>
-            <div class="mastery-step__body">
-              <p class="mastery-step__label">Mojster</p>
-              <p class="mastery-step__desc">Reši problem sam — reklamacija, napaka v naročilu.</p>
-              <div class="mastery-step__meta">
-                <span class="mastery-step__reward">+50 XP</span>
-                <span class="mastery-step__autonomy">samostojno</span>
-              </div>
-            </div>
-            <span class="mastery-step__lock">🔒</span>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:14px;align-items:center">
-          <select class="mastery-agent-select" data-skill="diplomat" style="flex:1;padding:8px 10px;border-radius:8px;background:#F7F4EF;border:1px solid #C4BFB8;color:#1A1714;font-size:.85rem">
-            <option value="lea">⚡ Lea</option>
-            <option value="nejc">🛡️ Nejc</option>
-          </select>
-          <button class="mastery-advance-btn btn-primary" data-skill="diplomat" data-agent="lea" style="margin-top:0;flex:2">
-            Potrdi stopnjo ✓
-          </button>
-        </div>
-      </article>
-
-      <!-- ── VEŠČINE ─────────────────────────────────────────── -->
-      <div class="section-header" style="margin-bottom:10px;margin-top:8px">
-        <h3 class="section-header__title">🛠️ Veščine</h3>
-      </div>
-
-      <article class="mastery-card" data-skill="kuhanje">
-        <div class="mastery-card__head">
-          <span class="mastery-card__emoji">👨‍🍳</span>
-          <div>
-            <h4 class="mastery-card__title">Kuhanje</h4>
-            <p class="mastery-card__current-level">Trenutno: <span class="level-tag level-tag--active">Pomočnik</span></p>
-          </div>
-        </div>
-
-        <!-- Level track -->
-        <div class="mastery-track">
-
-          <!-- VAJENEC — completed -->
-          <div class="mastery-step mastery-step--done" data-level="0">
-            <div class="mastery-step__node">
-              <span class="mastery-step__icon">🌱</span>
-              <div class="mastery-step__connector mastery-step__connector--done"></div>
-            </div>
-            <div class="mastery-step__body">
-              <p class="mastery-step__label">Vajenec</p>
-              <p class="mastery-step__desc">Osnove z nadzorom starša.</p>
-              <div class="mastery-step__meta">
-                <span class="mastery-step__cost mastery-step__cost--paid">−50 XP investicija</span>
-                <span class="mastery-step__autonomy">👁 Nadzor</span>
-              </div>
-            </div>
-            <div class="mastery-step__check">✓</div>
-          </div>
-
-          <!-- POMOČNIK — active -->
-          <div class="mastery-step mastery-step--active" data-level="1">
-            <div class="mastery-step__node">
-              <span class="mastery-step__icon">🔧</span>
-              <div class="mastery-step__connector mastery-step__connector--active"></div>
-            </div>
-            <div class="mastery-step__body">
-              <p class="mastery-step__label">Pomočnik</p>
-              <p class="mastery-step__desc">Starš pasivno opazuje. Brezplačna praksa.</p>
-              <div class="mastery-step__meta">
-                <span class="mastery-step__cost">−25 XP investicija</span>
-                <span class="mastery-step__autonomy">👀 Opazovalec</span>
-              </div>
-            </div>
-            <div class="mastery-step__pulse"></div>
-          </div>
-
-          <!-- MOJSTER — locked -->
-          <div class="mastery-step mastery-step--locked" data-level="2">
-            <div class="mastery-step__node">
-              <span class="mastery-step__icon">⭐</span>
-            </div>
-            <div class="mastery-step__body">
-              <p class="mastery-step__label">Mojster</p>
-              <p class="mastery-step__desc">Polna licenca. Zdaj s to veščino zaslužuješ XP.</p>
-              <div class="mastery-step__meta">
-                <span class="mastery-step__reward">+40 XP / izvedba</span>
-                <span class="mastery-step__autonomy">🚀 Samostojno</span>
-              </div>
-            </div>
-            <div class="mastery-step__lock">🔒</div>
-          </div>
-
-        </div><!-- /mastery-track -->
-        <div style="display:flex;gap:8px;margin-top:14px;align-items:center">
-          <select class="mastery-agent-select" data-skill="kuhanje" style="flex:1;padding:8px 10px;border-radius:8px;background:#F7F4EF;border:1px solid #C4BFB8;color:#1A1714;font-size:.85rem">
-            <option value="lea">⚡ Lea</option>
-            <option value="nejc">🛡️ Nejc</option>
-          </select>
-          <button class="mastery-advance-btn btn-primary" data-skill="kuhanje" data-agent="lea" style="margin-top:0;flex:2">
-            Napreduj na naslednji nivo
-          </button>
-        </div>
-      </article>
-
-      <!-- MASTERY SKILL CARD — Mizarstvo -->
-      <article class="mastery-card" data-skill="mizarstvo">
-        <div class="mastery-card__head mastery-card__head--toggle" role="button" tabindex="0" aria-expanded="false">
-          <span class="mastery-card__emoji">🪚</span>
-          <div>
-            <h4 class="mastery-card__title">Mizarstvo</h4>
-            <p class="mastery-card__current-level">Trenutno: <span class="level-tag level-tag--locked">Zaklenjeno</span></p>
-          </div>
-          <i class="ph-bold ph-caret-down mastery-card__caret"></i>
-        </div>
-        <!-- collapsed — track hidden, expand on click via engine.js -->
-        <div class="mastery-track mastery-track--hidden">
-          <div class="mastery-step mastery-step--locked" data-level="2">
-            <div class="mastery-step__node"><span class="mastery-step__icon">🌱</span></div>
-            <div class="mastery-step__body">
-              <p class="mastery-step__label">Vajenec</p>
-              <p class="mastery-step__desc">Kladivo, žeblji. Polni nadzor starša.</p>
-              <div class="mastery-step__meta">
-                <span class="mastery-step__cost">−75 XP investicija</span>
-                <span class="mastery-step__autonomy">👁 Nadzor</span>
-              </div>
-            </div>
-            <div class="mastery-step__lock">🔒</div>
-          </div>
-          <div class="mastery-step mastery-step--locked" data-level="2">
-            <div class="mastery-step__node"><span class="mastery-step__icon">🔧</span></div>
-            <div class="mastery-step__body">
-              <p class="mastery-step__label">Pomočnik</p>
-              <p class="mastery-step__desc">Žaga in vrtalnik. Starš opazuje.</p>
-              <div class="mastery-step__meta">
-                <span class="mastery-step__cost">−25 XP investicija</span>
-                <span class="mastery-step__autonomy">👀 Opazovalec</span>
-              </div>
-            </div>
-            <div class="mastery-step__lock">🔒</div>
-          </div>
-          <div class="mastery-step mastery-step--locked" data-level="2">
-            <div class="mastery-step__node"><span class="mastery-step__icon">⭐</span></div>
-            <div class="mastery-step__body">
-              <p class="mastery-step__label">Mojster</p>
-              <p class="mastery-step__desc">Popravi sam. Polna samostojnost.</p>
-              <div class="mastery-step__meta">
-                <span class="mastery-step__reward">+50 XP / izvedba</span>
-                <span class="mastery-step__autonomy">🚀 Samostojno</span>
-              </div>
-            </div>
-            <div class="mastery-step__lock">🔒</div>
-          </div>
-        </div>
-              <div style="display:flex;gap:8px;margin-top:14px;align-items:center">
-          <select class="mastery-agent-select" data-skill="mizarstvo" style="flex:1;padding:8px 10px;border-radius:8px;background:#F7F4EF;border:1px solid #C4BFB8;color:#1A1714;font-size:.85rem">
-            <option value="lea">⚡ Lea</option>
-            <option value="nejc">🛡️ Nejc</option>
-          </select>
-          <button class="mastery-advance-btn btn-primary" data-skill="mizarstvo" data-agent="lea" style="margin-top:0;flex:2">
-            Napreduj na naslednji nivo
-          </button>
-        </div>
-      </article>
-
-      <!-- MASTERY SKILL CARD — Orientacija -->
-      
-
-    </section>
-
-    <!-- ══════════════════════════════════════════════════════
-         SECTION 2 — KNJIŽNI MOLJ (Scholar)
-    ══════════════════════════════════════════════════════ -->
-    <section aria-label="Knjižni Molj">
-      <div class="section-header" style="margin-top: 8px;">
-        <h3 class="section-header__title"><i class="ph-bold ph-book-open"></i> Knjižni Molj</h3>
-        <span class="section-header__badge scholar">📚 Scholar</span>
-      </div>
-
-      <!-- Scholar session -->
-      <article class="card card--scholar">
-        <div class="card__header">
-          <span class="scholar-avatar">📚</span>
-          <div>
-            <p class="card__eyebrow">Nova bralna seja</p>
-            <h4 class="card__title">Izberi knjigo</h4>
-          </div>
-          <span class="scholar-xp-badge" id="scholar-xp-preview">— XP</span>
-        </div>
-        <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
-          <select class="scholar-agent-select" style="flex:1;padding:8px 10px;border-radius:var(--r-sm);background:var(--bg-base);border:1px solid rgba(255,255,255,0.1);color:var(--text-primary);font-size:.85rem">
-            <option value="lea">⚡ Lea</option>
-            <option value="nejc">🛡️ Nejc</option>
-          </select>
-          <label style="display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--text-secondary);cursor:pointer;white-space:nowrap">
-            <input type="checkbox" id="scholar-younger" style="accent-color:var(--neon-gold)"/> 👨‍👧 ×2
-          </label>
-        </div>
-        <div class="book-type-grid">
-          <button class="book-type-btn" data-book-type="slikanica">
-            <span class="book-type-btn__icon">📚</span>
-            <span class="book-type-btn__label">Slikanica</span>
-            <span class="book-type-btn__xp">+10 XP</span>
-            <span class="book-type-btn__diff">★</span>
-          </button>
-          <button class="book-type-btn" data-book-type="poglavje">
-            <span class="book-type-btn__icon">📖</span>
-            <span class="book-type-btn__label">Poglavja</span>
-            <span class="book-type-btn__xp">+20 XP</span>
-            <span class="book-type-btn__diff">★★</span>
-          </button>
-          <button class="book-type-btn" data-book-type="roman">
-            <span class="book-type-btn__icon">📕</span>
-            <span class="book-type-btn__label">Roman</span>
-            <span class="book-type-btn__xp">+40 XP</span>
-            <span class="book-type-btn__diff">★★★</span>
-          </button>
-          <button class="book-type-btn" data-book-type="literatura">
-            <span class="book-type-btn__icon">🎓</span>
-            <span class="book-type-btn__label">Literatura</span>
-            <span class="book-type-btn__xp">+60 XP</span>
-            <span class="book-type-btn__diff">★★★★</span>
-          </button>
-        </div>
-        <div class="scholar-briefing-row" style="margin-top:10px">
-          <i class="ph-bold ph-microphone"></i>
-          <p>Zaključi z <strong>ustnim brifingom</strong> s Poveljnikom za potrditev XP.</p>
-        </div>
-        <button class="btn-primary" id="scholar-finish" style="margin-top:8px">
-          <i class="ph-bold ph-check"></i> Zaključi branje
-        </button>
-        <div class="scholar-history" id="scholar-history" style="margin-top:10px"></div>
-      </article>
-
-    </section>
-
-    <!-- ══════════════════════════════════════════════════════
-         SECTION 3 — GIBALNI MODIFIKATORJI (pregled)
-    ══════════════════════════════════════════════════════ -->
-    <section aria-label="Gibalni modifikatorji">
-      <div class="section-header" style="margin-top: 8px;">
-        <h3 class="section-header__title"><i class="ph-bold ph-person-simple-run"></i> Akcijski Izzivi</h3>
-      </div>
-      <div class="prompt-chips">
-        <span class="prompt-chip">🤸 Preval</span>
-        <span class="prompt-chip">🦩 Štorklja</span>
-        <span class="prompt-chip">🥷 Nindža</span>
-        <span class="prompt-chip">🙈 Na slepo</span>
-        <span class="prompt-chip">🎩 Diplomat</span>
-        <span class="prompt-chip prompt-chip--special">🛋️ Mir na kavču</span>
-      </div>
-      <p class="prompt-note">Pred vsako misijo sistem naključno izbere akcijo. Opravi jo, preden zahtevek odda.</p>
-    </section>
-
-    <!-- ══════════════════════════════════════════════════════
-         SECTION 4 — LONA PRO (teaser)
-    ══════════════════════════════════════════════════════ -->
-    <section aria-label="Lona Pro">
-      <article class="card card--pro-teaser">
-        <div class="pro-teaser__badge">V RAZVOJU</div>
-        <div class="card__header">
-          <span style="font-size: 1.6rem;">🔒</span>
-          <div>
-            <p class="card__eyebrow">Za odrasle</p>
-            <h4 class="card__title">LONA PRO</h4>
-          </div>
-        </div>
-        <ul class="pro-teaser__list">
-          <li><i class="ph-bold ph-hammer"></i> Heritage Skills (popravi sam, mizarstvo)</li>
-          <li><i class="ph-bold ph-brain"></i> Analogni Fokus &amp; Deep Work</li>
-          <li><i class="ph-bold ph-users-three"></i> Mentor Bonus: prenos veščin na Lona Kids</li>
-        </ul>
-      </article>
-    </section>
-
-  </main>
+</main>
 
   <!-- ── BOTTOM NAV ───────────────────────────────────────── -->
   
@@ -518,26 +243,150 @@
   
 
   <script src="config.js"></script>
-  <script src="engine/gatekeeper.js"></script>
-  <script src="engine/xp.js"></script>
-  <script src="engine/cooldown.js"></script>
-  <script src="engine/joker.js"></script>
-  <script src="engine/actionPrompt.js"></script>
-  <script src="engine/mastery.js"></script>
-  <script src="engine/season.js"></script>
-  <script src="engine/equipment.js"></script>
-  <script src="engine/scholar.js"></script>
-  <script src="engine.js"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
-    }
-  </script>
+<script src="engine/xp.js"></script>
+<script src="engine/joker.js"></script>
+<script src="engine/mastery.js"></script>
+<script>
+if(typeof initXp==="function") initXp();
+if(typeof initJokers==="function") initJokers();
+if(typeof initCoins==="function") initCoins();
+
+let libAgent = localStorage.getItem("lona_current_agent") || LONA_CONFIG.agents[0].id;
+
+function renderAgentSw() {
+  const el = document.getElementById('lib-agent-sw');
+  el.innerHTML = LONA_CONFIG.agents.map(a => `
+    <button onclick="libAgent='${a.id}';renderAll()"
+      style="flex:1;padding:8px 12px;border-radius:12px;font-size:.82rem;font-weight:700;cursor:pointer;
+      background:${a.id===libAgent?'rgba(90,175,122,.2)':'rgba(255,255,255,.04)'};
+      border:1px solid ${a.id===libAgent?'rgba(90,175,122,.35)':'rgba(255,255,255,.08)'};
+      color:${a.id===libAgent?'#5AAF7A':'rgba(247,244,239,.5)'};
+      font-family:'DM Sans',sans-serif">
+      ${a.avatar} ${a.name}
+    </button>`).join('');
+  document.getElementById('lib-agent-name').textContent =
+    LONA_CONFIG.agents.find(a=>a.id===libAgent)?.name || '';
+}
+
+function renderMastery() {
+  const el = document.getElementById('lib-mastery');
+  const freeXp = typeof getXp === "function" ? getXp(libAgent) : 0;
+
+  el.innerHTML = Object.values(LONA_CONFIG.masterySkills).map(skill => {
+    const level   = typeof getMasteryLevel === "function" ? getMasteryLevel(libAgent, skill.id) : 0;
+    const maxLvl  = skill.levels.length - 1;
+    const lvlDef  = skill.levels[level];
+    const nextLvl = skill.levels[level + 1];
+    const cost    = nextLvl?.xpCost ?? 0;
+    const canAfford = nextLvl && (cost === 0 || freeXp >= cost);
+    const pct     = Math.round((level / maxLvl) * 100);
+
+    // Nivoji
+    const levelsHtml = skill.levels.map((l, i) => {
+      const done    = i <= level;
+      const current = i === level;
+      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;
+        border-bottom:1px solid rgba(255,255,255,.05);opacity:${done?1:.4}">
+        <span style="font-size:1.1rem;width:24px;text-align:center">${l.icon}</span>
+        <div style="flex:1">
+          <p style="font-size:.82rem;font-weight:${current?800:600};color:${current?'#F7F4EF':'rgba(247,244,239,.6)'};margin:0">
+            ${l.label} ${current?'← trenutno':''}
+          </p>
+          <p style="font-size:.65rem;color:rgba(247,244,239,.4);margin:0">${l.description}</p>
+        </div>
+        ${i > level && l.xpCost > 0 ? `<span style="font-size:.65rem;color:rgba(247,244,239,.3);white-space:nowrap">−${l.xpCost} XP</span>` : ''}
+        ${done && i > 0 ? '<span style="color:#5AAF7A;font-size:.8rem">✓</span>' : ''}
+      </div>`;
+    }).join('');
+
+    return `<div class="card" style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <span style="font-size:1.6rem">${skill.icon}</span>
+        <div style="flex:1">
+          <p style="font-size:.95rem;font-weight:800;margin:0">${skill.label}</p>
+          <p style="font-size:.65rem;color:#5AAF7A;font-weight:700;margin:2px 0 0">${lvlDef.icon} ${lvlDef.label}</p>
+        </div>
+        <span style="font-size:.7rem;color:rgba(247,244,239,.35)">${level}/${maxLvl}</span>
+      </div>
+
+      <!-- Progress bar -->
+      <div style="height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;margin-bottom:12px">
+        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#2D7D52,#5AAF7A);border-radius:2px;transition:width .6s ease"></div>
+      </div>
+
+      <!-- Nivoji -->
+      ${levelsHtml}
+
+      <!-- Napreduj gumb -->
+      ${nextLvl ? `<button onclick="advanceMastery('${libAgent}','${skill.id}');setTimeout(renderAll,300)"
+        style="width:100%;margin-top:12px;padding:11px;border-radius:13px;font-size:.85rem;font-weight:800;cursor:pointer;
+        background:${canAfford?'rgba(90,175,122,.15)':'rgba(255,255,255,.04)'};
+        border:1px solid ${canAfford?'rgba(90,175,122,.35)':'rgba(255,255,255,.08)'};
+        color:${canAfford?'#5AAF7A':'rgba(247,244,239,.3)'};font-family:'DM Sans',sans-serif">
+        ${canAfford ? `Napreduj na "${nextLvl.label}" ${cost>0?'− '+cost+' XP':'(brezplačno)'}` : `Rabiš ${cost - freeXp} XP več`}
+      </button>` : `<p style="text-align:center;font-size:.78rem;color:#FFD60A;font-weight:700;margin-top:10px">⭐ Maksimalna stopnja!</p>`}
+    </div>`;
+  }).join('');
+}
+
+function renderRanks() {
+  const el = document.getElementById('lib-ranks');
+  const maxXp = typeof getMaxXp === "function" ? getMaxXp(libAgent) : 0;
+  const curRank = LONA_CONFIG.ranks.slice().reverse().find(r => maxXp >= r.minXp)?.label || LONA_CONFIG.ranks[0].label;
+
+  el.innerHTML = LONA_CONFIG.ranks.map((r, i) => {
+    const done    = maxXp >= r.minXp;
+    const current = r.label === curRank;
+    const next    = LONA_CONFIG.ranks[i+1];
+    const pct     = next ? Math.min(100, Math.round(((maxXp - r.minXp) / (next.minXp - r.minXp)) * 100)) : 100;
+
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:13px;margin-bottom:6px;
+      background:${current?'rgba(90,175,122,.1)':done?'rgba(255,255,255,.03)':'rgba(255,255,255,.02)'};
+      border:1px solid ${current?'rgba(90,175,122,.3)':done?'rgba(255,255,255,.07)':'rgba(255,255,255,.04)'};
+      opacity:${done?1:.45}">
+      <span style="font-size:1.2rem;width:28px;text-align:center">${current?'⚡':done?'✓':'○'}</span>
+      <div style="flex:1">
+        <p style="font-size:.85rem;font-weight:${current?800:600};color:${current?'#F7F4EF':'rgba(247,244,239,.6)'};margin:0">
+          ${r.label} ${current?'← trenutno':''}
+        </p>
+        <p style="font-size:.6rem;color:rgba(247,244,239,.35);margin:1px 0 0">${r.minXp} XP${next?' → '+next.minXp+' XP':' (max)'}</p>
+        ${current && next ? `<div style="height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin-top:4px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:#5AAF7A;border-radius:2px"></div>
+        </div>` : ''}
+      </div>
+      ${r.unlocks?.length ? `<span style="font-size:.65rem;color:#FFD60A;white-space:nowrap">🔓 ${r.unlocks.join(', ')}</span>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function renderAll() {
+  renderAgentSw();
+  renderMastery();
+  renderRanks();
+}
+
+document.addEventListener('DOMContentLoaded', renderAll);
+window.addEventListener('pageshow', renderAll);
+</script>
+
 <nav class="bottom-nav" aria-label="Navigacija">
-  <button class="bottom-nav__item" onclick="location.replace('home.html')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Baza</span></button>
-  <button class="bottom-nav__item" onclick="location.replace('hub.html')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg><span>Hub</span></button>
-  <button class="bottom-nav__item bottom-nav__item--active" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="#5AAF7A" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg><span>Knjižnica</span></button>
-  <button class="bottom-nav__item" onclick="location.replace('profile.html')"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profil</span></button>
+  <button class="bottom-nav__item" onclick="location.replace('home.html')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+    <span>Baza</span>
+  </button>
+  <button class="bottom-nav__item " onclick="location.replace('hub.html')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+    <span>Hub</span>
+  </button>
+  <button class="bottom-nav__item bottom-nav__item--active" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#5AAF7A" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+    <span>Knjižnica</span>
+  </button>
+  <button class="bottom-nav__item" onclick="location.replace('profile.html')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Profil</span>
+  </button>
 </nav>
+
 </body>
 </html>

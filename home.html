@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="LONA OS"/>
 <title>LONA OS</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:#0a120a;color:#F7F4EF;min-height:100dvh;padding-bottom:100px;overflow-x:hidden}
@@ -72,8 +72,8 @@ body{font-family:'DM Sans',sans-serif;background:#0a120a;color:#F7F4EF;min-heigh
 
 /* MISSION CARDS */
 .mission-list{display:flex;flex-direction:column;gap:7px}
-.mc{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:15px;cursor:pointer;transition:transform .15s ease,filter .15s ease;-webkit-tap-highlight-color:transparent;opacity:0;transform:translateY(10px)}
-.mc.mc-in{opacity:1;transform:translateY(0);transition:opacity .28s ease,transform .28s ease}
+.mc{display:flex!important;align-items:center;gap:12px;padding:12px 14px;border-radius:15px;cursor:pointer;-webkit-tap-highlight-color:transparent;opacity:0;transform:translateY(10px);animation:none!important}
+.mc.mc-in{opacity:1!important;transform:translateY(0)!important;transition:opacity .28s ease,transform .28s ease}
 .mc:active{transform:scale(.97);filter:brightness(1.1)}
 .mc.mc-locked{opacity:.38;cursor:not-allowed}
 .mc__icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
@@ -109,12 +109,82 @@ body{font-family:'DM Sans',sans-serif;background:#0a120a;color:#F7F4EF;min-heigh
 
 /* SETTINGS */
 .settings-overlay{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center}
+
+/* ── LOCATION PICKER ─────────────────────────────────── */
+.loc-pick-wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 16px 0}
+.loc-pick-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;
+  border-radius:16px;border:1.5px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s ease;
+  -webkit-tap-highlight-color:transparent;font-family:var(--font-body)}
+.loc-pick-btn:active{transform:scale(.93)}
+.loc-pick-btn__icon{font-size:22px;line-height:1}
+.loc-pick-btn__label{font-size:10px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;color:rgba(247,244,239,.4)}
+.loc-pick-btn--active{transform:scale(1.04)}
+.loc-pick-btn--eq.loc-pick-btn--active{background:rgba(175,82,222,.18);border-color:rgba(175,82,222,.5)}
+.loc-pick-btn--eq.loc-pick-btn--active .loc-pick-btn__label{color:#CF8FFF}
+.loc-pick-btn--indoor.loc-pick-btn--active{background:rgba(90,175,122,.15);border-color:rgba(90,175,122,.4)}
+.loc-pick-btn--indoor.loc-pick-btn--active .loc-pick-btn__label{color:#5AAF7A}
+.loc-pick-btn--outdoor.loc-pick-btn--active{background:rgba(52,199,89,.12);border-color:rgba(52,199,89,.35)}
+.loc-pick-btn--outdoor.loc-pick-btn--active .loc-pick-btn__label{color:#34C759}
+.loc-pick-btn--all.loc-pick-btn--active{background:rgba(90,200,250,.1);border-color:rgba(90,200,250,.3)}
+.loc-pick-btn--all.loc-pick-btn--active .loc-pick-btn__label{color:#5AC8FA}
+
+/* ── RANDOM MISSION CARD ─────────────────────────────── */
+.rmc{border-radius:20px;overflow:hidden;position:relative;
+  min-height:160px;display:flex;flex-direction:column;justify-content:flex-end;
+  animation:rmc-in .35s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes rmc-in{from{opacity:0;transform:scale(.9) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+/* Kocka animacija */
+@keyframes dice-roll{
+  0%  {transform:scale(1) rotate(0deg)}
+  15% {transform:scale(.85) rotate(-8deg)}
+  30% {transform:scale(.8) rotate(12deg) translateY(-8px)}
+  45% {transform:scale(.82) rotate(-10deg) translateY(-4px)}
+  60% {transform:scale(.85) rotate(6deg)}
+  75% {transform:scale(.92) rotate(-3deg)}
+  90% {transform:scale(.98) rotate(1deg)}
+  100%{transform:scale(1) rotate(0deg)}
+}
+@keyframes dice-flip{
+  0%  {transform:perspective(400px) rotateY(0deg);opacity:1}
+  40% {transform:perspective(400px) rotateY(90deg) scale(.8);opacity:.3}
+  60% {transform:perspective(400px) rotateY(90deg) scale(.8);opacity:.3}
+  100%{transform:perspective(400px) rotateY(0deg);opacity:1}
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-6px) rotate(-2deg)}
+  40%{transform:translateX(6px) rotate(2deg)}
+  60%{transform:translateX(-4px) rotate(-1deg)}
+  80%{transform:translateX(4px) rotate(1deg)}
+}
+.rmc--rolling{animation:dice-roll .55s cubic-bezier(.36,.07,.19,.97) both}
+.rmc--flip{animation:dice-flip .45s ease both}
+.rmc__bg{position:absolute;inset:0}
+.rmc__overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.1) 60%,transparent 100%)}
+.rmc__body{position:relative;padding:16px 18px 14px}
+.rmc__icon{font-size:2.2rem;display:block;margin-bottom:6px}
+.rmc__name{font-family:var(--font-display);font-size:1.4rem;color:#fff;margin:0 0 3px;line-height:1.2}
+.rmc__desc{font-size:.78rem;color:rgba(255,255,255,.55);margin:0 0 12px}
+.rmc__actions{display:flex;gap:8px}
+.rmc__btn{flex:1;padding:11px;border-radius:13px;font-size:.85rem;font-weight:800;
+  font-family:var(--font-body);cursor:pointer;transition:all .15s ease;border:none;
+  -webkit-tap-highlight-color:transparent}
+.rmc__btn:active{transform:scale(.95)}
+.rmc__btn--do{background:rgba(255,255,255,.95);color:#0a120a}
+.rmc__btn--skip{background:rgba(255,209,102,.2);border:1px solid rgba(255,209,102,.4)!important;color:#FFD60A}
+.rmc__btn--next{background:rgba(255,255,255,.12);color:rgba(255,255,255,.7)}
+.rmc__xp{font-size:.78rem;font-weight:700;color:#fff;opacity:.7;text-align:right;margin-bottom:4px}
+
 </style>
+<link rel="stylesheet" href="shared.css"/>
 </head>
 <body>
 
 <header class="top-bar">
-  <div class="top-bar__logo">[LONA<span class="logo-accent">_OS</span>]</div>
+  <div class="top-bar__logo" onclick="location.replace('index.html')" style="cursor:pointer">[LONA<span class="logo-accent">_OS</span>]</div>
   <div class="top-bar__agent" onclick="location.replace('index.html')" title="Zamenjaj agenta">
     <span class="status-dot"></span>
     <span class="top-bar__agent-name" id="current-agent-name">Agent</span>
@@ -122,84 +192,39 @@ body{font-family:'DM Sans',sans-serif;background:#0a120a;color:#F7F4EF;min-heigh
   </div>
   <button onclick="document.getElementById('settings-panel').style.display='flex'"
     style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(247,244,239,.5);font-size:14px;cursor:pointer;flex-shrink:0">⚙</button>
+  <button onclick="location.href='commander.html'"
+    style="width:32px;height:32px;border-radius:50%;background:rgba(175,82,222,.12);border:1px solid rgba(175,82,222,.3);color:#CF8FFF;font-size:14px;cursor:pointer;flex-shrink:0" title="Commander Panel">🎖️</button>
 </header>
 
-<main>
+<main class="main-scroll" style="padding:0 0 100px;gap:0;max-width:100%">
   <section id="cmd-panel-section"></section>
 
-  <!-- VIEW TABS -->
-  <div class="view-tabs">
-    <div class="view-tab view-tab--eq view-tab--active" onclick="switchView('eq')">
-      <span class="view-tab__icon">⚡</span>
-      <span class="view-tab__label">EQ</span>
-    </div>
-    <div class="view-tab view-tab--indoor" onclick="switchView('indoor')">
-      <span class="view-tab__icon">🏠</span>
-      <span class="view-tab__label">V hiši</span>
-    </div>
-    <div class="view-tab view-tab--outdoor" onclick="switchView('outdoor')">
-      <span class="view-tab__icon">🌲</span>
-      <span class="view-tab__label">Zunaj</span>
-    </div>
-    <div class="view-tab view-tab--all" onclick="switchView('all')">
-      <span class="view-tab__icon">🗂</span>
-      <span class="view-tab__label">Vse</span>
-    </div>
+  <!-- LOCATION PICKER -->
+  <div class="loc-pick-wrap">
+    <button class="loc-pick-btn loc-pick-btn--eq" onclick="pickLocation('eq')">
+      <span class="loc-pick-btn__icon">⚡</span>
+      <span class="loc-pick-btn__label">EQ</span>
+    </button>
+    <button class="loc-pick-btn loc-pick-btn--indoor" onclick="pickLocation('indoor')">
+      <span class="loc-pick-btn__icon">🏠</span>
+      <span class="loc-pick-btn__label">V hiši</span>
+    </button>
+    <button class="loc-pick-btn loc-pick-btn--outdoor" onclick="pickLocation('outdoor')">
+      <span class="loc-pick-btn__icon">🌲</span>
+      <span class="loc-pick-btn__label">Zunaj</span>
+    </button>
+    <button class="loc-pick-btn loc-pick-btn--all" onclick="pickLocation('all')">
+      <span class="loc-pick-btn__icon">🗂</span>
+      <span class="loc-pick-btn__label">Vse</span>
+    </button>
   </div>
 
-  <!-- EQ VIEW -->
-  <div class="view active" id="view-eq">
-    <div class="cat-carousel" id="carousel-eq"></div>
-    <div class="drawer">
-      <div class="drawer-handle"></div>
-      <div class="drawer-header">
-        <p class="drawer-title" id="drawer-eq-title">⚡ EQ Akcija</p>
-        <div class="drawer-meta">
-          <div class="daily-dots" id="daily-dots-eq"></div>
-        </div>
-      </div>
-      <div class="mission-list" id="list-eq"></div>
-    </div>
+  <!-- RANDOM MISSION CARD -->
+  <div id="random-mission-wrap" style="padding:0 16px;display:none">
+    <div id="random-mission-card" class="rmc"></div>
   </div>
 
-  <!-- INDOOR VIEW -->
-  <div class="view" id="view-indoor">
-    <div class="cat-carousel" id="carousel-indoor"></div>
-    <div class="drawer">
-      <div class="drawer-handle"></div>
-      <div class="drawer-header">
-        <p class="drawer-title" id="drawer-indoor-title">🧹 Čiščenje</p>
-        <div class="drawer-meta">
-          <div class="daily-dots" id="daily-dots-indoor"></div>
-          <button class="shuffle-btn" onclick="shuffleIndoor()">↻ Drugo</button>
-        </div>
-      </div>
-      <div class="mission-list" id="list-indoor"></div>
-    </div>
-  </div>
 
-  <!-- OUTDOOR VIEW -->
-  <div class="view" id="view-outdoor">
-    <div class="cat-carousel" id="carousel-outdoor"></div>
-    <div class="drawer">
-      <div class="drawer-handle"></div>
-      <div class="drawer-header">
-        <p class="drawer-title" id="drawer-outdoor-title">🌲 Outdoor</p>
-        <div class="drawer-meta">
-          <div class="daily-dots" id="daily-dots-outdoor"></div>
-          <button class="shuffle-btn" onclick="shuffleOutdoor()">↻ Drugo</button>
-        </div>
-      </div>
-      <div class="mission-list" id="list-outdoor"></div>
-    </div>
-  </div>
-
-  <!-- VSE VIEW — ribbon -->
-  <div class="view" id="view-all">
-    <div style="padding:12px 16px 8px;display:flex;align-items:center;justify-content:space-between">
-      <p style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(247,244,239,.35)">Vse misije</p>
-      <span style="font-size:11px;color:rgba(247,244,239,.3)" id="all-count"></span>
-    </div>
     <div class="ribbon-wrap">
       <div class="ribbon" id="ribbon-all"></div>
     </div>

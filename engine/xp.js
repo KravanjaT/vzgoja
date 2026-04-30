@@ -156,3 +156,34 @@ function grantManualBonus(amount) {
 function showProposals() {
   lonaToast("Predlogi — prihaja kmalu! 📬", "cyan");
 }
+
+// ── KOVANCI 🪙 ──────────────────────────────────────────────
+function coinsKey(agentId) { return `lona_coins_${agentId}`; }
+
+function getCoins(agentId) {
+  const stored = localStorage.getItem(coinsKey(agentId));
+  if (stored !== null) return parseInt(stored);
+  return LONA_CONFIG.agents.find(a => a.id === agentId)?.coins ?? 0;
+}
+
+function addCoins(agentId, amount) {
+  const current = getCoins(agentId);
+  const newVal  = Math.max(0, current + amount);
+  localStorage.setItem(coinsKey(agentId), String(newVal));
+  if (typeof renderCmdAgents === "function") renderCmdAgents();
+  return newVal;
+}
+
+function spendCoins(agentId, amount) {
+  if (getCoins(agentId) < amount) return false;
+  addCoins(agentId, -amount);
+  return true;
+}
+
+function initCoins() {
+  LONA_CONFIG.agents.forEach(a => {
+    if (localStorage.getItem(coinsKey(a.id)) === null) {
+      localStorage.setItem(coinsKey(a.id), String(a.coins ?? 0));
+    }
+  });
+}

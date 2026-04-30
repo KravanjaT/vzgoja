@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <title>LONA OS — Profil</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:"DM Sans",sans-serif;background:#0F1A0F;min-height:100dvh;padding-bottom:100px;color:#F7F4EF}
@@ -98,10 +98,11 @@ body{font-family:"DM Sans",sans-serif;background:#0F1A0F;min-height:100dvh;paddi
 .bottom-nav__item--active svg{stroke:#5AAF7A}
 .bottom-nav__item--active::after{content:"";position:absolute;bottom:-4px;width:4px;height:4px;border-radius:50%;background:#5AAF7A}
 </style>
+<link rel="stylesheet" href="shared.css"/>
 </head>
 <body>
 <header class="top-bar">
-  <div class="top-bar__logo">[LONA<span class="logo-accent">_OS</span>]</div>
+  <div class="top-bar__logo" onclick="location.replace('index.html')" style="cursor:pointer">[LONA<span class="logo-accent">_OS</span>]</div>
   <span class="top-bar__title">Profil Agenta</span>
 </header>
 <main class="main-scroll">
@@ -117,9 +118,21 @@ body{font-family:"DM Sans",sans-serif;background:#0F1A0F;min-height:100dvh;paddi
         <p class="profile-hero__name" id="hero-name">—</p>
         <p class="profile-hero__rank" id="hero-rank">—</p>
       </div>
-      <div class="profile-hero__xp-badge">
-        <p class="profile-hero__xp-val" id="hero-xp">0</p>
-        <p class="profile-hero__xp-lbl">XP skupaj</p>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+        <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+          <div style="text-align:right">
+            <p style="font-size:.6rem;color:rgba(247,244,239,.35);text-transform:uppercase;letter-spacing:.08em;margin:0">Prosti XP</p>
+            <p id="hero-xp" style="font-family:'DM Serif Display',serif;font-size:1.6rem;color:#5AAF7A;line-height:1;margin:0">0</p>
+          </div>
+          <div style="text-align:right">
+            <p style="font-size:.6rem;color:rgba(247,244,239,.35);text-transform:uppercase;letter-spacing:.08em;margin:0">Skupni XP</p>
+            <p id="hero-total-xp" style="font-size:.9rem;font-weight:800;color:#FFD60A;line-height:1;margin:0">0</p>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;padding:5px 10px;background:rgba(255,214,10,.12);border:1px solid rgba(255,214,10,.3);border-radius:20px">
+          <span style="font-size:1rem">🪙</span>
+          <span id="hero-coins" style="font-size:1.1rem;font-weight:800;color:#FFD60A">0</span>
+        </div>
       </div>
     </div>
     <div class="xp-bar-track"><div class="xp-bar-fill" id="hero-bar" style="width:0%"></div></div>
@@ -135,20 +148,7 @@ body{font-family:"DM Sans",sans-serif;background:#0F1A0F;min-height:100dvh;paddi
     </div>
   </div>
   <div class="section-header"><h3 class="section-header__title">🏆 Nagrade</h3></div>
-  <div class="rewards-grid">
-    <div class="reward-card reward-card--personal">
-      <p class="reward-card__eyebrow">Osebno</p>
-      <div class="reward-row" data-cost="20"><span class="reward-row__icon">🍫</span><span class="reward-row__name">Čokolada</span><span class="reward-row__cost">20 XP</span></div>
-      <div class="reward-row" data-cost="40"><span class="reward-row__icon">🍦</span><span class="reward-row__name">Sladoled</span><span class="reward-row__cost">40 XP</span></div>
-      <div class="reward-row" data-cost="80"><span class="reward-row__icon">🛒</span><span class="reward-row__name">Izbira v trgovini</span><span class="reward-row__cost">80 XP</span></div>
-    </div>
-    <div class="reward-card reward-card--shared">
-      <p class="reward-card__eyebrow">Skupaj</p>
-      <div class="reward-row" data-cost="40" data-shared="true"><span class="reward-row__icon">📺</span><span class="reward-row__name">Risanka</span><span class="reward-row__cost">40 XP</span></div>
-      <div class="reward-row" data-cost="150" data-shared="true"><span class="reward-row__icon">🏕️</span><span class="reward-row__name">Tabor doma</span><span class="reward-row__cost">150 XP</span></div>
-      <div class="reward-row" data-cost="500" data-shared="true"><span class="reward-row__icon">🎬</span><span class="reward-row__name">Kino večer</span><span class="reward-row__cost">500 XP</span></div>
-    </div>
-  </div>
+  <div class="rewards-grid" id="rewards-grid"></div>
   <div class="section-header" style="margin-top:4px"><h3 class="section-header__title">⚔️ Mojstrstvo</h3></div>
   <div class="mastery-list" id="profile-mastery"></div>
   <div class="section-header" style="margin-top:4px">
@@ -228,6 +228,7 @@ function renderHero(){
   const a=LONA_CONFIG.agents.find(x=>x.id===currentAgentId);
   const xp=typeof getXp==="function"?getXp(currentAgentId):0;
   const maxXp=typeof getMaxXp==="function"?getMaxXp(currentAgentId):xp;
+  const coins=typeof getCoins==="function"?getCoins(currentAgentId):0;
   const ranks=LONA_CONFIG.ranks;
   const ci=ranks.findIndex(r=>r.minXp>maxXp);
   const lo=ranks[Math.max(0,ci-1)]?.minXp??0;
@@ -238,22 +239,112 @@ function renderHero(){
   document.getElementById("hero-name").textContent=a?.name||currentAgentId;
   document.getElementById("hero-rank").textContent=rankLabel;
   document.getElementById("hero-xp").textContent=xp;
+  const totalEl = document.getElementById("hero-total-xp");
+  if(totalEl) totalEl.textContent = maxXp;
   document.getElementById("stat-jokers").textContent=jokers;
   document.getElementById("hero-bar").style.width=pct+"%";
   document.getElementById("hero-bar-lo").textContent=lo;
   document.getElementById("hero-bar-hi").textContent=hi;
   document.getElementById("hero-bar-next").textContent=ranks[ci]?.label??"Kapitan ✓";
   loadAvatar(currentAgentId);
+  // Kovanci — prominentno
+  const coinsEl = document.getElementById("hero-coins");
+  if(coinsEl) coinsEl.textContent = coins;
 }
 
 function renderRewards(){
-  const xp=typeof getXp==="function"?getXp(currentAgentId):0;
-  const allXp=Object.values(JSON.parse(localStorage.getItem("lona_xp_state")||"{}")).reduce((s,v)=>s+v,0);
-  document.querySelectorAll(".reward-row").forEach(row=>{
-    const cost=parseInt(row.dataset.cost);
-    const shared=row.dataset.shared==="true";
-    row.classList.toggle("reward-row--unlocked",shared?allXp>=cost:xp>=cost);
-    row.onclick=()=>{if(typeof claimReward==="function"){claimReward(row);setTimeout(renderRewards,300)}};
+  const el = document.getElementById("rewards-grid");
+  if (!el || !LONA_CONFIG.rewards) return;
+
+  const coins    = typeof getCoins==="function" ? getCoins(currentAgentId) : 0;
+  const allCoins = LONA_CONFIG.agents.reduce((s,a)=>s+(typeof getCoins==="function"?getCoins(a.id):0),0);
+
+  // Progressive reveal — pokaži vse ki si jih lahko privoščiš + naslednjo
+  function visibleRewards(list, available) {
+    let nextHiddenShown = false;
+    return list.filter(r => {
+      const canAfford = available >= r.cost;
+      if (canAfford) return true;
+      if (!nextHiddenShown) { nextHiddenShown = true; return true; } // naslednja zamegljeno
+      return false; // ostale skrite
+    });
+  }
+
+  const personalVisible = visibleRewards(LONA_CONFIG.rewards.personal, coins);
+  const sharedVisible   = visibleRewards(LONA_CONFIG.rewards.shared,   allCoins);
+
+  const mkRow = (r, shared, available) => {
+    const canAfford = available >= r.cost;
+    const isNext    = !canAfford; // ta je naslednja — zamegljeno
+    const need      = r.cost - available;
+    return `<div class="reward-row ${canAfford?'reward-row--unlocked':''}"
+      data-id="${r.id}" data-shared="${shared}" data-cost="${r.cost}"
+      style="opacity:${isNext?.55:1};filter:${isNext?'blur(.5px)':'none'};transition:all .3s ease">
+      <span class="reward-row__icon">${isNext?'🔒':r.icon}</span>
+      <span class="reward-row__name">${r.label}</span>
+      <span class="reward-row__cost" style="color:${canAfford?'#FFD60A':'rgba(247,244,239,.35)'}">
+        ${canAfford ? '🪙 '+r.cost : '🪙 +'+need+' še'}
+      </span>
+    </div>`;
+  };
+
+  el.innerHTML = `
+    <div class="reward-card reward-card--personal">
+      <p class="reward-card__eyebrow" style="display:flex;align-items:center;justify-content:space-between">
+        <span>Osebno</span>
+        <span style="color:#FFD60A;font-weight:800">🪙 ${coins}</span>
+      </p>
+      ${personalVisible.map(r=>mkRow(r,false,coins)).join("")}
+    </div>
+    <div class="reward-card reward-card--shared">
+      <p class="reward-card__eyebrow" style="display:flex;align-items:center;justify-content:space-between">
+        <span>Skupaj</span>
+        <span style="color:#FFD60A;font-weight:800">🪙 ${allCoins}</span>
+      </p>
+      ${sharedVisible.map(r=>mkRow(r,true,allCoins)).join("")}
+    </div>`;
+
+  el.querySelectorAll(".reward-row[data-id]").forEach(row=>{
+    row.addEventListener("click",()=>{
+      const coins2 = typeof getCoins==="function" ? getCoins(currentAgentId) : 0;
+      const allC2  = LONA_CONFIG.agents.reduce((s,a)=>s+(typeof getCoins==="function"?getCoins(a.id):0),0);
+      const cost   = parseInt(row.dataset.cost);
+      const shared = row.dataset.shared==="true";
+      const canAfford = shared ? allC2 >= cost : coins2 >= cost;
+      if(!canAfford){ lonaToast("Premalo kovancev! 🪙 Zberi še več!","red"); return; }
+      const id     = row.dataset.id;
+      const reward = [...LONA_CONFIG.rewards.personal,...LONA_CONFIG.rewards.shared].find(r=>r.id===id);
+      if(!reward) return;
+      const d=document.createElement("div");
+      d.className="joker-dialog";
+      d.innerHTML=`<div class="joker-dialog__box">
+        <div style="font-size:2.8rem">${reward.icon}</div>
+        <p style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:#F7F4EF;text-align:center">${reward.label}</p>
+        <div style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(255,214,10,.1);border:1px solid rgba(255,214,10,.25);border-radius:12px;margin:4px 0">
+          <span style="font-size:1.2rem">🪙</span>
+          <span style="font-size:1rem;font-weight:800;color:#FFD60A">${cost} kovancev</span>
+        </div>
+        <p style="font-size:.72rem;color:rgba(247,244,239,.4);text-align:center">Poveljnik potrdi</p>
+        <div class="joker-dialog__btns">
+          <button class="joker-dialog__cancel">Prekliči</button>
+          <button class="joker-dialog__confirm">✓ Potrdi</button>
+        </div>
+      </div>`;
+      document.body.appendChild(d);
+      d.querySelector(".joker-dialog__cancel").addEventListener("click",()=>d.remove());
+      d.querySelector(".joker-dialog__confirm").addEventListener("click",()=>{
+        d.remove();
+        if(shared){
+          const perAgent = Math.ceil(cost/LONA_CONFIG.agents.length);
+          LONA_CONFIG.agents.forEach(a=>{ if(typeof spendCoins==="function") spendCoins(a.id, perAgent); });
+        } else {
+          if(typeof spendCoins==="function") spendCoins(currentAgentId, cost);
+        }
+        lonaToast(`${reward.icon} ${reward.label} unovčeno! 🎉`,"gold");
+        if(typeof showConfetti==="function") showConfetti();
+        setTimeout(renderAll, 200);
+      });
+    });
   });
 }
 
@@ -273,12 +364,38 @@ function renderLog(){
 }
 
 function renderMasteryProfile(){
-  const el=document.getElementById("profile-mastery");if(!el)return;
-  el.innerHTML=Object.values(LONA_CONFIG.masterySkills).map(skill=>{
-    const level=typeof getMasteryLevel==="function"?getMasteryLevel(currentAgentId,skill.id):0;
-    const lvlDef=skill.levels[level]||skill.levels[0];
-    const pct=Math.round((level/(skill.levels.length-1))*100);
-    return'<div class="mastery-item"><span class="mastery-item__icon">'+skill.icon+'</span><div class="mastery-item__info"><p class="mastery-item__name">'+skill.label+'</p><p class="mastery-item__level">'+lvlDef.icon+" "+lvlDef.label+'</p><div class="mastery-bar"><div class="mastery-bar__fill" style="width:'+pct+'%"></div></div></div><span class="mastery-item__badge">'+level+"/"+(skill.levels.length-1)+'</span></div>';
+  const el = document.getElementById("profile-mastery");
+  if (!el) return;
+  const freeXp = typeof getXp === "function" ? getXp(currentAgentId) : 0;
+
+  el.innerHTML = Object.values(LONA_CONFIG.masterySkills).map(skill => {
+    const level   = typeof getMasteryLevel === "function" ? getMasteryLevel(currentAgentId, skill.id) : 0;
+    const lvlDef  = skill.levels[level] || skill.levels[0];
+    const nextLvl = skill.levels[level + 1];
+    const maxLvl  = skill.levels.length - 1;
+    const pct     = Math.round((level / maxLvl) * 100);
+    const cost    = nextLvl?.xpCost ?? 0;
+    const canAfford = !nextLvl ? false : (cost === 0 || freeXp >= cost);
+
+    return `<div class="mastery-item">
+      <span class="mastery-item__icon">${skill.icon}</span>
+      <div class="mastery-item__info">
+        <p class="mastery-item__name">${skill.label}</p>
+        <p class="mastery-item__level">${lvlDef.icon} ${lvlDef.label}</p>
+        <div class="mastery-bar"><div class="mastery-bar__fill" style="width:${pct}%"></div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+        <span class="mastery-item__badge">${level}/${maxLvl}</span>
+        ${nextLvl ? `<button onclick="advanceMastery('${currentAgentId}','${skill.id}')"
+          style="padding:4px 10px;border-radius:10px;font-size:.7rem;font-weight:800;
+          background:${canAfford?'rgba(90,175,122,.15)':'rgba(255,255,255,.05)'};
+          border:1px solid ${canAfford?'rgba(90,175,122,.4)':'rgba(255,255,255,.1)'};
+          color:${canAfford?'#5AAF7A':'rgba(247,244,239,.3)'};
+          cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap">
+          ${cost > 0 ? '−'+cost+' XP' : 'Brezplačno'}
+        </button>` : '<span style="font-size:.65rem;color:#FFD60A">MAX ⭐</span>'}
+      </div>
+    </div>`;
   }).join("");
 }
 

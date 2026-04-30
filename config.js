@@ -1,982 +1,605 @@
 // ============================================================
-//  LONA OS — config.js  (v2.6)
-//  Single source of truth. Edit values here, nowhere else.
-//  New in v2.6: Mastery system, Scholar, Jokers, Action Prompts
+//  LONA OS — config.js  (v3.0)
+//  51 osnovnih misij + kovanci + sezone
 // ============================================================
 
 const LONA_CONFIG = {
 
-  // ── META ───────────────────────────────────────────────────
-  version: "2.6",
+  version: "3.0",
   appName: "LONA OS",
   subtitle: "Poveljniški Center",
 
   // ── AGENTS ─────────────────────────────────────────────────
   agents: [
-    {
-      id:      "lea",
-      name:    "Lea",
-      xp:      240,
-      rank:    "Vojak I",
-      avatar:  "⚡",
-      photo:   null,   // Pot do slike npr. "photos/lea.jpg"
-      jokers:  2,
-      badges:  ["kuhanje_pomocnik", "sesanje_mojster"],
-    },
-    {
-      id:      "nejc",
-      name:    "Nejc",
-      xp:      195,
-      rank:    "Regrut II",
-      avatar:  "🛡️",
-      photo:   null,   // Pot do slike npr. "photos/nejc.jpg"
-      jokers:  1,
-      badges:  ["kuhanje_vajenec"],
-    },
+    { id:"lea",  name:"Lea",  xp:240, avatar:"⚡",  photo:null, jokers:2, coins:50 },
+    { id:"nejc", name:"Nejc", xp:195, avatar:"🛡️", photo:null, jokers:1, coins:30 },
   ],
 
-  // ── GLOBAL GOAL ────────────────────────────────────────────
-  globalGoal: {
-    name:    "Kino Večer",
-    icon:    "🎬",
-    current: 0,
-    target:  500,
-    unit:    "XP",
+  // ── COMMANDER ──────────────────────────────────────────────
+  commander: {
+    confirmLabel: "Potrdi ✓",
   },
 
-  // ── REWARD SYSTEM ──────────────────────────────────────────
-  // revealAt: koliko XP mora agent imeti da vidi nagrado
-  // buyAt:    koliko XP stane nagrada
-  // sharedRevealAt: skupni XP za odkritje skupne nagrade
+  // ── KOVANCI + XP RAZMERJE ───────────────────────────────────
+  // Vsaka misija dobi XP in kovance
+  // EQ misije dobijo bonus kovance
+  coinsPerXp: 0.4,  // 25 XP → 10 🪙
+
+  // ── RANGI → odklenejo mojstrstvo ───────────────────────────
+  ranks: [
+    { label:"Regrut I",    minXp:0,    unlocks:[] },
+    { label:"Regrut II",   minXp:100,  unlocks:["kuhanje_vajenec"] },
+    { label:"Vojak I",     minXp:250,  unlocks:["sesanje_mojster"] },
+    { label:"Vojak II",    minXp:450,  unlocks:["kuhanje_pomocnik"] },
+    { label:"Desetnik I",  minXp:700,  unlocks:["organizacija_pro"] },
+    { label:"Desetnik II", minXp:1000, unlocks:["kuhanje_mojster"] },
+    { label:"Narednik I",  minXp:1400, unlocks:["eq_specialist"] },
+    { label:"Narednik II", minXp:1900, unlocks:[] },
+    { label:"Vodnik",      minXp:2500, unlocks:[] },
+    { label:"Poročnik",    minXp:3200, unlocks:[] },
+    { label:"Kapitan",     minXp:4200, unlocks:[] },
+    { label:"Poveljnik",   minXp:5500, unlocks:[] },
+  ],
+
+  // ── GATEKEEPER ─────────────────────────────────────────────
+  gatekeeper: {
+    label:    "Standard 0",
+    subtitle: "Jutranja rutina",
+    checks: [
+      { id:"zobje",   label:"Zobje",    icon:"🦷" },
+      { id:"postelja",label:"Postelja", icon:"🛏️" },
+      { id:"miza",    label:"Miza",     icon:"🪑" },
+    ],
+  },
+
+  // ── NAGRADE (kovanci) ───────────────────────────────────────
   rewards: {
     personal: [
-      { id: "igra_15",    label: "15 min igre",        icon: "🎮", buyAt: 30,  revealAt: 0   },
-      { id: "cokolada",   label: "Čokolada",            icon: "🍫", buyAt: 50,  revealAt: 30  },
-      { id: "sladoled",   label: "Sladoled",            icon: "🍦", buyAt: 80,  revealAt: 50  },
-      { id: "kosilo",     label: "Izbira kosila",       icon: "🍽️", buyAt: 150, revealAt: 100 },
-      { id: "trgovina",   label: "Izbira v trgovini",   icon: "🛒", buyAt: 250, revealAt: 200 },
+      { id:"igra_15",   label:"15 min igre",       icon:"🎮", cost:15  },
+      { id:"cokolada",  label:"Čokolada",           icon:"🍫", cost:25  },
+      { id:"sladoled",  label:"Sladoled",           icon:"🍦", cost:40  },
+      { id:"kosilo",    label:"Izbira kosila",      icon:"🍽️", cost:80  },
+      { id:"trgovina",  label:"Izbira v trgovini",  icon:"🛒", cost:150 },
+      { id:"igraca",    label:"Nova igrača",        icon:"🧸", cost:300 },
     ],
     shared: [
-      { id: "risanka",    label: "Risanka skupaj",      icon: "📺", buyAt: 80,  sharedRevealAt: 0   },
-      { id: "tabor",      label: "Tabor v dnevni sobi", icon: "🏕️", buyAt: 200, sharedRevealAt: 100 },
-      { id: "kino",       label: "Kino večer",          icon: "🎬", buyAt: 500, sharedRevealAt: 250 },
-      { id: "izlet",      label: "Izlet po izbiri",     icon: "🗺️", buyAt: 800, sharedRevealAt: 500 },
+      { id:"risanka",   label:"Risanka skupaj",      icon:"📺", cost:50  },
+      { id:"tabor",     label:"Tabor v dnevni sobi", icon:"🏕️", cost:120 },
+      { id:"kino",      label:"Kino večer",          icon:"🎬", cost:300 },
+      { id:"izlet",     label:"Izlet po izbiri",     icon:"🗺️", cost:600 },
     ],
   },
 
-  // ── GATEKEEPER (Nivo 0) ────────────────────────────────────
-  // Brez tega je aplikacija ZAKLENJENA
-  gatekeeper: {
-    label:    "STANDARD 0: ODOBRENO",
-    subtitle: "Dnevni protokol — brez tega nič ne deluje",
-    checks: [
-      { id: "zobje",  label: "Zobje",  icon: "ph-tooth" },
-      { id: "pizama", label: "Pižama", icon: "ph-moon"  },
-      { id: "miza",   label: "Miza",   icon: "ph-table" },
-    ],
-  },
-
-  // ── ACTION PROMPTS (Gibalni modifikatorji) ─────────────────
-  // Naključno izberi 1 pred vsako misijo
-  actionPrompts: [
-    { id: "preval",      label: "Preval",              icon: "🤸", instruction: "Naredi preval, preden začneš!" },
-    { id: "storklja",    label: "Štorklja",             icon: "🦩", instruction: "Stoj na eni nogi 10 sekund." },
-    { id: "ninja",       label: "Nindža",               icon: "🥷", instruction: "Priplazi se do cilja brez hrupa." },
-    { id: "slepo",       label: "Navigacija na slepo",  icon: "🙈", instruction: "Eden zaprte oči, drugi ga usmerja z besedami." },
-    { id: "diplomat",    label: "Diplomat",             icon: "🎩", instruction: "Misijo dogovori sam — brez pomoči starša." },
-    { id: "prepir_stop", label: "Mir na kavču",         icon: "🛋️", instruction: "Prepir med delom? 5 min skupnega načrtovanja na kavču." },
+  // ── SEZONE ─────────────────────────────────────────────────
+  seasons: [
+    { id:"osnovno",  label:"Osnovno",  icon:"📋", active:true  },
+    { id:"zima",     label:"Zima",     icon:"❄️", active:false },
+    { id:"pomlad",   label:"Pomlad",   icon:"🌸", active:false },
+    { id:"poletje",  label:"Poletje",  icon:"☀️", active:false },
+    { id:"jesen",    label:"Jesen",    icon:"🍂", active:false },
   ],
 
-  // ── MISSIONS ───────────────────────────────────────────────
+  // ── ACTION PROMPTS ──────────────────────────────────────────
+  actionPrompts: [], // Odstranjeno — telovadba je posebna kategorija misij
+
+  // ── MISIJE ─────────────────────────────────────────────────
   missions: {
+
+    // ════════════════════════════════════════════════════════
+    //  HIGIENA (5)
+    // ════════════════════════════════════════════════════════
+    tus: {
+      id:"tus", label:"Tuš", icon:"🚿",
+      xp:15, coins:6, cooldownHrs:48,
+      category:"hygiene", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Umij se temeljito",
+    },
+    lase: {
+      id:"lase", label:"Umij Lase", icon:"💆",
+      xp:10, coins:4, cooldownHrs:48,
+      category:"hygiene", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Šampon + sušenje",
+    },
+    nohti: {
+      id:"nohti", label:"Postriži Nohte", icon:"✂️",
+      xp:10, coins:4, cooldownHrs:168,
+      category:"hygiene", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Roke in noge",
+    },
+    roke: {
+      id:"roke", label:"Umij Roke", icon:"🙌",
+      xp:5, coins:2, cooldownHrs:24,
+      category:"hygiene", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Pred jedjo in po WC",
+    },
+    obraz: {
+      id:"obraz", label:"Umij Obraz", icon:"💧",
+      xp:8, coins:3, cooldownHrs:24,
+      category:"hygiene", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Zjutraj in zvečer",
+    },
+
+    // ════════════════════════════════════════════════════════
+    //  ČIŠČENJE (8)
+    // ════════════════════════════════════════════════════════
     sesanje: {
-      id:           "sesanje",
-      label:        "Sesanje",
-      icon:         "🌬️",
-      baseXp:       25,
-      cooldownHrs:  72,
-      category:     "cleaning",
-      location:     "indoor",
-      state:        "locked",
-      cooldownEnds: null,
+      id:"sesanje", label:"Sesanje", icon:"🌬️",
+      xp:25, coins:10, cooldownHrs:72,
+      category:"cleaning", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Cel hodnik ali soba",
     },
     posoda: {
-      id:          "posoda",
-      label:       "Pomivalni Stroj",
-      icon:        "🍽️",
-      baseXp:      15,
-      cooldownHrs: 72,
-      category:    "kitchen",
-      location:    "indoor",
-      state:       "available",
+      id:"posoda", label:"Pomivalni Stroj", icon:"🍽️",
+      xp:15, coins:6, cooldownHrs:24,
+      category:"cleaning", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Naloži ali razloži",
     },
     perilo: {
-      id:              "perilo",
-      label:           "Gora Perila",
-      icon:            "🧺",
-      baseXp:          30,
-      cooldownHrs:     72,
-      category:        "cleaning",
-      location:        "indoor",
-      isScoutBonus:    true,
-      scoutMultiplier: 2.5,
-      state:           "special",
+      id:"perilo", label:"Gora Perila", icon:"🧺",
+      xp:30, coins:12, cooldownHrs:72,
+      category:"cleaning", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Zloži in spravi",
     },
     wc: {
-      id:          "wc",
-      location:    "indoor",
-      duration:    "short",
-      label:       "WC Čiščenje",
-      icon:        "🚽",
-      baseXp:      20,
-      cooldownHrs: 72,
-      category:    "cleaning",
-      state:       "available",
+      id:"wc", label:"WC Čiščenje", icon:"🚽",
+      xp:20, coins:8, cooldownHrs:72,
+      category:"cleaning", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"WC + umivalnik",
     },
-    kuhanje: {
-      id:             "kuhanje",
-      label:          "Kuhanje",
-      icon:           "🍳",
-      baseXp:         40,
-      cooldownHrs:    72,
-      category:       "kitchen",
-      location:       "indoor",
-      hasMastery:     true,
-      masterySkillId: "kuhanje",
-      state:          "available",
-    },
-    izvidnik: {
-      id:        "izvidnik",
-      label:     "Izvidniški Bonus",
-      icon:      "👁️",
-      baseXp:    0,
-      cooldownHrs:  72,
-      isScout:   true,
-      category:  "cleaning",
-      state:     "available",
-    },
-    skupna: {
-      id:        "skupna",
-      label:     "Skupna Misija",
-      icon:      "🤝",
-      baseXp:    30,
-      cooldownHrs:  72,
-      isShared:  true,
-      category:  "cleaning",
-      state:     "available",
-    },
-    // ── VARNOST & PRVA POMOČ ───────────────────────────────
-    prva_pomoc: {
-      id: "prva_pomoc", label: "Prva Pomoč", icon: "🩹",
-      baseXp: 35, cooldownHrs: 168, location: "indoor", duration: "medium",
-      category: "safety", state: "available",
-    },
-    klic_112: {
-      id: "klic_112", label: "Klic 112", icon: "📞",
-      baseXp: 30, cooldownHrs: 168, location: "indoor", duration: "short",
-      category: "safety", state: "available",
-    },
-    pozar_vaja: {
-      id: "pozar_vaja", label: "Požarna Vaja", icon: "🔥",
-      baseXp: 25, cooldownHrs: 168, location: "indoor", duration: "short",
-      category: "safety", state: "available",
-    },
-    varnost_ulica: {
-      id: "varnost_ulica", label: "Varnost na Ulici", icon: "🚦",
-      baseXp: 20, cooldownHrs: 72, location: "outdoor", duration: "short",
-      category: "safety", state: "available",
-    },
-    naslov_napamet: {
-      id: "naslov_napamet", label: "Naslov na Pamet", icon: "🏠",
-      baseXp: 20, cooldownHrs: 168, location: "indoor", duration: "short",
-      category: "safety", state: "available",
-    },
-
-    // ── DENAR & EKONOMIJA ───────────────────────────────────
-    stej_denar: {
-      id: "stej_denar", label: "Preštej Drobiž", icon: "🪙",
-      baseXp: 15, cooldownHrs: 72, location: "indoor", duration: "short",
-      category: "money", state: "available",
-    },
-    nakup_sam: {
-      id: "nakup_sam", label: "Sam Kupi v Trgovini", icon: "🛍️",
-      baseXp: 35, cooldownHrs: 72, location: "outdoor", duration: "medium",
-      category: "money", state: "available",
-    },
-    varcevanje: {
-      id: "varcevanje", label: "Varčevalna Skrinjica", icon: "🐷",
-      baseXp: 20, cooldownHrs: 168, location: "indoor", duration: "short",
-      category: "money", state: "available",
-    },
-    cena_primerjava: {
-      id: "cena_primerjava", label: "Primerjaj Cene", icon: "🏷️",
-      baseXp: 25, cooldownHrs: 72, location: "outdoor", duration: "short",
-      category: "money", state: "available",
-    },
-    zasluzek: {
-      id: "zasluzek", label: "Zasluži XP z delom", icon: "💼",
-      baseXp: 40, cooldownHrs: 168, location: "indoor", duration: "medium",
-      category: "money", state: "available",
-    },
-
-    // ── SOCIALNE VEŠČINE ────────────────────────────────────
-    predstavi_se: {
-      id: "predstavi_se", label: "Predstavi Se", icon: "👋",
-      baseXp: 20, cooldownHrs: 48, location: "outdoor", duration: "short",
-      category: "social", state: "available",
-    },
-    zahvala: {
-      id: "zahvala", label: "Iskrena Zahvala", icon: "🙏",
-      baseXp: 15, cooldownHrs: 48, location: "indoor", duration: "short",
-      category: "social", state: "available",
-    },
-    kompliment: {
-      id: "kompliment", label: "Daj Kompliment", icon: "💬",
-      baseXp: 15, cooldownHrs: 24, location: "indoor", duration: "short",
-      category: "social", state: "available",
-    },
-    opravicilo: {
-      id: "opravicilo", label: "Iskreno Opravičilo", icon: "🤝",
-      baseXp: 25, cooldownHrs: 48, location: "indoor", duration: "short",
-      category: "social", state: "available",
-    },
-    telefon_klic: {
-      id: "telefon_klic", label: "Sam Pokliči", icon: "📱",
-      baseXp: 30, cooldownHrs: 72, location: "indoor", duration: "short",
-      category: "social", state: "available",
-    },
-    prijazen_tujec: {
-      id: "prijazen_tujec", label: "Pomagaj Neznancu", icon: "🌟",
-      baseXp: 35, cooldownHrs: 168, location: "outdoor", duration: "short",
-      category: "social", state: "available",
-    },
-
-    // ── USTVARJALNOST & UM ──────────────────────────────────
-    dnevnik: {
-      id: "dnevnik", label: "Piši Dnevnik", icon: "📓",
-      baseXp: 15, cooldownHrs: 24, location: "indoor", duration: "short",
-      category: "creativity", state: "available",
-    },
-    risba: {
-      id: "risba", label: "Nariši Spomin", icon: "🎨",
-      baseXp: 15, cooldownHrs: 48, location: "indoor", duration: "medium",
-      category: "creativity", state: "available",
-    },
-    izum: {
-      id: "izum", label: "Izmisli Si Izum", icon: "💡",
-      baseXp: 25, cooldownHrs: 72, location: "indoor", duration: "medium",
-      category: "creativity", state: "available",
-    },
-    uganka: {
-      id: "uganka", label: "Reši Uganko", icon: "🧩",
-      baseXp: 20, cooldownHrs: 48, location: "indoor", duration: "medium",
-      category: "creativity", state: "available",
-    },
-    zgodba: {
-      id: "zgodba", label: "Pripoveduj Zgodbo", icon: "📖",
-      baseXp: 25, cooldownHrs: 72, location: "indoor", duration: "medium",
-      category: "creativity", state: "available",
-    },
-
-    // ── TELO & GIBANJE ──────────────────────────────────────
-    raztezanje: {
-      id: "raztezanje", label: "Jutranje Raztezanje", icon: "🧘",
-      baseXp: 10, cooldownHrs: 24, location: "indoor", duration: "short",
-      category: "body", state: "available",
-    },
-    tek: {
-      id: "tek", label: "10 Minut Teka", icon: "🏃",
-      baseXp: 20, cooldownHrs: 24, location: "outdoor", duration: "short",
-      category: "body", state: "available",
-    },
-    sklece: {
-      id: "sklece", label: "10 Skleč", icon: "💪",
-      baseXp: 15, cooldownHrs: 24, location: "indoor", duration: "short",
-      category: "body", state: "available",
-    },
-    ples: {
-      id: "ples", label: "Zaplesaj 3 Minute", icon: "💃",
-      baseXp: 15, cooldownHrs: 24, location: "indoor", duration: "short",
-      category: "body", state: "available",
-    },
-    kolesarjenje: {
-      id: "kolesarjenje", label: "Kolesarjenje", icon: "🚲",
-      baseXp: 25, cooldownHrs: 48, location: "outdoor", duration: "medium",
-      category: "body", state: "available",
-    },
-    sprehod: {
-      id: "sprehod", label: "30 Min Sprehod", icon: "🚶",
-      baseXp: 20, cooldownHrs: 24, location: "outdoor", duration: "medium",
-      category: "body", state: "available",
-    },
-
-    // ── SITUACIJSKE MISIJE ─────────────────────────────────
-    // Aktivirajo se glede na situacijo — starš izbere situacijo
-    cakanje_restavracija: {
-      id: "cakanje_restavracija", label: "Tihi Agent", icon: "🍽️",
-      baseXp: 35,
-      cooldownHrs:  72, situation: "restavracija", duration: "medium",
-      desc: "Čakanje na hrano brez telefona — tiho, miren, aktiven opazovalec.",
-      challenges: [
-        "Preštej vse rdeče predmete v restavraciji",
-        "Opazuj natakarja — koliko miz streže?",
-        "Izmisli si zgodbo o paru pri sosednji mizi",
-        "Nariši restavracijo na serviet",
-      ],
-    },
-    cakanje_zdravnik: {
-      id: "cakanje_zdravnik", label: "Potrpežljiv Agent", icon: "🏥",
-      baseXp: 30,
-      cooldownHrs:  72, situation: "zdravnik", duration: "medium",
-      desc: "Čakalna vrsta — brez joče, brez 'kdaj bomo šli'.",
-      challenges: [
-        "Preštej koliko ljudi čaka pred teboj",
-        "Opazuj — kdo ima najstarejše čevlje?",
-        "Izmisli si ime za vsakega v čakalnici",
-        "Tihо diši 5x globoko",
-      ],
-    },
-    cakanje_vrsta: {
-      id: "cakanje_vrsta", label: "Vrsta Mojster", icon: "🛒",
-      baseXp: 25,
-      cooldownHrs:  72, situation: "vrsta", duration: "short",
-      desc: "Vrsta v trgovini — mirno, brez trganja za starša.",
-      challenges: [
-        "Preštej izdelke v košarici pred tabo",
-        "Najdi 3 različne barve v vrsti",
-        "Stoj tih kot kip — koliko sekund zdržiš?",
-      ],
-    },
-    dolgocas: {
-      id: "dolgocas", label: "Anti-Dolgočas", icon: "🧩",
-      baseXp: 20,
-      cooldownHrs:  72, situation: "dolgocas", duration: "short",
-      desc: "Ko je dolgčas — brez zaslona, sam poišči rešitev.",
-      challenges: [
-        "Iz papirja naredi letalo in ga 10x vrzi",
-        "Izmisli si igro z 2 predmetoma ki jih vidiš",
-        "Napiši zgodbo brez pisanja — samo v glavi",
-        "Poišči 5 stvari ki imajo obliko kroga",
-      ],
-    },
-    avto: {
-      id: "avto", label: "Avto Misija", icon: "🚗",
-      baseXp: 20,
-      cooldownHrs:  72, situation: "avto", duration: "short",
-      desc: "Dolga vožnja — brez 'kdaj smo tam'.",
-      challenges: [
-        "Preštej rdeče avtomobile do 10",
-        "Vsaka stavba ki jo vidiš — izmisli kdo tam živi",
-        "Igramo 20 vprašanj — živali samo",
-        "Tiha minuta — kdo bo dlje zdržal?",
-      ],
-    },
-
-    // ── OUTDOOR MISIJE ─────────────────────────────────────
-    listi: {
-      id: "listi", label: "List Detektiv", icon: "🍃",
-      baseXp: 20, cooldownHrs: 48,
-      location: "outdoor", duration: "short",
-      state: "available",
-    },
-    pot: {
-      id: "pot", label: "Počisti Pot", icon: "🧹",
-      baseXp: 25, cooldownHrs: 72,
-      location: "outdoor", duration: "short",
-      state: "available",
-    },
-    taborisce: {
-      id: "taborisce", label: "Vzpostavi Taborišče", icon: "🏕️",
-      baseXp: 50, cooldownHrs: 168,
-      location: "outdoor", duration: "long",
-      state: "available",
-    },
-    narava_foto: {
-      id: "narava_foto", label: "Narava Fotograf", icon: "📸",
-      baseXp: 30, cooldownHrs: 72,
-      location: "outdoor", duration: "medium",
-      state: "available",
-    },
-    vrt: {
-      id: "vrt", label: "Vrtnar", icon: "🌱",
-      baseXp: 35, cooldownHrs: 72,
-      location: "outdoor", duration: "medium",
-      state: "available",
-    },
-    orientacija_out: {
-      id: "orientacija_out", label: "Orientacija", icon: "🧭",
-      baseXp: 40, cooldownHrs: 168,
-      location: "outdoor", duration: "medium",
-      state: "available",
-    },
-
-    // ── HIGIENA & SKRB ZA SEBE ────────────────────────────
-    postelja: {
-      id: "postelja", label: "Naredi Posteljo", icon: "🛏️",
-      baseXp: 10, cooldownHrs: 24, location: "indoor", duration: "short",
-      category: "hygiene", state: "available",
-    },
-    oblacenje: {
-      id: "oblacenje", label: "Sam Se Obleci", icon: "👕",
-      baseXp: 10, cooldownHrs: 24, location: "indoor", duration: "short",
-      category: "hygiene", state: "available",
-    },
-    nahrbtnik: {
-      id: "nahrbtnik", label: "Spakiraj Nahrbtnik", icon: "🎒",
-      baseXp: 15, cooldownHrs: 24, location: "indoor", duration: "short",
-      category: "hygiene", state: "available",
-    },
-    soba: {
-      id: "soba", label: "Pospravi Sobo", icon: "🧹",
-      baseXp: 20, cooldownHrs: 48, location: "indoor", duration: "medium",
-      category: "hygiene", state: "available",
-    },
-    brisaca: {
-      id: "brisaca", label: "Zloži Brisače", icon: "🧺",
-      baseXp: 15, cooldownHrs: 72, location: "indoor", duration: "short",
-      category: "hygiene", state: "available",
-    },
-
-    // ── KUHINJA & HRANA ────────────────────────────────────
-    zajtrk: {
-      id: "zajtrk", label: "Pripravi Zajtrk", icon: "🥣",
-      baseXp: 20, cooldownHrs: 24, location: "indoor", duration: "short",
-      category: "kitchen", state: "available",
-    },
-    miza_zajtrk: {
-      id: "miza_zajtrk", label: "Pokrij Mizo", icon: "🍴",
-      baseXp: 10, cooldownHrs: 24, location: "indoor", duration: "short",
-      category: "kitchen", state: "available",
-    },
-    malica: {
-      id: "malica", label: "Pripravi Malico", icon: "🥪",
-      baseXp: 15, cooldownHrs: 24, location: "indoor", duration: "short",
-      category: "kitchen", state: "available",
-    },
-    nakup_seznam: {
-      id: "nakup_seznam", label: "Napiši Nakupovalni Seznam", icon: "📝",
-      baseXp: 20, cooldownHrs: 72, location: "indoor", duration: "short",
-      category: "kitchen", state: "available",
-    },
-    odpadki: {
-      id: "odpadki", label: "Odnesi Odpadke", icon: "🗑️",
-      baseXp: 15, cooldownHrs: 48, location: "indoor", duration: "short",
-      category: "kitchen", state: "available",
-    },
-
-    // ── ČIŠČENJE ────────────────────────────────────────────
     prah: {
-      id: "prah", label: "Obriši Prah", icon: "🧽",
-      baseXp: 15, cooldownHrs: 72, location: "indoor", duration: "short",
-      category: "cleaning", state: "available",
+      id:"prah", label:"Obrisi Prah", icon:"🪣",
+      xp:20, coins:8, cooldownHrs:72,
+      category:"cleaning", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Police in pohištvo",
     },
     okna: {
-      id: "okna", label: "Obriši Okna", icon: "🪟",
-      baseXp: 25, cooldownHrs: 168, location: "indoor", duration: "medium",
-      category: "cleaning", state: "available",
+      id:"okna", label:"Okna", icon:"🪟",
+      xp:25, coins:10, cooldownHrs:168,
+      category:"cleaning", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Vsaj 2 okni",
     },
     kopalnica: {
-      id: "kopalnica", label: "Kopalnica Sijaj", icon: "🚿",
-      baseXp: 30, cooldownHrs: 72, location: "indoor", duration: "medium",
-      category: "cleaning", state: "available",
+      id:"kopalnica", label:"Kopalnica", icon:"🛁",
+      xp:30, coins:12, cooldownHrs:72,
+      category:"cleaning", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Kad + tla + ogledalo",
     },
-    umivalnik: {
-      id: "umivalnik", label: "Umivalnik", icon: "🪣",
-      baseXp: 15, cooldownHrs: 48, location: "indoor", duration: "short",
-      category: "cleaning", state: "available",
-    },
-    igrače: {
-      id: "igrače", label: "Pospravi Igrače", icon: "🧸",
-      baseXp: 10, cooldownHrs: 24, location: "indoor", duration: "short",
-      category: "cleaning", state: "available",
-    },
-
-    // ── ORGANIZACIJA ────────────────────────────────────────
-    knjige: {
-      id: "knjige", label: "Pospravi Knjige", icon: "📚",
-      baseXp: 10, cooldownHrs: 72, location: "indoor", duration: "short",
-      category: "organisation", state: "available",
-    },
-    copati: {
-      id: "copati", label: "Uredi Copate", icon: "👟",
-      baseXp: 10, cooldownHrs: 48, location: "indoor", duration: "short",
-      category: "organisation", state: "available",
-    },
-    oblacila_omara: {
-      id: "oblacila_omara", label: "Zloži Oblačila", icon: "👔",
-      baseXp: 20, cooldownHrs: 72, location: "indoor", duration: "medium",
-      category: "organisation", state: "available",
-    },
-    hrana_omara: {
-      id: "hrana_omara", label: "Razporedi Živila", icon: "🥫",
-      baseXp: 20, cooldownHrs: 168, location: "indoor", duration: "medium",
-      category: "organisation", state: "available",
+    kuhinja_ciscenje: {
+      id:"kuhinja_ciscenje", label:"Počisti Kuhinjo", icon:"🫧",
+      xp:20, coins:8, cooldownHrs:48,
+      category:"cleaning", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Pulti + štedilnik",
     },
 
-    // ── SKRB ZA DRUGE ──────────────────────────────────────
-    rastline: {
-      id: "rastline", label: "Zalij Rastline", icon: "🌿",
-      baseXp: 10, cooldownHrs: 48, location: "indoor", duration: "short",
-      category: "care", state: "available",
+    // ════════════════════════════════════════════════════════
+    //  KUHINJA (6)
+    // ════════════════════════════════════════════════════════
+    kuhanje: {
+      id:"kuhanje", label:"Kuhanje", icon:"🍳",
+      xp:40, coins:16, cooldownHrs:48,
+      category:"kitchen", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Pripravi pravi obrok",
     },
-    zival: {
-      id: "zival", label: "Nahrani Žival", icon: "🐾",
-      baseXp: 15, cooldownHrs: 24, location: "indoor", duration: "short",
-      category: "care", state: "available",
+    zajtrk: {
+      id:"zajtrk", label:"Pripravi Zajtrk", icon:"🥣",
+      xp:15, coins:6, cooldownHrs:24,
+      category:"kitchen", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Za sebe ali vse",
     },
-    pismo: {
-      id: "pismo", label: "Napiši Pismo/Kartico", icon: "✉️",
-      baseXp: 25, cooldownHrs: 168, location: "indoor", duration: "medium",
-      category: "care", state: "available",
+    kosilo_prep: {
+      id:"kosilo_prep", label:"Pomagaj pri Kosilu", icon:"🥗",
+      xp:20, coins:8, cooldownHrs:48,
+      category:"kitchen", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Rezanje, mešanje...",
     },
-    pomocnik: {
-      id: "pomocnik", label: "Pomagaj Mlajšemu", icon: "🤲",
-      baseXp: 20, cooldownHrs: 48, location: "indoor", duration: "medium",
-      category: "care", state: "available",
+    pospraviti_po: {
+      id:"pospraviti_po", label:"Pospravi po Kuhanju", icon:"🧹",
+      xp:15, coins:6, cooldownHrs:24,
+      category:"kitchen", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Pospravi vse po sebi",
     },
-
-    // ── STRAH PROTOKOL ─────────────────────────────────────
-    // Postopno soočanje s strahovi — vsaka misija ima 3 stopnje
-    strah_tema: {
-      id: "strah_tema", label: "Gospodar Teme", icon: "🌙",
-      baseXp: 0, isProgressive: true, category: "fear",
-      levels: [
-        { xp: 15, label: "1 minuta v temni sobi — starš je za vrati" },
-        { xp: 25, label: "5 minut sam v temi — starš v sosednji sobi" },
-        { xp: 40, label: "Zaspi brez luči — povsem sam" },
-      ],
+    nakupi: {
+      id:"nakupi", label:"Nakupovalni Seznam", icon:"📝",
+      xp:15, coins:6, cooldownHrs:72,
+      category:"kitchen", location:"any",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Napiši kaj manjka",
     },
-    strah_visina: {
-      id: "strah_visina", label: "Plezalec", icon: "🧗",
-      baseXp: 0, isProgressive: true, category: "fear",
-      levels: [
-        { xp: 15, label: "Splezi na stolček in skoči — starš drži roke" },
-        { xp: 25, label: "Splezi na drevo do prve veje" },
-        { xp: 40, label: "Splezi do vrha in ostani 30 sekund" },
-      ],
-    },
-    strah_tujci: {
-      id: "strah_tujci", label: "Pogumni Govornik", icon: "🗣️",
-      baseXp: 0, isProgressive: true, category: "fear",
-      levels: [
-        { xp: 15, label: "Reči 'Dober dan' prodajalcu — starš je zraven" },
-        { xp: 25, label: "Sam vprašaj kje je artikel v trgovini" },
-        { xp: 40, label: "Sam naroči v kavarni ali restavraciji" },
-      ],
-    },
-    strah_neuspeh: {
-      id: "strah_neuspeh", label: "Vztrajalec", icon: "💪",
-      baseXp: 0, isProgressive: true, category: "fear",
-      levels: [
-        { xp: 15, label: "Naredi nalogo ki ti ne gre — ne obupaj 5 min" },
-        { xp: 25, label: "Poskusi 3x preden prosiš za pomoč" },
-        { xp: 40, label: "Zaključi težko nalogo čisto sam" },
-      ],
-    },
-    strah_zmota: {
-      id: "strah_zmota", label: "Brez Strahu Zmote", icon: "🎯",
-      baseXp: 0, isProgressive: true, category: "fear",
-      levels: [
-        { xp: 15, label: "Povej napačen odgovor namerno — smej se temu" },
-        { xp: 25, label: "Pred starši zarecituj pesem — tudi če se zmotiš" },
-        { xp: 40, label: "Pred vsemi povej zgodbo ki si jo izmislil" },
-      ],
+    sladica: {
+      id:"sladica", label:"Naredi Sladico", icon:"🍰",
+      xp:30, coins:12, cooldownHrs:72,
+      category:"kitchen", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Pecivo, palačinke...",
     },
 
-    // ── SAMOSTOJNOST LESTVICA ───────────────────────────────
-    // Vsaka misija ima stopnje od pomoči do polne samostojnosti
-    samo_zajtrk: {
-      id: "samo_zajtrk", label: "Jutranji Ritual", icon: "☀️",
-      baseXp: 0, isProgressive: true, category: "independence",
-      levels: [
-        { xp: 10, label: "Zbudi se sam ob alarmu — brez klicanja" },
-        { xp: 20, label: "Opravi jutranjo rutino sam — zobje, oblek, zajtrk" },
-        { xp: 35, label: "Cel teden — vsak dan sam brez opomnika" },
-      ],
+    // ════════════════════════════════════════════════════════
+    //  ORGANIZACIJA (5)
+    // ════════════════════════════════════════════════════════
+    soba: {
+      id:"soba", label:"Pospravi Sobo", icon:"📦",
+      xp:20, coins:8, cooldownHrs:48,
+      category:"organisation", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Vse na svoje mesto",
     },
-    samo_hrana: {
-      id: "samo_hrana", label: "Kuhar Začetnik", icon: "👨‍🍳",
-      baseXp: 0, isProgressive: true, category: "independence",
-      levels: [
-        { xp: 15, label: "Pripravi sendvič sam — brez vprašanj" },
-        { xp: 25, label: "Skuhaj testenine — starš je v bližini" },
-        { xp: 40, label: "Pripravi celoten obrok za 2 osebi" },
-      ],
+    torba: {
+      id:"torba", label:"Pripravi Torbo", icon:"🎒",
+      xp:10, coins:4, cooldownHrs:24,
+      category:"organisation", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Za jutri",
     },
-    samo_prosti_cas: {
-      id: "samo_prosti_cas", label: "Kreativni Čas", icon: "🎨",
-      baseXp: 0, isProgressive: true, category: "independence",
-      levels: [
-        { xp: 10, label: "30 min brez zaslona — sam si najdi aktivnost" },
-        { xp: 20, label: "1 ura — sam naredi projekt ali igro" },
-        { xp: 35, label: "Cel popoldne — sam brez dolgčasa ali whina" },
-      ],
+    omare: {
+      id:"omare", label:"Uredi Omare", icon:"🗄️",
+      xp:25, coins:10, cooldownHrs:168,
+      category:"organisation", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Obleke po vrsti",
     },
-    samo_problem: {
-      id: "samo_problem", label: "Reševalec Problemov", icon: "🔧",
-      baseXp: 0, isProgressive: true, category: "independence",
-      levels: [
-        { xp: 15, label: "Ko gre kaj narobe — najprej sam poskusi rešiti" },
-        { xp: 25, label: "Poišči rešitev v knjigi ali vprašaj nekoga drug" },
-        { xp: 40, label: "Reši problem čisto sam — poroča rezultat" },
-      ],
+    pisalna_miza: {
+      id:"pisalna_miza", label:"Uredi Pisalno Mizo", icon:"🖊️",
+      xp:15, coins:6, cooldownHrs:72,
+      category:"organisation", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Čista in urejena",
     },
-    samo_cas: {
-      id: "samo_cas", label: "Časovni Mojster", icon: "⏰",
-      baseXp: 0, isProgressive: true, category: "independence",
-      levels: [
-        { xp: 15, label: "Sam nastavi alarm za jutro" },
-        { xp: 25, label: "Sam načrtuj dan — zjutraj popiši kaj boš naredil" },
-        { xp: 40, label: "Teden brez zamud — vsak dan pravočasno" },
-      ],
+    skupni_prostori: {
+      id:"skupni_prostori", label:"Skupni Prostori", icon:"🛋️",
+      xp:20, coins:8, cooldownHrs:48,
+      category:"organisation", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Dnevna soba, hodnik",
     },
 
-    // ══════════════════════════════════════════════════════
-    //  EQ OPERACIJE — Akcijske (joker + XP)
-    // ══════════════════════════════════════════════════════
+    // ════════════════════════════════════════════════════════
+    //  EQ AKCIJA (7) — +Joker
+    // ════════════════════════════════════════════════════════
     nevtralizator: {
-      id: "nevtralizator", label: "Nevtralizator", icon: "🧘",
-      baseXp: 40, isEq: true, eqType: "akcija",
-      jokerReward: 1,
-      cooldownHrs: 24,
-      category: "eq", location: "any", state: "available",
-      desc: "Upravljaj čustvo v realnem trenutku",
+      id:"nevtralizator", label:"Nevtralizator", icon:"🧘",
+      xp:40, coins:20, cooldownHrs:24,
+      category:"eq", location:"any",
+      eqType:"akcija", jokerReward:1,
+      season:"osnovno", visible:true, state:"available",
+      desc:"Upravljaj čustvo v realnem trenutku",
     },
     narocanje: {
-      id: "narocanje", label: "Naroči Sam", icon: "🍽️",
-      baseXp: 50, isEq: true, eqType: "akcija",
-      jokerReward: 1,
-      cooldownHrs: 48,
-      category: "eq", location: "outdoor", state: "available",
-      desc: "Sam naroči v kavarni ali gostilni",
+      id:"narocanje", label:"Naroči Sam", icon:"🍽️",
+      xp:50, coins:25, cooldownHrs:48,
+      category:"eq", location:"outdoor",
+      eqType:"akcija", jokerReward:1,
+      season:"osnovno", visible:true, state:"available",
+      desc:"Sam naroči v kavarni ali gostilni",
     },
     telefon_tujec: {
-      id: "telefon_tujec", label: "Telefonski Klic", icon: "📞",
-      baseXp: 60, isEq: true, eqType: "akcija",
-      jokerReward: 1,
-      cooldownHrs: 72,
-      category: "eq", location: "any", state: "available",
-      desc: "Pokliči tujca — zobozdravnik, restavracija...",
+      id:"telefon_tujec", label:"Telefonski Klic", icon:"📞",
+      xp:60, coins:30, cooldownHrs:72,
+      category:"eq", location:"any",
+      eqType:"akcija", jokerReward:1,
+      season:"osnovno", visible:true, state:"available",
+      desc:"Pokliči tujca — zobozdravnik, pizza...",
     },
     opravicilo: {
-      id: "opravicilo", label: "Opravičilo", icon: "🙏",
-      baseXp: 50, isEq: true, eqType: "akcija",
-      jokerReward: 1,
-      cooldownHrs: 48,
-      category: "eq", location: "any", state: "available",
-      desc: "Pristno se opraviči osebi ki si ji naredil krivico",
+      id:"opravicilo", label:"Opravičilo", icon:"🙏",
+      xp:50, coins:25, cooldownHrs:48,
+      category:"eq", location:"any",
+      eqType:"akcija", jokerReward:1,
+      season:"osnovno", visible:true, state:"available",
+      desc:"Pristno se opraviči",
     },
     pohvala: {
-      id: "pohvala", label: "Pohvali Nekoga", icon: "⭐",
-      baseXp: 35, isEq: true, eqType: "akcija",
-      jokerReward: 1,
-      cooldownHrs: 24,
-      category: "eq", location: "any", state: "available",
-      desc: "Iskreno pohvali nekoga — ne samo 'super'",
+      id:"pohvala", label:"Pohvali Nekoga", icon:"⭐",
+      xp:35, coins:15, cooldownHrs:24,
+      category:"eq", location:"any",
+      eqType:"akcija", jokerReward:1,
+      season:"osnovno", visible:true, state:"available",
+      desc:"Iskrena pohvala — ne samo super",
+    },
+    nova_stvar: {
+      id:"nova_stvar", label:"Nova Stvar", icon:"🎯",
+      xp:45, coins:20, cooldownHrs:72,
+      category:"eq", location:"any",
+      eqType:"akcija", jokerReward:1,
+      season:"osnovno", visible:true, state:"available",
+      desc:"Poskusi nekaj kar te je strah",
+    },
+    pomoc_tujcu: {
+      id:"pomoc_tujcu", label:"Pomoč Tujcu", icon:"🤲",
+      xp:40, coins:20, cooldownHrs:48,
+      category:"eq", location:"any",
+      eqType:"akcija", jokerReward:1,
+      season:"osnovno", visible:true, state:"available",
+      desc:"Ponudi pomoč neznani osebi",
     },
 
-    // ── EQ REFLEKSIJSKE — Pogovor s starši (XP) ──────────
+    // ════════════════════════════════════════════════════════
+    //  EQ REFLEKSIJA (5)
+    // ════════════════════════════════════════════════════════
     debriefing: {
-      id: "debriefing", label: "Debriefing", icon: "📋",
-      baseXp: 30, isEq: true, eqType: "refleksija",
-      cooldownHrs: 24,
-      category: "eq", location: "any", state: "available",
-      desc: "Pogovor o tem kaj se je danes zgodilo",
-    },
-    intel_report: {
-      id: "intel_report", label: "Intel Report", icon: "🤝",
-      baseXp: 25, isEq: true, eqType: "refleksija",
-      cooldownHrs: 168,
-      category: "eq", location: "any", state: "available",
-      desc: "Zahvala — konkretna, ne samo hvala",
+      id:"debriefing", label:"Debriefing", icon:"📋",
+      xp:30, coins:12, cooldownHrs:24,
+      category:"eq", location:"any",
+      eqType:"refleksija",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Pogovor o tem kaj se je danes zgodilo",
     },
     advokat: {
-      id: "advokat", label: "Advokat", icon: "⚖️",
-      baseXp: 35, isEq: true, eqType: "refleksija",
-      cooldownHrs: 48,
-      category: "eq", location: "any", state: "available",
-      desc: "Vidik druge osebe — zakaj je imel prav?",
+      id:"advokat", label:"Advokat", icon:"⚖️",
+      xp:35, coins:14, cooldownHrs:48,
+      category:"eq", location:"any",
+      eqType:"refleksija",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Vidik druge osebe",
+    },
+    intel_report: {
+      id:"intel_report", label:"Intel Report", icon:"🤝",
+      xp:25, coins:10, cooldownHrs:168,
+      category:"eq", location:"any",
+      eqType:"refleksija",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Zahvala — konkretna",
     },
     situacijski_izziv: {
-      id: "situacijski_izziv", label: "Situacijski Izziv", icon: "🎯",
-      baseXp: 45, isEq: true, eqType: "refleksija",
-      cooldownHrs: 72,
-      category: "eq", location: "any", state: "available",
-      desc: "Kako bi reagiral v tej situaciji?",
+      id:"situacijski_izziv", label:"Situacijski Izziv", icon:"🎭",
+      xp:45, coins:18, cooldownHrs:72,
+      category:"eq", location:"any",
+      eqType:"refleksija",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Kako bi reagiral v tej situaciji?",
+    },
+    hvaleznost: {
+      id:"hvaleznost", label:"Hvaležnost", icon:"💛",
+      xp:20, coins:8, cooldownHrs:24,
+      category:"eq", location:"any",
+      eqType:"refleksija",
+      season:"osnovno", visible:true, state:"available",
+      desc:"3 stvari za katere si hvaležen danes",
     },
 
-    skrivna_wc: {
-      id:       "skrivna_wc",
-      label:    "Skrivna Misija",
-      icon:     "ph-question",
-      baseXp:   0,
-      isHidden: true,
-      state:    "hidden",
+    // ════════════════════════════════════════════════════════
+    //  OUTDOOR (6)
+    // ════════════════════════════════════════════════════════
+    sprehod: {
+      id:"sprehod", label:"Sprehod", icon:"🚶",
+      xp:20, coins:8, cooldownHrs:24,
+      category:"outdoor", location:"outdoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Vsaj 20 minut hoje",
     },
-  },
+    kolesarjenje: {
+      id:"kolesarjenje", label:"Kolesarjenje", icon:"🚴",
+      xp:30, coins:12, cooldownHrs:48,
+      category:"outdoor", location:"outdoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Vsaj 20 minut",
+    },
+    tek: {
+      id:"tek", label:"Tek", icon:"🏃",
+      xp:35, coins:14, cooldownHrs:48,
+      category:"outdoor", location:"outdoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Vsaj 10 minut",
+    },
+    plavanje: {
+      id:"plavanje", label:"Plavanje", icon:"🏊",
+      xp:35, coins:14, cooldownHrs:48,
+      category:"outdoor", location:"outdoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Vsaj 30 minut",
+    },
+    sport: {
+      id:"sport", label:"Šport", icon:"⚽",
+      xp:30, coins:12, cooldownHrs:48,
+      category:"outdoor", location:"outdoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Kakršenkoli šport z drugimi",
+    },
+    narava: {
+      id:"narava", label:"V Naravi", icon:"🌲",
+      xp:25, coins:10, cooldownHrs:48,
+      category:"outdoor", location:"outdoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Gozd, park, travnik",
+    },
 
-  // ── JOKER SISTEM ───────────────────────────────────────────
-  joker: {
-    description: "Preskoči Cooldown ali odkleni zaklenjeno misijo",
-    icon:        "🃏",
-    sourceLabel: "Dobljeni z opravljanjem Skrivnih misij",
-    maxPerAgent: 5,
-  },
+    // ════════════════════════════════════════════════════════
+    //  STRAH (6)
+    // ════════════════════════════════════════════════════════
+    strah_tema: {
+      id:"strah_tema", label:"Strah: Tema", icon:"🌑",
+      xp:35, coins:15, cooldownHrs:72,
+      category:"fear", location:"any",
+      season:"osnovno", visible:true, state:"available",
+      desc:"5 minut sam v temi",
+    },
+    strah_visina: {
+      id:"strah_visina", label:"Strah: Višina", icon:"🧗",
+      xp:40, coins:18, cooldownHrs:72,
+      category:"fear", location:"outdoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Pojdi višje kot ponavadi",
+    },
+    strah_tujci: {
+      id:"strah_tujci", label:"Strah: Tujci", icon:"👥",
+      xp:45, coins:20, cooldownHrs:72,
+      category:"fear", location:"any",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Povej si z neznano osebo",
+    },
+    strah_neuspeh: {
+      id:"strah_neuspeh", label:"Strah: Neuspeh", icon:"💪",
+      xp:40, coins:18, cooldownHrs:72,
+      category:"fear", location:"any",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Poskusi stvar kjer verjetno ne uspeš",
+    },
+    strah_zmota: {
+      id:"strah_zmota", label:"Strah: Zmota", icon:"🙋",
+      xp:35, coins:15, cooldownHrs:72,
+      category:"fear", location:"any",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Prizaj napako pred drugimi",
+    },
+    strah_novo: {
+      id:"strah_novo", label:"Novo Okolje", icon:"🗺️",
+      xp:40, coins:18, cooldownHrs:168,
+      category:"fear", location:"any",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Pojdi sam na novo mesto",
+    },
 
-  // ── MASTERY SYSTEM (Stopnje Mojstrstva) ────────────────────
+    // ════════════════════════════════════════════════════════
+    //  BRANJE (3)
+    // ════════════════════════════════════════════════════════
+    branje_knjiga: {
+      id:"branje_knjiga", label:"Branje", icon:"📚",
+      xp:25, coins:10, cooldownHrs:24,
+      category:"creativity", location:"any",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Vsaj 20 minut",
+    },
+    branje_glasno: {
+      id:"branje_glasno", label:"Glasno Branje", icon:"📖",
+      xp:30, coins:14, cooldownHrs:48,
+      category:"creativity", location:"any",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Beri mlajšemu ali staršu",
+    },
+    branje_strip: {
+      id:"branje_strip", label:"Strip / Revija", icon:"📰",
+      xp:15, coins:6, cooldownHrs:48,
+      category:"creativity", location:"any",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Kakršnokoli branje",
+    },
+
+    // ════════════════════════════════════════════════════════
+    //  TELOVADBA (8)
+    // ════════════════════════════════════════════════════════
+    preval: {
+      id:"preval", label:"Preval", icon:"🤸",
+      xp:15, coins:6, cooldownHrs:24,
+      category:"fitness", location:"indoor",
+      season:"osnovno", visible:true, state:"available",
+      desc:"5× preval naprej ali nazaj",
+    },
+    storklja: {
+      id:"storklja", label:"Štorklja", icon:"🦩",
+      xp:10, coins:4, cooldownHrs:24,
+      category:"fitness", location:"any",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Stoj na eni nogi 30 sekund",
+    },
+    sklece: {
+      id:"sklece", label:"Sklece", icon:"💪",
+      xp:20, coins:8, cooldownHrs:48,
+      category:"fitness", location:"any",
+      season:"osnovno", visible:true, state:"available",
+      desc:"10× sklece",
+    },
+    trebusnjaki: {
+      id:"trebusnjaki", label:"Trebušnjaki", icon:"🏋️",
+      xp:20, coins:8, cooldownHrs:48,
+      category:"fitness", location:"any",
+      season:"osnovno", visible:true, state:"available",
+      desc:"20× trebušnjaki",
+    },
+    raztezanje: {
+      id:"raztezanje", label:"Raztezanje", icon:"🧘",
+      xp:15, coins:6, cooldownHrs:24,
+      category:"fitness", location:"any",
+      season:"osnovno", visible:true, state:"available",
+      desc:"10 minut raztezanja",
+    },
+    poskok: {
+      id:"poskok", label:"Poskoki", icon:"⚡",
+      xp:15, coins:6, cooldownHrs:24,
+      category:"fitness", location:"any",
+      season:"osnovno", visible:true, state:"available",
+      desc:"50× poskoki",
+    },
+    plank: {
+      id:"plank", label:"Plank", icon:"🪨",
+      xp:20, coins:8, cooldownHrs:48,
+      category:"fitness", location:"any",
+      season:"osnovno", visible:true, state:"available",
+      desc:"Drži plank 30 sekund",
+    },
+    joga: {
+      id:"joga", label:"Mini Joga", icon:"🌸",
+      xp:25, coins:10, cooldownHrs:48,
+      category:"fitness", location:"any",
+      season:"osnovno", visible:true, state:"available",
+      desc:"10 minut joge ali meditacije",
+    },
+
+  }, // konec missions
+
+  // ── MOJSTRSTVO (odklenejo rangi) ────────────────────────────
   masterySkills: {
     kuhanje: {
-      id:    "kuhanje",
-      label: "Kuhanje",
-      icon:  "👨‍🍳",
-      levels: [
-        {
-          level: 0, id: "vajenec", label: "Vajenec", icon: "🌱",
-          description: "Učiš se osnov. Starš je 100% nadzornik.",
-          xpCost: 50, xpReward: 0, autonomy: "nadzor",
-        },
-        {
-          level: 1, id: "pomocnik", label: "Pomočnik", icon: "🔧",
-          description: "Starš pasivno opazuje. Brezplačna praksa.",
-          xpCost: 25, xpReward: 0, autonomy: "opazovalec",
-        },
-        {
-          level: 2, id: "mojster", label: "Mojster", icon: "⭐",
-          description: "Polna licenca. S to veščino zdaj zaslužuješ XP.",
-          xpCost: 0, xpReward: 40, autonomy: "samostojno",
-          unlocksBadge: "kuhanje_mojster",
-        },
+      id:"kuhanje", label:"Mojster Kuhinje", icon:"👨‍🍳",
+      levels:[
+        { label:"Začetnik",  icon:"🥄", xpCost:0,   xpReward:0,   description:"Znaš pripraviti preprost zajtrk." },
+        { label:"Pomočnik",  icon:"🍴", xpCost:50,  xpReward:0,   description:"Pomagaš pri kuhanju. Znaš rezati in mešati." },
+        { label:"Kuhar",     icon:"🍳", xpCost:100, xpReward:0,   description:"Sam kuhaš preproste obroke." },
+        { label:"Šef Kuhar", icon:"👨‍🍳", xpCost:200, xpReward:0,   description:"Kuhaš za vso družino." },
+        { label:"Mojster",   icon:"⭐", xpCost:350, xpReward:0,   description:"Izumljаš lastne recepte." },
       ],
     },
-    voda: {
-      id: "voda", label: "Gospodar Vode", icon: "💧",
-      levels: [
-        {
-          level: 0, id: "iskanje", label: "Poišči ventil", icon: "🔍",
-          description: "S starším poišči glavni ventil za vodo v hiši.",
-          xpCost: 0, xpReward: 20, autonomy: "nadzor",
-        },
-        {
-          level: 1, id: "zapiranje", label: "Zapri ventil", icon: "🔧",
-          description: "Sam poišči ventil in ga zapri ko starš reče.",
-          xpCost: 0, xpReward: 30, autonomy: "opazovalec",
-        },
-        {
-          level: 2, id: "mojster", label: "Mojster", icon: "⭐",
-          description: "Zapri in odpri ventil v 30 sekundah. Brez pomoči.",
-          xpCost: 0, xpReward: 50, autonomy: "samostojno",
-          unlocksBadge: "voda_mojster",
-        },
+    ciscenje: {
+      id:"ciscenje", label:"Mojster Čiščenja", icon:"🧹",
+      levels:[
+        { label:"Nered",     icon:"💨", xpCost:0,   xpReward:0,   description:"Iščeš izgovore." },
+        { label:"Pomočnik",  icon:"🧹", xpCost:40,  xpReward:0,   description:"Poseseš svojo sobo." },
+        { label:"Čistilec",  icon:"✨", xpCost:80,  xpReward:0,   description:"Čistiš brez opomina." },
+        { label:"Mojster",   icon:"🏆", xpCost:150, xpReward:0,   description:"Znaš čistiti vse prostore." },
       ],
     },
-    blackout: {
-      id: "blackout", label: "Blackout Protokol", icon: "🔦",
-      levels: [
-        {
-          level: 0, id: "z_lucko", label: "Z lučko", icon: "🔦",
-          description: "Z naglavno lučko najdi pot do varovalke skupaj s starším.",
-          xpCost: 0, xpReward: 20, autonomy: "nadzor",
-        },
-        {
-          level: 1, id: "vodenje", label: "Glasovno vodenje", icon: "🗣️",
-          description: "Brez lučke. Starš te usmerja samo z besedami: levo, desno, stop.",
-          xpCost: 0, xpReward: 30, autonomy: "opazovalec",
-        },
-        {
-          level: 2, id: "mojster", label: "Mojster", icon: "⭐",
-          description: "Sam, v temi, do varovalke in nazaj v 60 sekundah.",
-          xpCost: 0, xpReward: 50, autonomy: "samostojno",
-          unlocksBadge: "blackout_mojster",
-        },
+    organizacija: {
+      id:"organizacija", label:"Organizator", icon:"📦",
+      levels:[
+        { label:"Kaos",        icon:"🌀", xpCost:0,   xpReward:0,   description:"Stvari povsod." },
+        { label:"Urejen",      icon:"📦", xpCost:50,  xpReward:0,   description:"Svoja soba urejena." },
+        { label:"Organizator", icon:"🗂️", xpCost:120, xpReward:0,   description:"Veš kje je vse." },
+        { label:"Pro",         icon:"⭐", xpCost:250, xpReward:0,   description:"Organiziraš za vso družino." },
       ],
     },
-    diplomat: {
-      id: "diplomat", label: "Diplomat", icon: "🎩",
-      levels: [
-        {
-          level: 0, id: "trgovina", label: "Vprašaj v trgovini", icon: "🛒",
-          description: "Sam pristopi k prodajalcu in vprašaj kje je artikel. Brez pomoči.",
-          xpCost: 0, xpReward: 25, autonomy: "nadzor",
-        },
-        {
-          level: 1, id: "restavracija", label: "Naroči v restavraciji", icon: "🍽️",
-          description: "Sam naroči hrano za celo mizo. Pozdrav, naročilo, hvala.",
-          xpCost: 0, xpReward: 35, autonomy: "opazovalec",
-        },
-        {
-          level: 2, id: "mojster", label: "Mojster", icon: "⭐",
-          description: "Reši problem sam — reklamacija, napaka v naročilu, zamuda.",
-          xpCost: 0, xpReward: 50, autonomy: "samostojno",
-          unlocksBadge: "diplomat_mojster",
-        },
+    eq_skill: {
+      id:"eq_skill", label:"EQ Specialist", icon:"🧠",
+      levels:[
+        { label:"Začetnik",   icon:"😐", xpCost:0,   xpReward:0,   description:"Čustva te obvladajo." },
+        { label:"Opazovalec", icon:"👁️", xpCost:60,  xpReward:0,   description:"Prepoznaš svoja čustva." },
+        { label:"Specialist", icon:"🧘", xpCost:150, xpReward:0,   description:"Upravljaš čustva v težkih situacijah." },
+        { label:"Mojster EQ", icon:"🧠", xpCost:300, xpReward:0,   description:"Pomagaš drugim z njihovimi čustvi." },
       ],
     },
-    mizarstvo: {
-      id: "mizarstvo", label: "Mizarstvo", icon: "🪚",
-      levels: [
-        { level: 0, id: "vajenec",  label: "Vajenec",  icon: "🌱", description: "Kladivo, žeblji, osnove. Polni nadzor.",    xpCost: 75, xpReward: 0,  autonomy: "nadzor",      },
-        { level: 1, id: "pomocnik", label: "Pomočnik", icon: "🔧", description: "Žaga in vrtalnik. Starš opazuje.",           xpCost: 25, xpReward: 0,  autonomy: "opazovalec",  },
-        { level: 2, id: "mojster",  label: "Mojster",  icon: "⭐", description: "Popravi sam. Polna samostojnost.",           xpCost: 0,  xpReward: 50, autonomy: "samostojno", unlocksBadge: "mizarstvo_mojster" },
+    fitness: {
+      id:"fitness", label:"Športnik", icon:"💪",
+      levels:[
+        { label:"Kavčnik",   icon:"🛋️", xpCost:0,   xpReward:0,   description:"Raje sediš." },
+        { label:"Aktiven",   icon:"🚶", xpCost:40,  xpReward:0,   description:"Redna telesna aktivnost." },
+        { label:"Atlet",     icon:"🏃", xpCost:100, xpReward:0,   description:"Vsak dan se potrudi." },
+        { label:"Prvak",     icon:"🏆", xpCost:200, xpReward:0,   description:"Reden trening, zdrav slog." },
       ],
     },
-
   },
 
-  // ── SCHOLAR MODULE (Knjižni Molj) ──────────────────────────
-  scholar: {
-    label:                "Knjižni Molj",
-    icon:                 "📚",
-    briefingLabel:        "Ustni brifing s Poveljnikom",
-    familyClubMultiplier: 2, // Branje mlajšemu podvoji točke
-    bookTypes: [
-      { id: "slikanica",   label: "Slikanica",             difficulty: 1, baseXp: 10 },
-      { id: "poglavje",    label: "Zgodba s poglavji",     difficulty: 2, baseXp: 20 },
-      { id: "roman",       label: "Roman",                 difficulty: 3, baseXp: 40 },
-      { id: "literatura",  label: "Literatura / Strokovna", difficulty: 4, baseXp: 60 },
-    ],
-    activeSessions: [], // { agentId, bookTypeId, startDate, forYounger: bool }
-  },
-
-  // ── XP THRESHOLDS ──────────────────────────────────────────
-  ranks: [
-    { label: "Regrut I",   minXp:    0 },
-    { label: "Regrut II",  minXp:   50 },
-    { label: "Vojak I",    minXp:  150 },
-    { label: "Vojak II",   minXp:  300 },
-    { label: "Narednik",   minXp:  500 },
-    { label: "Poročnik",   minXp:  800 },
-    { label: "Kapitan",    minXp: 1200 },
-  ],
-
-  // ── GIBALNI ATRIBUTI ────────────────────────────────────────
-  attributes: {
-    moc: {
-      id: "moc", label: "Moč", icon: "💪", color: "#FF3B30",
-      xpPerLevel: 50,
-      titles: ["Začetnik","Borec","Vojak","Junak","Jeklen"],
-      missions: ["sesanje","pot","taborisce","perilo"],
-    },
-    koordinacija: {
-      id: "koordinacija", label: "Koordinacija", icon: "🎯", color: "#007AFF",
-      xpPerLevel: 40,
-      titles: ["Neroden","Natančen","Spreten","Virtuoz","Maestro"],
-      missions: ["posoda","kuhanje","listi","narava_foto"],
-    },
-    hitrost: {
-      id: "hitrost", label: "Hitrost", icon: "⚡", color: "#FFD60A",
-      xpPerLevel: 45,
-      titles: ["Počasen","Hiter","Blic","Strela","Hitronogi"],
-      missions: ["wc","sesanje","pot"],
-    },
-    vzdrzljivost: {
-      id: "vzdrzljivost", label: "Vzdržljivost", icon: "🫁", color: "#34C759",
-      xpPerLevel: 60,
-      titles: ["Šibak","Trdoživ","Vzdržen","Železen","Maratonec"],
-      missions: ["taborisce","orientacija_out","vrt","skupna"],
-    },
-    motorika: {
-      id: "motorika", label: "Fina Motorika", icon: "🖐️", color: "#AF52DE",
-      xpPerLevel: 35,
-      titles: ["Neroden","Priden","Spreten","Artist","Mojster Rok"],
-      missions: ["posoda","kuhanje","perilo","vrt","listi"],
-    },
-    um: {
-      id: "um", label: "Um", icon: "🧠", color: "#FF9500",
-      xpPerLevel: 40,
-      titles: ["Sanjar","Mislec","Strateg","Taktik","Genij"],
-      missions: ["debriefing","advokat","intel_report","orientacija_out","scholar_reading"],
-    },
-  },
-
-  // ── OPREMA = LICENCA ────────────────────────────────────────
-  // Oprema se odklene ko agent doseže določen mastery level
-  // To je dokaz dejanskega znanja — ne okras
-  equipment: [
-    {
-      id:          "vakuumsko_rezilo",
-      label:       "Vakuumsko Rezilo",
-      icon:        "🌀",
-      description: "Orodje mojstrov sesanja. Hitreje, tiše, brez sledi.",
-      slot:        "weapon",
-      unlockedBy:  { skill: "sesanje_mastery", level: 1 },
-      xpBonus:     0.1, // +10% XP na sesanje misijah
-    },
-    {
-      id:          "kuharski_mec",
-      label:       "Kuharjev Meč",
-      icon:        "🍳",
-      description: "Ni samo za rezanje zelenjave. Pravi kuharski mojster ga nosi.",
-      slot:        "weapon",
-      unlockedBy:  { skill: "kuhanje", level: 1 },
-      xpBonus:     0.1,
-    },
-    {
-      id:          "mojstrski_sekac",
-      label:       "Mojstrski Sekač",
-      icon:        "🪚",
-      description: "Podeljeno le tistim, ki poznajo les in žebelj.",
-      slot:        "weapon",
-      unlockedBy:  { skill: "mizarstvo", level: 1 },
-      xpBonus:     0.1,
-    },
-    {
-      id:          "vodna_palica",
-      label:       "Vodna Palica",
-      icon:        "💧",
-      description: "Nadzor nad vodo. Hiša je varna dokler jo nosiš.",
-      slot:        "armor",
-      unlockedBy:  { skill: "voda", level: 1 },
-      xpBonus:     0,
-    },
-    {
-      id:          "nocni_scit",
-      label:       "Nočni Ščit",
-      icon:        "🔦",
-      description: "Varuje v temi. Edini, ki ga nosijo tisti brez strahu.",
-      slot:        "armor",
-      unlockedBy:  { skill: "blackout", level: 1 },
-      xpBonus:     0,
-    },
-    {
-      id:          "zlati_jezik",
-      label:       "Zlati Jezik",
-      icon:        "🎩",
-      description: "Beseda je orožje. Podeljeno le pravim diplomatom.",
-      slot:        "special",
-      unlockedBy:  { skill: "diplomat", level: 1 },
-      xpBonus:     0,
-    },
-  ],
-
-  // ── BANKA LONA ──────────────────────────────────────────────
-  bank: {
-    interestRate:  0.20,   // 20% obresti
-    durationDays:  7,      // po 7 dneh
-    minDeposit:    50,     // minimalni depozit
-    maxDeposit:    500,    // maksimalni depozit
-  },
-
-  // ── TEDENSKE SEZONE ────────────────────────────────────────
-  season: {
-    label:       "Sezona 1",
-    resetDay:    0,    // 0 = nedelja
-    resetHour:   0,    // polnoč
-    rewards: [
-      { rank: 1, label: "Zmagovalec tedna", icon: "🏆", bonusXp: 30 },
-      { rank: 2, label: "Finalist",          icon: "🥈", bonusXp: 15 },
-    ],
-  },
-
-  // ── LONA PRO (V razvoju) ───────────────────────────────────
-  lonaPro: {
-    enabled: false,
-    features: [
-      "Heritage Skills (popravi sam, mizarstvo, samooskrba)",
-      "Analogni Fokus (Deep Work, težka besedila, brez zaslonov)",
-      "Mentor Bonus: prenos veščin na Lona Kids prinaša nagrade",
-    ],
-  },
-
-};
-
-// lonaReset() in lonaDebug() sta definirani v engine/xp.js
+}; // konec LONA_CONFIG
