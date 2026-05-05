@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
-<meta name="theme-color" content="#0F1A0F"/>
+<meta name="theme-color" content="#1E2438"/>
 <link rel="manifest" href="manifest.json"/>
 <link rel="icon" type="image/png" href="favicon.png"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -12,15 +12,15 @@
 <title>LONA OS — Hub</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:#0a120a;color:#F7F4EF;min-height:100dvh;padding-bottom:100px;overflow-x:hidden}
+body{font-family:'DM Sans',sans-serif;background:#232840;color:#F0EEF8;min-height:100dvh;padding-bottom:100px;overflow-x:hidden}
 
 /* TOP BAR */
-.top-bar{display:flex;align-items:center;gap:10px;padding:14px 16px;background:rgba(10,18,10,.95);border-bottom:1px solid rgba(90,175,122,.1);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
-.top-bar__logo{font-family:'DM Serif Display',serif;font-size:1rem;color:#F7F4EF;letter-spacing:.06em;flex-shrink:0}
-.logo-accent{color:#5AAF7A}
+.top-bar{display:flex;align-items:center;gap:10px;padding:14px 16px;background:rgba(10,18,10,.95);border-bottom:1px solid rgba(120,160,255,.15);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
+.top-bar__logo{font-family:'DM Serif Display',serif;font-size:1rem;color:#F0EEF8;letter-spacing:.06em;flex-shrink:0}
+.logo-accent{color:#72D68A}
 .top-bar__agent{flex:1;display:flex;align-items:center;gap:6px;cursor:pointer;justify-content:center}
-.top-bar__agent-name{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(247,244,239,.45)}
-.status-dot{width:6px;height:6px;border-radius:50%;background:#5AAF7A;flex-shrink:0}
+.top-bar__agent-name{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(240,238,248,.65)}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#72D68A;flex-shrink:0}
 
 /* CMD PANEL */
 #cmd-panel-section{padding:0 16px}
@@ -29,10 +29,10 @@ body{font-family:'DM Sans',sans-serif;background:#0a120a;color:#F7F4EF;min-heigh
 .view-tabs{display:flex;gap:0;padding:12px 16px 0;position:relative}
 .view-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 6px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s ease;-webkit-tap-highlight-color:transparent}
 .view-tab__icon{font-size:20px}
-.view-tab__label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(247,244,239,.3);transition:color .2s ease}
-.view-tab--active .view-tab__label{color:#F7F4EF}
+.view-tab__label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(240,238,248,.45);transition:color .2s ease}
+.view-tab--active .view-tab__label{color:#F0EEF8}
 .view-tab--eq{border-bottom-color:transparent}.view-tab--eq.view-tab--active{border-bottom-color:#AF52DE}
-.view-tab--indoor{border-bottom-color:transparent}.view-tab--indoor.view-tab--active{border-bottom-color:#5AAF7A}
+.view-tab--indoor{border-bottom-color:transparent}.view-tab--indoor.view-tab--active{border-bottom-color:#72D68A}
 .view-tab--outdoor{border-bottom-color:transparent}.view-tab--outdoor.view-tab--active{border-bottom-color:#34C759}
 .view-tab--all{border-bottom-color:transparent}.view-tab--all.view-tab--active{border-bottom-color:#5AC8FA}
 
@@ -59,13 +59,13 @@ body{font-family:'DM Sans',sans-serif;background:#0a120a;color:#F7F4EF;min-heigh
 .drawer{background:rgba(12,20,12,.98);border-radius:20px 20px 0 0;margin-top:4px;padding:0 16px 16px}
 .drawer-handle{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.12);margin:10px auto 14px}
 .drawer-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.drawer-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:#F7F4EF}
+.drawer-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:#F0EEF8}
 .drawer-meta{display:flex;align-items:center;gap:8px}
 .daily-dots{display:flex;gap:4px;align-items:center}
 .daily-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);transition:background .3s ease}
-.daily-dot.done{background:#5AAF7A}
+.daily-dot.done{background:#72D68A}
 .daily-dot.locked{background:#FF3B30}
-.shuffle-btn{padding:5px 12px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(247,244,239,.55);font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:transparent}
+.shuffle-btn{padding:5px 12px;border-radius:12px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.1);color:rgba(240,238,248,.55);font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:transparent}
 .shuffle-btn:active{transform:scale(.95)}
 
 /* MISSION CARDS */
@@ -76,8 +76,8 @@ body{font-family:'DM Sans',sans-serif;background:#0a120a;color:#F7F4EF;min-heigh
 .mc.mc-locked{opacity:.38;cursor:not-allowed}
 .mc__icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
 .mc__body{flex:1;min-width:0}
-.mc__name{font-size:13px;font-weight:700;color:#F7F4EF;margin:0;line-height:1.2}
-.mc__desc{font-size:11px;color:rgba(247,244,239,.38);margin:2px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mc__name{font-size:13px;font-weight:700;color:#F0EEF8;margin:0;line-height:1.2}
+.mc__desc{font-size:11px;color:rgba(240,238,248,.38);margin:2px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mc__right{flex-shrink:0;text-align:right}
 .mc__xp{font-size:14px;font-weight:800;margin:0;line-height:1}
 .mc__joker{font-size:10px;color:#FFD60A;margin:2px 0 0;font-weight:700}
@@ -93,17 +93,17 @@ body{font-family:'DM Sans',sans-serif;background:#0a120a;color:#F7F4EF;min-heigh
 .rb:active{transform:scale(.97)}
 .rb__icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 .rb__body{flex:1;min-width:0}
-.rb__name{font-size:13px;font-weight:700;color:#F7F4EF;margin:0}
-.rb__cat{font-size:10px;color:rgba(247,244,239,.38);margin:1px 0 0}
+.rb__name{font-size:13px;font-weight:700;color:#F0EEF8;margin:0}
+.rb__cat{font-size:10px;color:rgba(240,238,248,.38);margin:1px 0 0}
 .rb__xp{font-size:12px;font-weight:800;flex-shrink:0}
 
 /* BOTTOM NAV */
-.bottom-nav{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:400px;display:flex;background:rgba(10,18,10,.94);border:1px solid rgba(90,175,122,.18);border-radius:24px;padding:8px 12px;gap:0;z-index:100;backdrop-filter:blur(16px);box-shadow:0 4px 24px rgba(0,0,0,.5)}
+.bottom-nav{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:400px;display:flex;background:rgba(10,18,10,.94);border:1px solid rgba(120,160,255,.22);border-radius:24px;padding:8px 12px;gap:0;z-index:100;backdrop-filter:blur(16px);box-shadow:0 4px 24px rgba(0,0,0,.5)}
 .bottom-nav__item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:7px 4px;cursor:pointer;position:relative;background:none;border:none;-webkit-tap-highlight-color:transparent}
 .bottom-nav__item svg{width:22px;height:22px}
-.bottom-nav__item span{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(247,244,239,.3)}
-.bottom-nav__item--active span{color:#5AAF7A;font-weight:800}
-.bottom-nav__item--active::after{content:"";position:absolute;bottom:-4px;width:4px;height:4px;border-radius:50%;background:#5AAF7A}
+.bottom-nav__item span{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(240,238,248,.45)}
+.bottom-nav__item--active span{color:#72D68A;font-weight:800}
+.bottom-nav__item--active::after{content:"";position:absolute;bottom:-4px;width:4px;height:4px;border-radius:50%;background:#72D68A}
 
 /* SETTINGS */
 .settings-overlay{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center}
@@ -111,18 +111,18 @@ body{font-family:'DM Sans',sans-serif;background:#0a120a;color:#F7F4EF;min-heigh
 /* ── LOCATION PICKER ─────────────────────────────────── */
 .loc-pick-wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 16px 0}
 .loc-pick-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;
-  border-radius:16px;border:1.5px solid rgba(255,255,255,.08);
-  background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s ease;
+  border-radius:16px;border:1.5px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.10);cursor:pointer;transition:all .2s ease;
   -webkit-tap-highlight-color:transparent;font-family:var(--font-body)}
 .loc-pick-btn:active{transform:scale(.93)}
 .loc-pick-btn__icon{font-size:22px;line-height:1}
 .loc-pick-btn__label{font-size:10px;font-weight:700;letter-spacing:.06em;
-  text-transform:uppercase;color:rgba(247,244,239,.4)}
+  text-transform:uppercase;color:rgba(240,238,248,.6)}
 .loc-pick-btn--active{transform:scale(1.04)}
 .loc-pick-btn--eq.loc-pick-btn--active{background:rgba(175,82,222,.18);border-color:rgba(175,82,222,.5)}
 .loc-pick-btn--eq.loc-pick-btn--active .loc-pick-btn__label{color:#CF8FFF}
-.loc-pick-btn--indoor.loc-pick-btn--active{background:rgba(90,175,122,.15);border-color:rgba(90,175,122,.4)}
-.loc-pick-btn--indoor.loc-pick-btn--active .loc-pick-btn__label{color:#5AAF7A}
+.loc-pick-btn--indoor.loc-pick-btn--active{background:rgba(120,160,255,.2);border-color:rgba(90,175,122,.4)}
+.loc-pick-btn--indoor.loc-pick-btn--active .loc-pick-btn__label{color:#72D68A}
 .loc-pick-btn--outdoor.loc-pick-btn--active{background:rgba(52,199,89,.12);border-color:rgba(52,199,89,.35)}
 .loc-pick-btn--outdoor.loc-pick-btn--active .loc-pick-btn__label{color:#34C759}
 .loc-pick-btn--all.loc-pick-btn--active{background:rgba(90,200,250,.1);border-color:rgba(90,200,250,.3)}
@@ -144,7 +144,7 @@ body{font-family:'DM Sans',sans-serif;background:#0a120a;color:#F7F4EF;min-heigh
   font-family:var(--font-body);cursor:pointer;transition:all .15s ease;border:none;
   -webkit-tap-highlight-color:transparent}
 .rmc__btn:active{transform:scale(.95)}
-.rmc__btn--do{background:rgba(255,255,255,.95);color:#0a120a}
+.rmc__btn--do{background:rgba(255,255,255,.95);color:#232840}
 .rmc__btn--skip{background:rgba(255,209,102,.2);border:1px solid rgba(255,209,102,.4)!important;color:#FFD60A}
 .rmc__btn--next{background:rgba(255,255,255,.12);color:rgba(255,255,255,.7)}
 .rmc__xp{font-size:.78rem;font-weight:700;color:#fff;opacity:.7;text-align:right;margin-bottom:4px}
@@ -152,47 +152,47 @@ body{font-family:'DM Sans',sans-serif;background:#0a120a;color:#F7F4EF;min-heigh
 
 /* Hub/Library specifično */
 .top-bar__meta{flex:1;display:flex;align-items:center;gap:6px;justify-content:center}
-.top-bar__title{font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(247,244,239,.4)}
-.top-bar__alert{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(247,244,239,.5);font-size:14px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.top-bar__title{font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,238,248,.6)}
+.top-bar__alert{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.1);color:rgba(240,238,248,.7);font-size:14px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .main-scroll{padding:16px;display:flex;flex-direction:column;gap:12px;max-width:480px;margin:0 auto}
-.card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:16px}
+.card{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:16px}
 .section-header{display:flex;align-items:center;justify-content:space-between;padding:4px 2px;margin-bottom:8px}
-.section-header__title{font-family:'DM Serif Display',serif;font-size:.95rem;color:rgba(247,244,239,.7);font-weight:400}
-.section-header__badge{font-size:.65rem;font-weight:600;color:rgba(247,244,239,.35);padding:3px 8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:20px}
-h2,h3{font-family:'DM Serif Display',serif;color:#F7F4EF;font-weight:400}
-p,span,label{color:#F7F4EF}
-select,input,textarea{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#F7F4EF;padding:8px 10px;font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none}
-select option{background:#1a2b1a}
+.section-header__title{font-family:'DM Serif Display',serif;font-size:.95rem;color:rgba(240,238,248,.7);font-weight:400}
+.section-header__badge{font-size:.65rem;font-weight:600;color:rgba(240,238,248,.5);padding:3px 8px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);border-radius:20px}
+h2,h3{font-family:'DM Serif Display',serif;color:#F0EEF8;font-weight:400}
+p,span,label{color:#F0EEF8}
+select,input,textarea{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#F0EEF8;padding:8px 10px;font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none}
+select option{background:#2A3050}
 button{font-family:'DM Sans',sans-serif}
 /* Mastery */
-.mastery-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;margin-bottom:8px}
-.mastery-section{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;margin-bottom:8px}
+.mastery-card{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:14px;margin-bottom:8px}
+.mastery-section{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:14px;margin-bottom:8px}
 /* Hub specifično */
-.hub-stat__val{font-family:'DM Serif Display',serif;font-size:1.4rem;color:#5AAF7A}
-.hub-stat__lbl{font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(247,244,239,.4)}
-.day-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.hub-stat__val{font-family:'DM Serif Display',serif;font-size:1.4rem;color:#72D68A}
+.hub-stat__lbl{font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(240,238,248,.6)}
+.day-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.09)}
 .day-row:last-child{border-bottom:none}
-.day-row__name{font-size:.72rem;font-weight:700;color:rgba(247,244,239,.5);width:30px;flex-shrink:0;text-transform:uppercase;letter-spacing:.06em}
-.day-row__name--today{color:#5AAF7A}
+.day-row__name{font-size:.72rem;font-weight:700;color:rgba(240,238,248,.7);width:30px;flex-shrink:0;text-transform:uppercase;letter-spacing:.06em}
+.day-row__name--today{color:#72D68A}
 .day-row__missions{display:flex;gap:5px;flex:1;flex-wrap:wrap}
-.day-mission-chip{font-size:.68rem;font-weight:600;padding:3px 8px;border-radius:20px;cursor:pointer;background:rgba(45,125,82,.12);color:#5AAF7A;border:1px solid rgba(45,125,82,.2)}
+.day-mission-chip{font-size:.68rem;font-weight:600;padding:3px 8px;border-radius:20px;cursor:pointer;background:rgba(45,125,82,.12);color:#72D68A;border:1px solid rgba(45,125,82,.2)}
 .day-mission-chip--remove{background:rgba(255,59,48,.1);color:#FF6B6B;border-color:rgba(255,59,48,.2)}
-.day-row__add{font-size:.7rem;color:rgba(247,244,239,.4);cursor:pointer;padding:3px 8px;border-radius:20px;border:1px dashed rgba(255,255,255,.15);white-space:nowrap}
-.bank-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.08);cursor:pointer;background:rgba(255,255,255,.04);margin-bottom:6px}
-.bank-item:hover{background:rgba(45,125,82,.12);border-color:#5AAF7A}
+.day-row__add{font-size:.7rem;color:rgba(240,238,248,.6);cursor:pointer;padding:3px 8px;border-radius:20px;border:1px dashed rgba(255,255,255,.15);white-space:nowrap}
+.bank-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);cursor:pointer;background:rgba(255,255,255,.10);margin-bottom:6px}
+.bank-item:hover{background:rgba(45,125,82,.12);border-color:#72D68A}
 .bank-item__icon{font-size:1.1rem;flex-shrink:0}
-.bank-item__name{font-size:.82rem;font-weight:600;color:#F7F4EF}
-.bank-item__xp{font-size:.65rem;color:#5AAF7A;font-weight:600}
-.bank-item__add{font-size:.75rem;font-weight:700;color:rgba(247,244,239,.3);width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bank-item__name{font-size:.82rem;font-weight:600;color:#F0EEF8}
+.bank-item__xp{font-size:.65rem;color:#72D68A;font-weight:600}
+.bank-item__add{font-size:.75rem;font-weight:700;color:rgba(240,238,248,.45);width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .season-teaser{background:rgba(255,149,0,.08);border:1px solid rgba(255,149,0,.2);border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px}
-.briefing-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;border-radius:14px;background:rgba(255,255,255,.06);color:#F7F4EF;font-size:1rem;font-weight:600;border:1px solid rgba(255,255,255,.1);cursor:pointer;width:100%}
-.briefing-btn:hover{background:rgba(45,125,82,.12);border-color:#5AAF7A}
+.briefing-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;border-radius:14px;background:rgba(255,255,255,.09);color:#F0EEF8;font-size:1rem;font-weight:600;border:1px solid rgba(255,255,255,.1);cursor:pointer;width:100%}
+.briefing-btn:hover{background:rgba(45,125,82,.12);border-color:#72D68A}
 /* Library */
 .mastery-card__header{display:flex;align-items:center;gap:10px;cursor:pointer}
-.mastery-card__caret{margin-left:auto;color:rgba(247,244,239,.4)}
+.mastery-card__caret{margin-left:auto;color:rgba(240,238,248,.6)}
 .mastery-card__body{display:none;padding-top:12px}
 .mastery-card--open .mastery-card__body{display:block}
-.mastery-level{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.mastery-level{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.09)}
 .mastery-level:last-child{border-bottom:none}
 
 </style>
@@ -222,7 +222,7 @@ button{font-family:'DM Sans',sans-serif}
       <span class="section-header__badge" id="hub-daily-badge">0/4</span>
     </div>
     <div id="hub-daily-dots" style="display:flex;gap:8px;align-items:center;margin-bottom:12px"></div>
-    <div id="hub-today-missions" style="font-size:.82rem;color:rgba(247,244,239,.4);text-align:center;padding:8px 0">Danes še ni opravljenih misij.</div>
+    <div id="hub-today-missions" style="font-size:.82rem;color:rgba(240,238,248,.6);text-align:center;padding:8px 0">Danes še ni opravljenih misij.</div>
   </div>
 
   <!-- TEDENSKA LESTVICA -->
@@ -292,25 +292,25 @@ function renderHub() {
       const av     = photo ? `<img src="${photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : a.avatar;
       return `<div class="card" style="display:flex;flex-direction:column;gap:8px">
         <div style="display:flex;align-items:center;gap:10px">
-          <div style="width:40px;height:40px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;border:2px solid rgba(90,175,122,.3)">${av}</div>
+          <div style="width:40px;height:40px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;border:2px solid rgba(90,175,122,.3)">${av}</div>
           <div>
             <p style="font-weight:800;font-size:.95rem;margin:0">${a.name}</p>
             <p style="font-size:.6rem;color:#FFD60A;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:0">${rank}</p>
           </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-          <div style="text-align:center;padding:6px;background:rgba(90,175,122,.08);border-radius:10px;border:1px solid rgba(90,175,122,.15)">
-            <p style="font-size:1.1rem;font-weight:800;color:#5AAF7A;margin:0">${xp}</p>
-            <p style="font-size:.55rem;color:rgba(247,244,239,.4);margin:0;text-transform:uppercase">XP</p>
+          <div style="text-align:center;padding:6px;background:rgba(90,175,122,.08);border-radius:10px;border:1px solid rgba(120,160,255,.2)">
+            <p style="font-size:1.1rem;font-weight:800;color:#72D68A;margin:0">${xp}</p>
+            <p style="font-size:.55rem;color:rgba(240,238,248,.6);margin:0;text-transform:uppercase">XP</p>
           </div>
           <div style="text-align:center;padding:6px;background:rgba(255,214,10,.06);border-radius:10px;border:1px solid rgba(255,214,10,.15)">
             <p style="font-size:1.1rem;font-weight:800;color:#FFD60A;margin:0">${coins}</p>
-            <p style="font-size:.55rem;color:rgba(247,244,239,.4);margin:0;text-transform:uppercase">🪙</p>
+            <p style="font-size:.55rem;color:rgba(240,238,248,.6);margin:0;text-transform:uppercase">🪙</p>
           </div>
         </div>
         <div style="display:flex;gap:4px;align-items:center">
-          ${Array.from({length:4},(_,i)=>`<div style="width:10px;height:10px;border-radius:50%;background:${i<daily?'#5AAF7A':'rgba(255,255,255,.12)'}"></div>`).join("")}
-          <span style="font-size:.65rem;color:rgba(247,244,239,.4);margin-left:4px">${daily}/4 danes</span>
+          ${Array.from({length:4},(_,i)=>`<div style="width:10px;height:10px;border-radius:50%;background:${i<daily?'#72D68A':'rgba(255,255,255,.12)'}"></div>`).join("")}
+          <span style="font-size:.65rem;color:rgba(240,238,248,.6);margin-left:4px">${daily}/4 danes</span>
         </div>
       </div>`;
     }).join('') + '</div>';
@@ -321,8 +321,8 @@ function renderHub() {
   document.getElementById('hub-daily-badge').textContent = daily + '/4';
   const dotsEl = document.getElementById('hub-daily-dots');
   dotsEl.innerHTML = Array.from({length:4},(_,i) =>
-    `<div style="width:12px;height:12px;border-radius:50%;background:${i<daily?'#5AAF7A':'rgba(255,255,255,.12)'}"></div>`
-  ).join('') + (daily >= 4 ? '<span style="font-size:.8rem;color:#5AAF7A;font-weight:700;margin-left:6px">🏆 Limit dosežen!</span>' : '');
+    `<div style="width:12px;height:12px;border-radius:50%;background:${i<daily?'#72D68A':'rgba(255,255,255,.12)'}"></div>`
+  ).join('') + (daily >= 4 ? '<span style="font-size:.8rem;color:#72D68A;font-weight:700;margin-left:6px">🏆 Limit dosežen!</span>' : '');
 
   // Danes opravljene misije
   const log = JSON.parse(localStorage.getItem('lona_mission_log') || '[]');
@@ -333,17 +333,17 @@ function renderHub() {
     todayEl.innerHTML = todayLog.map(e => {
       const m = LONA_CONFIG.missions[e.missionId];
       const agent = LONA_CONFIG.agents.find(a => a.id === e.agentId);
-      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.09)">
         <span style="font-size:1rem">${m?.icon||'📋'}</span>
         <div style="flex:1">
           <p style="font-size:.82rem;font-weight:700;margin:0">${m?.label||e.missionId}</p>
-          <p style="font-size:.65rem;color:rgba(247,244,239,.4);margin:0">${agent?.name||e.agentId}</p>
+          <p style="font-size:.65rem;color:rgba(240,238,248,.6);margin:0">${agent?.name||e.agentId}</p>
         </div>
-        <span style="font-size:.82rem;font-weight:800;color:#5AAF7A">+${e.xp} XP</span>
+        <span style="font-size:.82rem;font-weight:800;color:#72D68A">+${e.xp} XP</span>
       </div>`;
     }).join('');
   } else {
-    todayEl.innerHTML = '<p style="font-size:.82rem;color:rgba(247,244,239,.35);text-align:center;padding:12px 0">Danes še ni opravljenih misij.</p>';
+    todayEl.innerHTML = '<p style="font-size:.82rem;color:rgba(240,238,248,.5);text-align:center;padding:12px 0">Danes še ni opravljenih misij.</p>';
   }
 
   // Tedenska lestvica
@@ -357,11 +357,11 @@ function renderHub() {
     const photo = localStorage.getItem("lona_photo_" + a.id);
     const av = photo ? `<img src="${photo}" style="width:32px;height:32px;border-radius:50%;object-fit:cover">` : `<span style="font-size:1.1rem">${a.avatar}</span>`;
     const medals = ['🥇','🥈','🥉'];
-    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.09)">
       <span style="font-size:1.2rem;width:24px">${medals[i]||''}</span>
-      <div style="width:32px;height:32px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0">${av}</div>
+      <div style="width:32px;height:32px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0">${av}</div>
       <p style="flex:1;font-weight:700;margin:0">${a.name}</p>
-      <p style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:#5AAF7A;margin:0">${a.weekXp} XP</p>
+      <p style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:#72D68A;margin:0">${a.weekXp} XP</p>
     </div>`;
   }).join('');
 
@@ -370,7 +370,7 @@ function renderHub() {
   const logCount = document.getElementById('hub-log-count');
   logCount.textContent = log.length + ' skupaj';
   if (!log.length) {
-    logEl.innerHTML = '<p style="font-size:.82rem;color:rgba(247,244,239,.35);text-align:center;padding:12px 0">Še ni zgodovine.</p>';
+    logEl.innerHTML = '<p style="font-size:.82rem;color:rgba(240,238,248,.5);text-align:center;padding:12px 0">Še ni zgodovine.</p>';
     return;
   }
   logEl.innerHTML = [...log].reverse().slice(0,15).map(e => {
@@ -381,9 +381,9 @@ function renderHub() {
       <span style="font-size:1rem;flex-shrink:0">${m?.icon||'📋'}</span>
       <div style="flex:1;min-width:0">
         <p style="font-size:.82rem;font-weight:600;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m?.label||e.missionId}</p>
-        <p style="font-size:.62rem;color:rgba(247,244,239,.4);margin:0">${agent?.name||e.agentId} · ${date}</p>
+        <p style="font-size:.62rem;color:rgba(240,238,248,.6);margin:0">${agent?.name||e.agentId} · ${date}</p>
       </div>
-      <p style="font-size:.82rem;font-weight:800;color:${e.compromised?'#FF6B6B':'#5AAF7A'};margin:0;flex-shrink:0">${e.compromised?'⚠️':'+'}${e.xp} XP</p>
+      <p style="font-size:.82rem;font-weight:800;color:${e.compromised?'#FF6B6B':'#72D68A'};margin:0;flex-shrink:0">${e.compromised?'⚠️':'+'}${e.xp} XP</p>
     </div>`;
   }).join('');
 }
@@ -394,19 +394,19 @@ window.addEventListener('pageshow', renderHub);
 
 <nav class="bottom-nav" aria-label="Navigacija">
   <button class="bottom-nav__item" onclick="location.replace('home.html')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(240,238,248,.45)" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
     <span>Baza</span>
   </button>
   <button class="bottom-nav__item bottom-nav__item--active" aria-current="page">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#5AAF7A" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="#72D68A" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
     <span>Hub</span>
   </button>
   <button class="bottom-nav__item " onclick="location.replace('library.html')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(240,238,248,.45)" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
     <span>Knjižnica</span>
   </button>
   <button class="bottom-nav__item" onclick="location.replace('profile.html')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,.3)" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(240,238,248,.45)" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     <span>Profil</span>
   </button>
 </nav>

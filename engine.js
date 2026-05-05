@@ -1,7 +1,7 @@
 const CAT_COLORS = {
   hygiene:'#34C759',kitchen:'#FF9500',cleaning:'#007AFF',organisation:'#AF52DE',
   care:'#FF2D55',outdoor:'#30D158',body:'#FF3B30',safety:'#FF3B30',
-  money:'#FFD60A',social:'#5AC8FA',creativity:'#FF9500',custom:'#5AAF7A',
+  money:'#FFD60A',social:'#5AC8FA',creativity:'#FF9500',custom:'#72D68A',
   fear:'#AF52DE',independence:'#007AFF',eq:'#AF52DE',fitness:'#FF6B00',
 };
 const CAT_NAMES = {
@@ -51,7 +51,7 @@ function getCurrentAgent() {
 
 // ── TOAST ──────────────────────────────────────────────────
 function lonaToast(msg, color) {
-  const c = { green:"#2D7D52", gold:"#C47D1A", red:"#C4352A", cyan:"#2563EB" };
+  const c = { green:"#4A9E6A", gold:"#C47D1A", red:"#C4352A", cyan:"#2563EB" };
   const bg = { green:"#EAF4EE", gold:"#FDF3E3", red:"#FDECEA", cyan:"#EEF3FD" };
   const clr = c[color] || c.green;
   const bgClr = bg[color] || bg.green;
@@ -383,21 +383,21 @@ function showQualityCheck(agentId, mission, mod, callback) {
   d.className = "joker-dialog";
   d.innerHTML = `<div class="joker-dialog__box">
     <div style="font-size:2.2rem">${mission.icon || "📋"}</div>
-    <p style="font-family:'DM Serif Display',serif;font-size:1.05rem;color:#F7F4EF;margin:0;text-align:center">${mission.label}</p>
-    <p style="font-size:.78rem;color:rgba(247,244,239,.45);text-align:center;margin:2px 0 10px">${mission.desc || ""}</p>
+    <p style="font-family:'DM Serif Display',serif;font-size:1.05rem;color:#F0EEF8;margin:0;text-align:center">${mission.label}</p>
+    <p style="font-size:.78rem;color:rgba(240,238,248,.65);text-align:center;margin:2px 0 10px">${mission.desc || ""}</p>
 
     <div style="display:flex;gap:8px;width:100%;justify-content:center;margin-bottom:6px">
-      <div style="text-align:center;padding:8px 12px;background:rgba(90,175,122,.12);border:1px solid rgba(90,175,122,.25);border-radius:12px;flex:1">
-        <p style="font-size:1.2rem;font-weight:800;color:#5AAF7A;margin:0">+${xp}</p>
-        <p style="font-size:.6rem;color:rgba(247,244,239,.4);margin:0;text-transform:uppercase">XP</p>
+      <div style="text-align:center;padding:8px 12px;background:rgba(120,160,255,.18);border:1px solid rgba(90,175,122,.25);border-radius:12px;flex:1">
+        <p style="font-size:1.2rem;font-weight:800;color:#72D68A;margin:0">+${xp}</p>
+        <p style="font-size:.6rem;color:rgba(240,238,248,.6);margin:0;text-transform:uppercase">XP</p>
       </div>
       <div style="text-align:center;padding:8px 12px;background:rgba(255,214,10,.1);border:1px solid rgba(255,214,10,.2);border-radius:12px;flex:1">
         <p style="font-size:1.2rem;font-weight:800;color:#FFD60A;margin:0">+${coins}</p>
-        <p style="font-size:.6rem;color:rgba(247,244,239,.4);margin:0;text-transform:uppercase">🪙</p>
+        <p style="font-size:.6rem;color:rgba(240,238,248,.6);margin:0;text-transform:uppercase">🪙</p>
       </div>
       ${isEqAc ? `<div style="text-align:center;padding:8px 12px;background:rgba(255,209,102,.1);border:1px solid rgba(255,209,102,.2);border-radius:12px;flex:1">
         <p style="font-size:1.2rem;font-weight:800;color:#FFD60A;margin:0">+1</p>
-        <p style="font-size:.6rem;color:rgba(247,244,239,.4);margin:0;text-transform:uppercase">🃏</p>
+        <p style="font-size:.6rem;color:rgba(240,238,248,.6);margin:0;text-transform:uppercase">🃏</p>
       </div>` : ""}
     </div>
 
@@ -405,7 +405,7 @@ function showQualityCheck(agentId, mission, mod, callback) {
       <button class="joker-dialog__cancel" style="border-color:rgba(255,60,90,.3);color:#FF3B30">⚠️ Površno</button>
       <button class="joker-dialog__confirm">✓ Potrdi</button>
     </div>
-    <p style="font-size:.68rem;color:rgba(247,244,239,.3);text-align:center;margin-top:2px">Površno = pol točk</p>
+    <p style="font-size:.68rem;color:rgba(240,238,248,.45);text-align:center;margin-top:2px">Površno = pol točk</p>
   </div>`;
   document.body.appendChild(d);
 
@@ -601,7 +601,7 @@ function onMissionClick(btn) {
       <p class="joker-dialog__body">
         <strong>${agentName}</strong> mora opraviti:<br>
         <strong style="font-size:1.1rem">${picked.label}</strong><br>
-        <span style="color:#2D7D52;font-weight:600">+${picked.baseXp} XP</span>
+        <span style="color:#4A9E6A;font-weight:600">+${picked.baseXp} XP</span>
       </p>
       <div class="joker-dialog__btns">
         <button class="joker-dialog__cancel">Prekliči</button>
@@ -896,10 +896,10 @@ function buildMissionBtn(mission, agentId) {
 
   // CAT_COLORS in CAT_NAMES so globalni (definirani na vrhu)
 
-  const clr   = onCooldown ? 'rgba(247,244,239,.25)' : (CAT_COLORS[mission.category] || '#5AAF7A');
-  const bg    = onCooldown ? 'rgba(255,255,255,.04)' : clr.replace(')', ',.12)').replace('rgb(','rgba(');
-  const border= onCooldown ? 'rgba(255,255,255,.07)' : clr.replace(')', ',.25)').replace('rgb(','rgba(');
-  const iconBg= onCooldown ? 'rgba(255,255,255,.06)' : clr.replace(')', ',.18)').replace('rgb(','rgba(');
+  const clr   = onCooldown ? 'rgba(240,238,248,.25)' : (CAT_COLORS[mission.category] || '#72D68A');
+  const bg    = onCooldown ? 'rgba(255,255,255,.10)' : clr.replace(')', ',.12)').replace('rgb(','rgba(');
+  const border= onCooldown ? 'rgba(255,255,255,.10)' : clr.replace(')', ',.25)').replace('rgb(','rgba(');
+  const iconBg= onCooldown ? 'rgba(255,255,255,.09)' : clr.replace(')', ',.18)').replace('rgb(','rgba(');
   const catName = CAT_NAMES[mission.category] || '';
   const isEqAction = mission.isEq && mission.eqType === 'akcija';
   const xpTxt = onCooldown ? '🔒' : mission.isProgressive ? '3×' : `+${xp}`;
@@ -916,12 +916,12 @@ function buildMissionBtn(mission, agentId) {
   const lockReason = dailyLocked ? '🔒 Dnevni limit (4/4)' : onCooldown ? '⏱ 3-dnevni cooldown' : '';
 
   const cardBg     = isLocked ? 'rgba(255,255,255,.03)' : bg;
-  const cardBorder = isLocked ? 'rgba(255,255,255,.06)' : border;
+  const cardBorder = isLocked ? 'rgba(255,255,255,.09)' : border;
   const cardOpacity= isLocked ? '.4' : '1';
 
   return `<div class="mc-card ${isLocked ? 'mc-locked' : ''}" data-mission="${mId}"
     style="background:${cardBg};border:1px solid ${cardBorder};opacity:${cardOpacity}">
-    <div class="mc-card__icon" style="background:${isLocked ? 'rgba(255,255,255,.06)' : iconBg}">${mission.icon||'📋'}</div>
+    <div class="mc-card__icon" style="background:${isLocked ? 'rgba(255,255,255,.09)' : iconBg}">${mission.icon||'📋'}</div>
     <div class="mc-card__body">
       <p class="mc-card__name">${mission.label}</p>
       <p class="mc-card__desc">${isLocked ? lockReason : desc}</p>
@@ -932,7 +932,7 @@ function buildMissionBtn(mission, agentId) {
             style="padding:5px 10px;border-radius:12px;background:rgba(255,209,102,.15);
             border:1px solid rgba(255,209,102,.4);color:#FFD60A;font-size:12px;font-weight:800;
             cursor:pointer;white-space:nowrap">🃏 Preskoči</button>`
-        : `<p class="mc-card__xp" style="color:${isLocked ? 'rgba(247,244,239,.25)' : clr};margin:0">${isLocked ? '—' : xpTxt + ' XP'}</p>`
+        : `<p class="mc-card__xp" style="color:${isLocked ? 'rgba(240,238,248,.25)' : clr};margin:0">${isLocked ? '—' : xpTxt + ' XP'}</p>`
       }
       ${isEqAction && !isLocked ? '<p class="mc-card__joker">+1 🃏</p>' : ''}
     </div>
@@ -1264,8 +1264,8 @@ function renderDailyProgress(agentId) {
   const done = getDailyCount(agentId);
   const locked = isDailyLocked(agentId);
   el.innerHTML = Array.from({length: DAILY_MAX}, (_,i) =>
-    `<div style="width:10px;height:10px;border-radius:50%;background:${i < done ? '#5AAF7A' : 'rgba(255,255,255,.15)'}"></div>`
-  ).join('') + `<span style="font-size:11px;font-weight:700;color:${locked ? '#FF3B30' : 'rgba(247,244,239,.5)'}">
+    `<div style="width:10px;height:10px;border-radius:50%;background:${i < done ? '#72D68A' : 'rgba(255,255,255,.15)'}"></div>`
+  ).join('') + `<span style="font-size:11px;font-weight:700;color:${locked ? '#FF3B30' : 'rgba(240,238,248,.7)'}">
     ${locked ? '🔒 Zaklenjeno' : done + '/' + DAILY_MAX}
   </span>`;
 }
@@ -1317,7 +1317,7 @@ function _refreshCurrentView() {
 
 function _mkClr(hex, a) {
   try {
-    const h = hex.startsWith('#') ? hex : '#5AAF7A';
+    const h = hex.startsWith('#') ? hex : '#72D68A';
     const r = parseInt(h.slice(1,3),16);
     const g = parseInt(h.slice(3,5),16);
     const b = parseInt(h.slice(5,7),16);
@@ -1384,7 +1384,7 @@ function _renderDrawer(view, tileIdx) {
     cleaning:'#007AFF', hygiene:'#34C759', kitchen:'#FF9500',
     organisation:'#AF52DE', outdoor:'#30D158', social:'#5AC8FA',
     fear:'#AF52DE', independence:'#007AFF',
-  }[tile.id] || '#5AAF7A';
+  }[tile.id] || '#72D68A';
 
   listEl.innerHTML = missions.map((m,i) => {
     const onCD  = typeof isOnCooldown === 'function' && isOnCooldown(m.id);
@@ -1394,12 +1394,12 @@ function _renderDrawer(view, tileIdx) {
     const showJoker = jokers > 0 && !isLocked && !isEqAction;
     const xp = m.baseXp || m.xp || 0;
 
-    const bg  = isLocked ? 'rgba(255,255,255,.04)' : _mkClr(clr, .12);
-    const ibg = isLocked ? 'rgba(255,255,255,.07)' : _mkClr(clr, .2);
-    const xpClr = isLocked ? 'rgba(247,244,239,.25)' : clr;
+    const bg  = isLocked ? 'rgba(255,255,255,.10)' : _mkClr(clr, .12);
+    const ibg = isLocked ? 'rgba(255,255,255,.10)' : _mkClr(clr, .2);
+    const xpClr = isLocked ? 'rgba(240,238,248,.25)' : clr;
 
     return `<div class="mc ${isLocked?'mc-locked':''}" data-mission="${m.id}"
-      style="background:${bg};border:1px solid ${isLocked?'rgba(255,255,255,.06)':clr+'33'};transition-delay:${i*50}ms">
+      style="background:${bg};border:1px solid ${isLocked?'rgba(255,255,255,.09)':clr+'33'};transition-delay:${i*50}ms">
       <div class="mc__icon" style="background:${ibg}">${m.icon||'📋'}</div>
       <div class="mc__body">
         <p class="mc__name">${m.label}</p>
@@ -1454,18 +1454,18 @@ function _renderRibbon() {
   el.innerHTML = missions.map((m,i) => {
     const onCD = typeof isOnCooldown === 'function' && isOnCooldown(m.id);
     const isLocked = locked || onCD;
-    const clr = (CAT_COLORS[m.category]) || '#5AAF7A';
-    const bg  = isLocked ? 'rgba(255,255,255,.04)' : _mkClr(clr, .1);
-    const ibg = isLocked ? 'rgba(255,255,255,.07)' : _mkClr(clr, .18);
+    const clr = (CAT_COLORS[m.category]) || '#72D68A';
+    const bg  = isLocked ? 'rgba(255,255,255,.10)' : _mkClr(clr, .1);
+    const ibg = isLocked ? 'rgba(255,255,255,.10)' : _mkClr(clr, .18);
 
     return `<div class="rb ${isLocked?'mc-locked':''}" data-mission="${m.id}"
-      style="background:${bg};border:1px solid ${isLocked?'rgba(255,255,255,.06)':clr+'33'};transition-delay:${Math.min(i,20)*28}ms">
+      style="background:${bg};border:1px solid ${isLocked?'rgba(255,255,255,.09)':clr+'33'};transition-delay:${Math.min(i,20)*28}ms">
       <div class="rb__icon" style="background:${ibg}">${m.icon||'📋'}</div>
       <div class="rb__body">
         <p class="rb__name">${m.label}</p>
         <p class="rb__cat">${CAT_NAMES[m.category]||''}</p>
       </div>
-      <span class="rb__xp" style="color:${isLocked?'rgba(247,244,239,.25)':clr}">${isLocked?'—':'+'+m.baseXp}</span>
+      <span class="rb__xp" style="color:${isLocked?'rgba(240,238,248,.25)':clr}">${isLocked?'—':'+'+m.baseXp}</span>
     </div>`;
   }).join('');
 
@@ -1498,7 +1498,7 @@ function _renderDailyDots() {
     if (!el) return;
     el.innerHTML = Array.from({length: DAILY_MAX || 4}, (_,i) =>
       `<div class="daily-dot ${i < done ? (locked && i === done-1 ? 'locked' : 'done') : ''}"></div>`
-    ).join('') + `<span style="font-size:10px;font-weight:700;color:${locked?'#FF3B30':'rgba(247,244,239,.35)'};margin-left:4px">${done}/${DAILY_MAX||4}</span>`;
+    ).join('') + `<span style="font-size:10px;font-weight:700;color:${locked?'#FF3B30':'rgba(240,238,248,.5)'};margin-left:4px">${done}/${DAILY_MAX||4}</span>`;
   });
 }
 
@@ -1530,25 +1530,25 @@ function showCommanderConfirm(agentId, mission, onConfirm) {
   d.className = "joker-dialog";
   d.innerHTML = `<div class="joker-dialog__box">
     <div style="font-size:2.5rem">${mission.icon || "📋"}</div>
-    <p style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:#F7F4EF;margin:0">${mission.label}</p>
-    <p style="font-size:.82rem;color:rgba(247,244,239,.5);text-align:center;margin:4px 0 8px">${mission.desc || ""}</p>
+    <p style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:#F0EEF8;margin:0">${mission.label}</p>
+    <p style="font-size:.82rem;color:rgba(240,238,248,.7);text-align:center;margin:4px 0 8px">${mission.desc || ""}</p>
 
     <div style="display:flex;gap:10px;width:100%;justify-content:center">
-      <div style="text-align:center;padding:10px 16px;background:rgba(90,175,122,.12);border:1px solid rgba(90,175,122,.25);border-radius:14px">
-        <p style="font-size:1.3rem;font-weight:800;color:#5AAF7A;margin:0">+${xp}</p>
-        <p style="font-size:.65rem;color:rgba(247,244,239,.4);margin:0;text-transform:uppercase;letter-spacing:.08em">XP</p>
+      <div style="text-align:center;padding:10px 16px;background:rgba(120,160,255,.18);border:1px solid rgba(90,175,122,.25);border-radius:14px">
+        <p style="font-size:1.3rem;font-weight:800;color:#72D68A;margin:0">+${xp}</p>
+        <p style="font-size:.65rem;color:rgba(240,238,248,.6);margin:0;text-transform:uppercase;letter-spacing:.08em">XP</p>
       </div>
       <div style="text-align:center;padding:10px 16px;background:rgba(255,214,10,.1);border:1px solid rgba(255,214,10,.25);border-radius:14px">
         <p style="font-size:1.3rem;font-weight:800;color:#FFD60A;margin:0">+${coins}</p>
-        <p style="font-size:.65rem;color:rgba(247,244,239,.4);margin:0;text-transform:uppercase;letter-spacing:.08em">🪙 Kovanci</p>
+        <p style="font-size:.65rem;color:rgba(240,238,248,.6);margin:0;text-transform:uppercase;letter-spacing:.08em">🪙 Kovanci</p>
       </div>
       ${isEqAction ? `<div style="text-align:center;padding:10px 16px;background:rgba(255,209,102,.1);border:1px solid rgba(255,209,102,.25);border-radius:14px">
         <p style="font-size:1.3rem;font-weight:800;color:#FFD60A;margin:0">+1</p>
-        <p style="font-size:.65rem;color:rgba(247,244,239,.4);margin:0;text-transform:uppercase;letter-spacing:.08em">🃏 Joker</p>
+        <p style="font-size:.65rem;color:rgba(240,238,248,.6);margin:0;text-transform:uppercase;letter-spacing:.08em">🃏 Joker</p>
       </div>` : ""}
     </div>
 
-    <p style="font-size:.72rem;color:rgba(247,244,239,.35);text-align:center">Poveljnik potrdi opravljeno misijo</p>
+    <p style="font-size:.72rem;color:rgba(240,238,248,.5);text-align:center">Poveljnik potrdi opravljeno misijo</p>
 
     <div class="joker-dialog__btns">
       <button class="joker-dialog__cancel">Prekliči</button>
@@ -1610,20 +1610,27 @@ function _showRandomMission(loc, animate) {
   const hidden  = window._hiddenMissions || JSON.parse(localStorage.getItem('lona_hidden_missions') || '[]');
   const daily   = typeof isDailyLocked === 'function' ? isDailyLocked(agentId) : false;
 
-  let pool = Object.values(LONA_CONFIG.missions).filter(m => {
-    if (hidden.includes(m.id)) return false;
-    if (typeof isOnCooldown === 'function' && isOnCooldown(m.id)) return false;
-    if (loc === 'eq')      return m.category === 'eq';
-    if (loc === 'indoor')  return m.location === 'indoor' && m.category !== 'eq';
-    if (loc === 'outdoor') return (m.location === 'outdoor' || m.category === 'outdoor' || m.category === 'body' || m.category === 'fear') && m.category !== 'eq';
-    return m.category !== 'eq';
-  });
+  // Custom (starš dodane) misije
+  const customs = typeof customLoad === 'function'
+    ? (Array.isArray(customLoad()) ? customLoad() : Object.values(customLoad()))
+    : [];
 
-  if (typeof customLoad === 'function') {
-    const customs = Array.isArray(customLoad()) ? customLoad() : Object.values(customLoad());
-    customs.forEach(m => {
-      if (!hidden.includes(m.id) && !(typeof isOnCooldown === 'function' && isOnCooldown(m.id)))
-        if (loc === 'all') pool.push(m);
+  let pool = [];
+
+  if (loc === 'mine') {
+    // Samo custom misije ki jih je dodal starš
+    pool = customs.filter(m =>
+      !hidden.includes(m.id) &&
+      !(typeof isOnCooldown === 'function' && isOnCooldown(m.id))
+    );
+  } else {
+    pool = Object.values(LONA_CONFIG.missions).filter(m => {
+      if (hidden.includes(m.id)) return false;
+      if (typeof isOnCooldown === 'function' && isOnCooldown(m.id)) return false;
+      if (loc === 'eq')      return m.category === 'eq';
+      if (loc === 'indoor')  return m.location === 'indoor' && m.category !== 'eq';
+      if (loc === 'outdoor') return (m.location === 'outdoor' || m.category === 'outdoor' || m.category === 'body' || m.category === 'fear') && m.category !== 'eq';
+      return true;
     });
   }
 
@@ -1650,50 +1657,81 @@ function _showRandomMission(loc, animate) {
       if (nm) { nm.style.opacity = '.3'; setTimeout(() => { if(nm) nm.style.opacity = '1'; }, 80); }
       if (ticks >= maxTicks) {
         clearInterval(interval);
-        // Flip na koncu — pokaži pravo misijo
+        // Na koncu animacije — shrani misijo in pokaži scratch
         setTimeout(() => {
-          card.classList.remove('rmc--rolling');
-          card.classList.add('rmc--flip');
           const mission = pool[Math.floor(Math.random() * pool.length)];
-          _rmcCurrentMission = { mission, loc };
-          setTimeout(() => _renderRmc(mission, agentId, daily), 220);
+          _rmcCurrentMission = { mission, agentId, daily, loc };
+          _renderScratch(loc);
         }, 100);
       }
     }, 80);
   } else {
     const mission = pool[Math.floor(Math.random() * pool.length)];
-    _rmcCurrentMission = { mission, loc };
-    _renderRmc(mission, agentId, daily);
+    _rmcCurrentMission = { mission, agentId, daily, loc };
+    _renderScratch(loc);
   }
 }
 
-function _renderRmc(mission, agentId, daily) {
-  const wrap = document.getElementById('random-mission-wrap');
+function _renderScratch(loc) {
+  // Prikaži "zaprti" scratch card
+  const card = document.getElementById('random-mission-card');
+  if (!card) return;
+  const labels = {eq:'Tvoja EQ misija te čaka...', indoor:'Misija v hiši te čaka...', outdoor:'Zunanja misija te čaka...', mine:'Posebna misija te čaka...'};
+  card.innerHTML = `
+    <div class="rmc-scratch" onclick="_rmcReveal()">
+      <span class="rmc-scratch__q">🎁</span>
+      <p class="rmc-scratch__label">${labels[loc] || 'Misija te čaka...'}</p>
+      <button class="rmc-scratch__btn" onclick="event.stopPropagation();_rmcReveal()">🎲 Vrzi kocko</button>
+    </div>`;
+}
+
+function _rmcReveal() {
+  if (!_rmcCurrentMission) return;
+  const { mission, agentId, daily } = _rmcCurrentMission;
+
   const card = document.getElementById('random-mission-card');
   if (!card) return;
 
-  const xp    = mission.baseXp || mission.xp || 20;
-  const coins = mission.coins  || Math.round(xp * (LONA_CONFIG.coinsPerXp || 0.4));
-  const g     = CAT_GRADS[mission.category] || CAT_GRADS.hygiene;
-  const jokers = typeof getJokers === 'function' ? getJokers(agentId) : 0;
-  const isEqAction = mission.eqType === 'akcija';
+  // Spinning efekt
+  const scratch = card.querySelector('.rmc-scratch');
+  if (scratch) {
+    scratch.classList.add('rmc-spinning');
+    if (navigator.vibrate) navigator.vibrate([20, 30, 20]);
+  }
 
-  // Reset animacije
-  card.className = 'rmc';
-  void card.offsetWidth;
+  setTimeout(() => _renderRmc(mission, agentId, daily), 280);
+}
+
+function _renderRmc(mission, agentId, daily) {
+  const card = document.getElementById('random-mission-card');
+  if (!card) return;
+
+  const xp      = mission.baseXp || mission.xp || 20;
+  const coins   = mission.coins  || Math.round(xp * (LONA_CONFIG.coinsPerXp || 0.4));
+  const g       = CAT_GRADS[mission.category] || CAT_GRADS.hygiene;
+  const jokers  = typeof getJokers === 'function' ? getJokers(agentId) : 0;
+  const isEqAc  = mission.eqType === 'akcija';
+  const catName = CAT_NAMES[mission.category] || '';
 
   card.innerHTML = `
-    <div class="rmc__bg" style="background:linear-gradient(135deg,${g[0]},${g[1]},${g[2]})"></div>
-    <div class="rmc__overlay"></div>
-    <div class="rmc__body">
-      <span class="rmc__icon">${mission.icon || '📋'}</span>
-      <p class="rmc__name">${mission.label}</p>
-      <p class="rmc__desc">${mission.desc || CAT_NAMES[mission.category] || ''}</p>
-      <p class="rmc__xp">+${xp} XP · 🪙 ${coins}${isEqAction ? ' · 🃏 +1 Joker' : ''}</p>
-      <div class="rmc__actions">
-        <button class="rmc__btn rmc__btn--do" onclick="_rmcDo()">✓ Opravi</button>
-        ${jokers > 0 && !daily ? `<button class="rmc__btn rmc__btn--skip" onclick="_rmcSkip()">🃏 Preskoči</button>` : ''}
-        <button class="rmc__btn rmc__btn--next" onclick="_rmcNext()">↻</button>
+    <div class="rmc-revealed">
+      <div class="rmc-revealed__bg" style="background:linear-gradient(135deg,${g[0]},${g[1]},${g[2]})"></div>
+      <div class="rmc-revealed__overlay"></div>
+      <div class="rmc-revealed__body">
+        <p class="rmc-revealed__cat">${mission.icon || ''} ${catName}</p>
+        <span class="rmc-revealed__icon">${mission.icon || '📋'}</span>
+        <p class="rmc-revealed__name">${mission.label}</p>
+        <p class="rmc-revealed__desc">${mission.desc || ''}</p>
+        <div class="rmc-pills">
+          <span class="rmc-pill rmc-pill--xp">+${xp} XP</span>
+          <span class="rmc-pill rmc-pill--coins">🪙 ${coins}</span>
+          ${isEqAc ? '<span class="rmc-pill rmc-pill--joker">+1 🃏</span>' : ''}
+        </div>
+        <div class="rmc-btns">
+          <button class="rmc-btn-do" onclick="_rmcDo()">✓ Opravi</button>
+          ${jokers > 0 && !daily ? '<button class="rmc-btn-sm rmc-btn-skip" onclick="_rmcSkip()">🃏</button>' : ''}
+          <button class="rmc-btn-sm rmc-btn-next" onclick="_rmcNext()">↻</button>
+        </div>
       </div>
     </div>`;
 }
@@ -1701,14 +1739,15 @@ function _renderRmc(mission, agentId, daily) {
 function _showRmcEmpty(loc) {
   const card = document.getElementById('random-mission-card');
   if (!card) return;
-  card.className = 'rmc';
   card.innerHTML = `
-    <div class="rmc__bg" style="background:linear-gradient(135deg,#1a1a2e,#2a2a4a)"></div>
-    <div class="rmc__overlay"></div>
-    <div class="rmc__body">
-      <span class="rmc__icon">🔒</span>
-      <p class="rmc__name">Vse misije na cooldownu</p>
-      <p class="rmc__desc">Odlično! Vse opravljeno. Jutri spet!</p>
+    <div class="rmc-revealed">
+      <div class="rmc-revealed__bg" style="background:linear-gradient(135deg,#0d1a0d,#2A3050,#232840)"></div>
+      <div class="rmc-revealed__overlay"></div>
+      <div class="rmc-revealed__body">
+        <span class="rmc-revealed__icon">🔒</span>
+        <p class="rmc-revealed__name">Vse opravljeno!</p>
+        <p class="rmc-revealed__desc">Jutri prihajajo nove misije.</p>
+      </div>
     </div>`;
 }
 
@@ -1766,6 +1805,19 @@ document.addEventListener("DOMContentLoaded", () => {
     if (typeof initXp     === "function") initXp();
     if (typeof initJokers === "function") initJokers();
     if (typeof initCoins  === "function") initCoins();
+
+    // Naloži shranjena imena agentov
+    const _savedNames = JSON.parse(localStorage.getItem('lona_agent_names') || '{}');
+    LONA_CONFIG.agents.forEach(a => { if (_savedNames[a.id]) a.name = _savedNames[a.id]; });
+
+    // Naloži XP/coins overrides za config misije (nastavljeno v commander)
+    const _overrides = JSON.parse(localStorage.getItem('lona_mission_overrides') || '{}');
+    Object.entries(_overrides).forEach(([id, vals]) => {
+      if (LONA_CONFIG.missions[id]) {
+        if (vals.xp    !== undefined) { LONA_CONFIG.missions[id].xp = vals.xp; LONA_CONFIG.missions[id].baseXp = vals.xp; }
+        if (vals.coins !== undefined) LONA_CONFIG.missions[id].coins = vals.coins;
+      }
+    });
 
     // Naloži custom nagrade iz localStorage (dodane v commander)
     const _savedRewards = localStorage.getItem('lona_custom_rewards');
@@ -2133,7 +2185,7 @@ function addRipple(btn, e) {
 
 /** Confetti za rank up */
 function showConfetti() {
-  const colors = ["#2D7D52","#C47D1A","#2563EB","#C4352A","#5AAF7A"];
+  const colors = ["#4A9E6A","#C47D1A","#2563EB","#C4352A","#72D68A"];
   for (let i = 0; i < 40; i++) {
     setTimeout(() => {
       const el = document.createElement("div");
@@ -2245,7 +2297,7 @@ function renderCmdAgents() {
   const flames = flameCount > 0 ? "🔥".repeat(flameCount) : "";
 
   section.innerHTML = `
-    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.06)">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(255,255,255,.10);border-bottom:1px solid rgba(255,255,255,.09)">
 
       <!-- Avatar kompakten -->
       <div style="position:relative;width:44px;height:44px;flex-shrink:0">
@@ -2255,34 +2307,34 @@ function renderCmdAgents() {
             stroke-dasharray="${Math.round(125 * pct / 100)} 125"
             stroke-linecap="round" transform="rotate(-90 22 22)"/>
         </svg>
-        <div style="position:absolute;inset:4px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:1.1rem">
+        <div style="position:absolute;inset:4px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:1.1rem">
           ${avatarHtml}
         </div>
       </div>
 
       <!-- Info -->
       <div style="flex:1;min-width:0">
-        <p style="font-size:.95rem;font-weight:800;color:#F7F4EF;margin:0;line-height:1">${a.name}</p>
+        <p style="font-size:.95rem;font-weight:800;color:#F0EEF8;margin:0;line-height:1">${a.name}</p>
         <p style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#FFD60A;margin:2px 0 0">${rank}</p>
       </div>
 
       <!-- Stats kompaktni -->
       <div style="display:flex;gap:10px;align-items:center;flex-shrink:0">
         <div style="text-align:center">
-          <p style="font-size:.9rem;font-weight:800;color:#5AAF7A;margin:0;line-height:1">${xp}</p>
-          <p style="font-size:.58rem;color:rgba(247,244,239,.4);margin:1px 0 0;text-transform:uppercase">XP</p>
+          <p style="font-size:.9rem;font-weight:800;color:#72D68A;margin:0;line-height:1">${xp}</p>
+          <p style="font-size:.58rem;color:rgba(240,238,248,.6);margin:1px 0 0;text-transform:uppercase">XP</p>
         </div>
         <div style="text-align:center">
           <p style="font-size:.9rem;font-weight:800;color:#FFD60A;margin:0;line-height:1">${coins}</p>
-          <p style="font-size:.58rem;color:rgba(247,244,239,.4);margin:1px 0 0;text-transform:uppercase">🪙</p>
+          <p style="font-size:.58rem;color:rgba(240,238,248,.6);margin:1px 0 0;text-transform:uppercase">🪙</p>
         </div>
         <div style="text-align:center">
           <p style="font-size:.9rem;font-weight:800;color:#CF8FFF;margin:0;line-height:1">${jokers}</p>
-          <p style="font-size:.58rem;color:rgba(247,244,239,.4);margin:1px 0 0;text-transform:uppercase">🃏</p>
+          <p style="font-size:.58rem;color:rgba(240,238,248,.6);margin:1px 0 0;text-transform:uppercase">🃏</p>
         </div>
         ${streak.count > 1 ? `<div style="text-align:center">
           <p style="font-size:.9rem;font-weight:800;color:#FF9500;margin:0;line-height:1">${streak.count}</p>
-          <p style="font-size:.58rem;color:rgba(247,244,239,.4);margin:1px 0 0;text-transform:uppercase">🔥</p>
+          <p style="font-size:.58rem;color:rgba(240,238,248,.6);margin:1px 0 0;text-transform:uppercase">🔥</p>
         </div>` : ""}
       </div>
 

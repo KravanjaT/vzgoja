@@ -4,8 +4,8 @@
   "description": "Poveljniški Center — Stealth Learning za otroke",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0F1A0F",
-  "theme_color": "#2D7D52",
+  "background_color": "#232840",
+  "theme_color": "#72D68A",
   "orientation": "portrait",
   "icons": [
     {

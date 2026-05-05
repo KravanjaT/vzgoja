@@ -5,7 +5,7 @@
 <link rel="icon" type="image/png" href="favicon.ico"/>
 
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
-<meta name="theme-color" content="#0F1A0F"/>
+<meta name="theme-color" content="#1E2438"/>
 <link rel="manifest" href="manifest.json"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -16,7 +16,7 @@
 
 body {
   font-family: 'DM Sans', sans-serif;
-  background: #0F1A0F;
+  background: #1E2438;
   min-height: 100dvh;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
@@ -61,14 +61,14 @@ body {
 }
 .logo-title {
   font-family: 'DM Serif Display', serif;
-  font-size: 3.2rem; color: #F7F4EF;
+  font-size: 3.2rem; color: #F0EEF8;
   letter-spacing: .04em; line-height: 1;
   margin-bottom: 6px;
 }
-.logo-title span { color: #5AAF7A; }
+.logo-title span { color: #72D68A; }
 .logo-sub {
   font-size: .7rem; letter-spacing: .16em;
-  text-transform: uppercase; color: rgba(247,244,239,.3);
+  text-transform: uppercase; color: rgba(240,238,248,.45);
 }
 
 /* Misija briefing */
@@ -76,15 +76,15 @@ body {
   width: 100%; padding: 16px 18px;
   background: rgba(45,125,82,.08);
   border: 1px solid rgba(45,125,82,.2);
-  border-left: 3px solid #5AAF7A;
+  border-left: 3px solid #72D68A;
   border-radius: 14px; margin-bottom: 32px;
 }
 .briefing-box__label {
   font-size: .58rem; font-weight: 700; letter-spacing: .14em;
-  text-transform: uppercase; color: #5AAF7A; margin-bottom: 6px;
+  text-transform: uppercase; color: #72D68A; margin-bottom: 6px;
 }
 .briefing-box__text {
-  font-size: .82rem; color: rgba(247,244,239,.7); line-height: 1.5;
+  font-size: .82rem; color: rgba(240,238,248,.7); line-height: 1.5;
 }
 
 /* Agent kartice */
@@ -93,8 +93,8 @@ body {
 .agent-card {
   display: flex; align-items: center; gap: 16px;
   padding: 18px 20px; border-radius: 18px;
-  background: rgba(255,255,255,.04);
-  border: 1.5px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.10);
+  border: 1.5px solid rgba(255,255,255,.12);
   cursor: pointer; transition: all 250ms ease;
   position: relative; overflow: hidden;
 }
@@ -128,27 +128,27 @@ body {
   border-radius: 50%;
 }
 .agent-card:hover .agent-card__avatar {
-  border-color: #5AAF7A;
+  border-color: #72D68A;
   box-shadow: 0 0 0 4px rgba(45,125,82,.2), 0 0 20px rgba(45,125,82,.3);
 }
 .agent-card__info { flex: 1; position: relative; z-index: 1; }
 .agent-card__name {
   font-family: 'DM Serif Display', serif;
-  font-size: 1.2rem; color: #F7F4EF; margin-bottom: 4px;
+  font-size: 1.2rem; color: #F0EEF8; margin-bottom: 4px;
 }
 .agent-card__rank {
   font-size: .6rem; font-weight: 600; letter-spacing: .1em;
-  text-transform: uppercase; color: #5AAF7A;
+  text-transform: uppercase; color: #72D68A;
 }
 .agent-card__xp {
-  font-size: .78rem; font-weight: 600; color: rgba(247,244,239,.4);
+  font-size: .78rem; font-weight: 600; color: rgba(240,238,248,.6);
   margin-top: 1px;
 }
 .agent-card__arrow {
-  font-size: 1.1rem; color: rgba(247,244,239,.2);
+  font-size: 1.1rem; color: rgba(240,238,248,.2);
   transition: all 250ms ease; position: relative; z-index: 1;
 }
-.agent-card:hover .agent-card__arrow { color: #5AAF7A; transform: translateX(4px); }
+.agent-card:hover .agent-card__arrow { color: #72D68A; transform: translateX(4px); }
 
 /* XP mini bar */
 .agent-card__bar {
@@ -162,8 +162,8 @@ body {
 .gk-check-item {
   display: flex; align-items: center; gap: 14px;
   padding: 14px 18px; border-radius: 16px;
-  background: rgba(255,255,255,.04);
-  border: 2px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.10);
+  border: 2px solid rgba(255,255,255,.12);
   cursor: pointer; transition: all 200ms ease;
   -webkit-tap-highlight-color: transparent;
 }
@@ -188,17 +188,17 @@ body {
   100%{ transform: scale(1); }
 }
 .gk-check-item__label {
-  font-size: .95rem; font-weight: 700; color: rgba(247,244,239,.7);
+  font-size: .95rem; font-weight: 700; color: rgba(240,238,248,.7);
   transition: color 200ms ease;
 }
 .gk-check-item--done .gk-check-item__label {
-  color: #5AAF7A; text-decoration: line-through;
+  color: #72D68A; text-decoration: line-through;
 }
 .gk-confirm-btn {
   width: 100%; padding: 16px; border-radius: 16px;
   font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 900;
-  background: rgba(255,255,255,.06); color: rgba(247,244,239,.4);
-  border: 2px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.09); color: rgba(240,238,248,.6);
+  border: 2px solid rgba(255,255,255,.12);
   transition: all 250ms ease; cursor: not-allowed;
 }
 .gk-confirm-btn--ready {
@@ -223,7 +223,7 @@ body {
 .step-animate { animation: step-in .35s cubic-bezier(.17,.67,.35,1.1) forwards; }
 
 .agent-card__bar-fill {
-  height: 100%; background: #5AAF7A;
+  height: 100%; background: #72D68A;
   transition: width .6s ease;
 }
 
@@ -234,10 +234,10 @@ body {
 }
 .or-divider::before, .or-divider::after {
   content: ''; flex: 1; height: 1px;
-  background: rgba(255,255,255,.06);
+  background: rgba(255,255,255,.09);
 }
 .or-divider span {
-  font-size: .62rem; color: rgba(247,244,239,.2);
+  font-size: .62rem; color: rgba(240,238,248,.2);
   letter-spacing: .1em; text-transform: uppercase;
 }
 
@@ -245,7 +245,7 @@ body {
 .login-footer {
   margin-top: 40px; text-align: center;
   font-size: .6rem; letter-spacing: .1em;
-  text-transform: uppercase; color: rgba(247,244,239,.15);
+  text-transform: uppercase; color: rgba(240,238,248,.15);
 }
 
 /* Loading animacija */
@@ -427,7 +427,7 @@ LONA_CONFIG.agents.forEach((agent, i) => {
     <div class="agent-card__avatar" id="avatar-${agent.id}" style="position:relative;overflow:visible">
       ${_photo ? `<img src="${_photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : agent.avatar}
       <div style="position:absolute;bottom:-2px;right:-2px;width:20px;height:20px;border-radius:50%;
-        background:#2D7D52;border:2px solid #0F1A0F;display:flex;align-items:center;
+        background:#4A9E6A;border:2px solid #1E2438;display:flex;align-items:center;
         justify-content:center;font-size:.55rem;z-index:2">📷</div>
     </div>
     <div class="agent-card__info">
@@ -441,50 +441,13 @@ LONA_CONFIG.agents.forEach((agent, i) => {
     </div>
   `;
 
-  // Skrit file input za tega agenta
-  const fileInput = document.createElement("input");
-  fileInput.type = "file"; fileInput.accept = "image/*";
-  fileInput.style.display = "none";
-  fileInput.addEventListener("change", function() {
-    const file = this.files[0]; if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const size = Math.min(img.width, img.height);
-        canvas.width = canvas.height = 400;
-        canvas.getContext("2d").drawImage(img,
-          (img.width-size)/2,(img.height-size)/2,size,size,0,0,400,400);
-        const data = canvas.toDataURL("image/jpeg", .8);
-        localStorage.setItem("lona_photo_" + agent.id, data);
-        // Posodobi avatar takoj
-        const av = document.getElementById("avatar-" + agent.id);
-        av.innerHTML = `<img src="${data}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">
-          <div style="position:absolute;bottom:-2px;right:-2px;width:20px;height:20px;border-radius:50%;
-            background:#2D7D52;border:2px solid #0F1A0F;display:flex;align-items:center;
-            justify-content:center;font-size:.55rem;z-index:2">📷</div>`;
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-
-  // Klik na avatar → foto, klik na kartico → izberi agenta
-  card.addEventListener("click", (e) => {
-    const av = document.getElementById("avatar-" + agent.id);
-    if (av.contains(e.target)) {
-      e.stopPropagation();
-      fileInput.click();
-      return;
-    }
+  card.addEventListener("click", () => {
     localStorage.setItem("lona_current_agent", agent.id);
     card.style.transform = "scale(.95)"; card.style.opacity = ".7";
     setTimeout(() => { location.href = "gatekeeper.html"; }, 180);
   });
 
   wrap.appendChild(card);
-  wrap.appendChild(fileInput);
   list.appendChild(wrap);
 });
 </script>

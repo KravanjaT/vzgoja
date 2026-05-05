@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
-<meta name="theme-color" content="#0F1A0F"/>
+<meta name="theme-color" content="#1E2438"/>
 <link rel="icon" type="image/png" href="favicon.png"/>
 <link rel="manifest" href="manifest.json"/>
 <title>LONA OS — Commander</title>
@@ -41,7 +41,7 @@ body { padding-bottom: 40px; }
 }
 .agent-cmd-card__avatar {
   width: 40px; height: 40px; border-radius: 50%;
-  overflow: hidden; background: rgba(255,255,255,.08);
+  overflow: hidden; background: rgba(255,255,255,.12);
   display: flex; align-items: center; justify-content: center;
   font-size: 1.2rem; flex-shrink: 0;
   border: 2px solid rgba(90,175,122,.3);
@@ -62,7 +62,7 @@ body { padding-bottom: 40px; }
 }
 .stat-pill {
   flex: 1; text-align: center; padding: 6px 4px;
-  background: rgba(255,255,255,.04);
+  background: rgba(255,255,255,.10);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
 }
@@ -122,7 +122,7 @@ body { padding-bottom: 40px; }
   background: var(--bg-card);
   cursor: pointer; transition: all .15s ease;
 }
-.cmd-action-btn--hide  { color: rgba(247,244,239,.4); }
+.cmd-action-btn--hide  { color: rgba(240,238,248,.6); }
 .cmd-action-btn--show  { color: var(--green); border-color: rgba(90,175,122,.3); }
 .cmd-action-btn--del   { color: var(--red); border-color: rgba(255,59,48,.2); }
 
@@ -144,7 +144,7 @@ body { padding-bottom: 40px; }
   margin-bottom: 4px; display: block;
 }
 .form-input {
-  background: rgba(255,255,255,.06);
+  background: rgba(255,255,255,.09);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   color: var(--text); padding: 10px 12px;
@@ -153,14 +153,14 @@ body { padding-bottom: 40px; }
 }
 .form-input:focus { border-color: rgba(90,175,122,.4); }
 .form-select {
-  background: rgba(255,255,255,.06);
+  background: rgba(255,255,255,.09);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   color: var(--text); padding: 10px 12px;
   font-size: .88rem; font-family: var(--font-body);
   outline: none; width: 100%;
 }
-.form-select option { background: #1a2b1a; }
+.form-select option { background: #2A3050; }
 
 .add-btn {
   width: 100%; padding: 13px;
@@ -244,6 +244,7 @@ body { padding-bottom: 40px; }
   <div class="cmd-tab cmd-tab--active" onclick="switchTab('missions')">⚔️ Misije</div>
   <div class="cmd-tab" onclick="switchTab('rewards')">🏆 Nagrade</div>
   <div class="cmd-tab" onclick="switchTab('add-mission')">+ Misija</div>
+  <div class="cmd-tab" onclick="switchTab('mine')">⭐ Moje</div>
   <div class="cmd-tab" onclick="switchTab('add-reward')">+ Nagrada</div>
 </div>
 
@@ -324,6 +325,42 @@ body { padding-bottom: 40px; }
   </div>
 </div>
 
+<!-- TAB: Moje misije -->
+<div class="tab-content cmd-section" id="tab-mine">
+  <p style="font-size:.75rem;color:var(--text-muted);margin-bottom:12px">
+    Misije ki jih dodata otroka vidita pod ⭐ Moje na glavni strani.
+  </p>
+  <div class="add-form" style="margin-bottom:12px">
+    <p class="cmd-section__title" style="margin-bottom:0">Dodaj v Moje misije</p>
+    <div class="add-form__row add-form__row--3">
+      <div>
+        <label class="form-label">Ikona</label>
+        <input class="form-input" id="mm-icon" placeholder="⭐" style="text-align:center;font-size:1.3rem"/>
+      </div>
+      <div>
+        <label class="form-label">Naziv</label>
+        <input class="form-input" id="mm-label" placeholder="Npr. Pomagaj pri nakupu"/>
+      </div>
+      <div>
+        <label class="form-label">XP</label>
+        <input class="form-input" id="mm-xp" type="number" value="25"/>
+      </div>
+    </div>
+    <div class="add-form__row add-form__row--2">
+      <div>
+        <label class="form-label">🪙 Kovanci</label>
+        <input class="form-input" id="mm-coins" type="number" value="10"/>
+      </div>
+      <div>
+        <label class="form-label">Opis</label>
+        <input class="form-input" id="mm-desc" placeholder="Kratko navodilo..."/>
+      </div>
+    </div>
+    <button class="add-btn" onclick="addMineMission()">⭐ Dodaj v Moje</button>
+  </div>
+  <div class="cmd-mission-list" id="mine-list"></div>
+</div>
+
 <!-- TAB: Dodaj nagrado -->
 <div class="tab-content cmd-section" id="tab-add-reward">
   <div class="add-form">
@@ -370,6 +407,8 @@ function switchTab(name) {
   document.querySelectorAll('.cmd-tab').forEach(t => t.classList.remove('cmd-tab--active'));
   document.getElementById('tab-' + name).classList.add('active');
   event.target.classList.add('cmd-tab--active');
+  if (name === 'mine') renderMineList();
+  if (name === 'missions') renderMissionList();
 }
 
 // ── AGENTS ────────────────────────────────────────────────
@@ -388,7 +427,14 @@ function renderAgents() {
 
     return `<div class="agent-cmd-card">
       <div class="agent-cmd-card__top">
-        <div class="agent-cmd-card__avatar">${avHtml}</div>
+        <div style="position:relative;flex-shrink:0;cursor:pointer" onclick="document.getElementById('photo-input-${a.id}').click()" title="Zamenjaj foto">
+          <div class="agent-cmd-card__avatar">${avHtml}</div>
+          <div style="position:absolute;bottom:-2px;right:-2px;width:20px;height:20px;border-radius:50%;
+            background:#4A9E6A;border:2px solid #232840;display:flex;align-items:center;
+            justify-content:center;font-size:.6rem">📷</div>
+        </div>
+        <input type="file" id="photo-input-${a.id}" accept="image/*" style="display:none"
+          onchange="handleCmdPhoto(this,'${a.id}')">
         <div>
           <p class="agent-cmd-card__name">${a.name}</p>
           <p class="agent-cmd-card__rank">${rank}</p>
@@ -396,7 +442,7 @@ function renderAgents() {
       </div>
       <div class="stat-row">
         <div class="stat-pill">
-          <p class="stat-pill__val" style="color:#5AAF7A">${xp}</p>
+          <p class="stat-pill__val" style="color:#72D68A">${xp}</p>
           <p class="stat-pill__lbl">XP prosto</p>
         </div>
         <div class="stat-pill">
@@ -408,9 +454,15 @@ function renderAgents() {
           <p class="stat-pill__lbl">🃏 Jokerji</p>
         </div>
       </div>
+      <div style="display:flex;gap:6px;margin-bottom:6px">
+        <input id="name-input-${a.id}" value="${a.name}"
+          style="flex:1;padding:7px 10px;border-radius:var(--r-sm);background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.1);color:#F0EEF8;font-size:.82rem;font-family:'DM Sans',sans-serif;outline:none"/>
+        <button onclick="saveName('${a.id}')"
+          style="padding:7px 12px;border-radius:var(--r-sm);background:rgba(120,160,255,.2);border:1px solid rgba(90,175,122,.3);color:#72D68A;font-size:.75rem;font-weight:800;cursor:pointer;white-space:nowrap">✓ Shrani</button>
+      </div>
       <div style="display:flex;gap:6px">
         <button onclick="giveBonus('${a.id}',25,'xp')"
-          style="flex:1;padding:7px;border-radius:var(--r-sm);background:rgba(90,175,122,.12);border:1px solid rgba(90,175,122,.25);color:#5AAF7A;font-size:.75rem;font-weight:800;cursor:pointer">+25 XP</button>
+          style="flex:1;padding:7px;border-radius:var(--r-sm);background:rgba(120,160,255,.18);border:1px solid rgba(90,175,122,.25);color:#72D68A;font-size:.75rem;font-weight:800;cursor:pointer">+25 XP</button>
         <button onclick="giveBonus('${a.id}',10,'coins')"
           style="flex:1;padding:7px;border-radius:var(--r-sm);background:rgba(255,214,10,.1);border:1px solid rgba(255,214,10,.25);color:#FFD60A;font-size:.75rem;font-weight:800;cursor:pointer">+10 🪙</button>
         <button onclick="giveBonus('${a.id}',1,'joker')"
@@ -418,6 +470,41 @@ function renderAgents() {
       </div>
     </div>`;
   }).join('');
+}
+
+function handleCmdPhoto(input, agentId) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const size = Math.min(img.width, img.height);
+      canvas.width = canvas.height = 400;
+      canvas.getContext('2d').drawImage(img,
+        (img.width-size)/2,(img.height-size)/2,size,size,0,0,400,400);
+      const data = canvas.toDataURL('image/jpeg', .8);
+      localStorage.setItem('lona_photo_' + agentId, data);
+      showMsg('📷 Foto shranjena!');
+      renderAgents();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveName(agentId) {
+  const input = document.getElementById('name-input-' + agentId);
+  if (!input || !input.value.trim()) return;
+  const names = JSON.parse(localStorage.getItem('lona_agent_names') || '{}');
+  names[agentId] = input.value.trim();
+  localStorage.setItem('lona_agent_names', JSON.stringify(names));
+  // Posodobi config
+  const agent = LONA_CONFIG.agents.find(a => a.id === agentId);
+  if (agent) agent.name = input.value.trim();
+  showMsg(`✓ Ime spremenjeno na "${input.value.trim()}"`);
+  renderAgents();
 }
 
 function giveBonus(agentId, amount, type) {
@@ -467,22 +554,77 @@ function renderMissionList() {
       organisation:'Organizacija',fitness:'Telovadba',outdoor:'Outdoor',
       eq:'EQ',fear:'Strah',creativity:'Branje',custom:'Moje',
       social:'Socialne',money:'Denar',body:'Telo',safety:'Varnost'}[m.category] || m.category;
-    return `<div class="cmd-mission-row ${isHidden ? 'cmd-mission-row--hidden' : ''}">
-      <span class="cmd-mission-row__icon">${m.icon || '📋'}</span>
-      <div class="cmd-mission-row__body">
-        <p class="cmd-mission-row__name">${m.label}</p>
-        <p class="cmd-mission-row__meta">${catName} · +${m.xp || m.baseXp || 0} XP · 🪙${m.coins || 0}</p>
+    return `<div class="cmd-mission-row ${isHidden ? 'cmd-mission-row--hidden' : ''}" style="flex-direction:column;align-items:stretch;gap:8px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="cmd-mission-row__icon">${m.icon||'📋'}</span>
+        <div class="cmd-mission-row__body">
+          <p class="cmd-mission-row__name">${m.label}</p>
+          <p class="cmd-mission-row__meta">${catName}</p>
+        </div>
+        <div style="display:flex;gap:4px">
+          <button class="cmd-action-btn" onclick="addToMine('${m.id}')"
+            title="Dodaj v Moje" style="color:#FF9500;border-color:rgba(255,149,0,.3);font-size:.65rem;width:auto;padding:0 8px;white-space:nowrap">⭐</button>
+          <button class="cmd-action-btn ${isHidden?'cmd-action-btn--show':'cmd-action-btn--hide'}"
+            onclick="setHidden('${m.id}',${!isHidden})">${isHidden?'👁':'🙈'}</button>
+          ${isCustom?`<button class="cmd-action-btn cmd-action-btn--del" onclick="deleteCustom('${m.id}')">🗑</button>`:''}
+        </div>
       </div>
-      <div class="cmd-mission-row__actions">
-        <button class="cmd-action-btn ${isHidden ? 'cmd-action-btn--show' : 'cmd-action-btn--hide'}"
-          onclick="setHidden('${m.id}', ${!isHidden})" title="${isHidden ? 'Pokaži' : 'Skrij'}">
-          ${isHidden ? '👁' : '🙈'}
-        </button>
-        ${isCustom ? `<button class="cmd-action-btn cmd-action-btn--del"
-          onclick="deleteCustom('${m.id}')" title="Izbriši">🗑</button>` : ''}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 4px">
+        <div>
+          <label style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:3px">XP</label>
+          <input type="number" value="${m.xp||m.baseXp||0}" min="0"
+            onchange="updateMissionVal('${m.id}','xp',this.value,'${isCustom}')"
+            style="width:100%;padding:6px 10px;border-radius:10px;background:rgba(90,175,122,.08);border:1px solid rgba(120,160,255,.25);color:#72D68A;font-size:.85rem;font-weight:800;outline:none;font-family:'DM Sans',sans-serif"/>
+        </div>
+        <div>
+          <label style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:3px">🪙 Kovanci</label>
+          <input type="number" value="${m.coins||0}" min="0"
+            onchange="updateMissionVal('${m.id}','coins',this.value,'${isCustom}')"
+            style="width:100%;padding:6px 10px;border-radius:10px;background:rgba(255,214,10,.08);border:1px solid rgba(255,214,10,.2);color:#FFD60A;font-size:.85rem;font-weight:800;outline:none;font-family:'DM Sans',sans-serif"/>
+        </div>
       </div>
     </div>`;
   }).join('') || '<p style="color:var(--text-muted);font-size:.82rem;text-align:center;padding:20px">Ni misij.</p>';
+}
+
+function addToMine(missionId) {
+  const m = LONA_CONFIG.missions[missionId];
+  if (!m) return;
+  const existing = JSON.parse(localStorage.getItem('lona_custom_missions') || '[]');
+  // Preveri če je že v Moje
+  if (existing.find(x => x.id === missionId || x.sourceId === missionId)) {
+    showMsg(`"${m.label}" je že v Moje misijah!`, true);
+    return;
+  }
+  // Dodaj kopijo z oznako sourceId
+  existing.push({ ...m, id:'mine_'+missionId, sourceId:missionId, category:'custom' });
+  localStorage.setItem('lona_custom_missions', JSON.stringify(existing));
+  showMsg(`⭐ "${m.label}" dodana v Moje misije!`);
+  renderMineList();
+}
+
+function updateMissionVal(id, field, val, isCustom) {
+  if (isCustom === 'true') {
+    // Custom misija — shrani v localStorage
+    const all = JSON.parse(localStorage.getItem('lona_custom_missions') || '[]');
+    const m = all.find(x => x.id === id);
+    if (m) {
+      if (field === 'xp')    { m.xp = parseInt(val)||0; m.baseXp = m.xp; }
+      if (field === 'coins') { m.coins = parseInt(val)||0; }
+      localStorage.setItem('lona_custom_missions', JSON.stringify(all));
+    }
+  } else {
+    // Config misija — shrani override v localStorage
+    const overrides = JSON.parse(localStorage.getItem('lona_mission_overrides') || '{}');
+    if (!overrides[id]) overrides[id] = {};
+    overrides[id][field] = parseInt(val)||0;
+    localStorage.setItem('lona_mission_overrides', JSON.stringify(overrides));
+    // Posodobi config v spominu
+    if (LONA_CONFIG.missions[id]) {
+      if (field === 'xp')    { LONA_CONFIG.missions[id].xp = parseInt(val)||0; LONA_CONFIG.missions[id].baseXp = parseInt(val)||0; }
+      if (field === 'coins') { LONA_CONFIG.missions[id].coins = parseInt(val)||0; }
+    }
+  }
 }
 
 function deleteCustom(id) {
@@ -493,23 +635,54 @@ function deleteCustom(id) {
 
 // ── REWARDS LIST ──────────────────────────────────────────
 function renderRewardsList() {
-  const mkRow = r => `<div class="cmd-reward-row">
-    <span class="cmd-reward-row__icon">${r.icon}</span>
-    <div class="cmd-reward-row__body">
-      <p class="cmd-reward-row__name">${r.label}</p>
-      <p class="cmd-reward-row__cost">🪙 ${r.cost} kovancev</p>
+  const mkRow = (r, type) => `<div class="cmd-mission-row" style="flex-direction:column;align-items:stretch;gap:8px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:1.2rem">${r.icon}</span>
+      <div style="flex:1">
+        <p style="font-size:.85rem;font-weight:700;color:var(--text);margin:0">${r.label}</p>
+      </div>
+      <button class="cmd-action-btn cmd-action-btn--del"
+        onclick="deleteReward('${r.id}','${type}')">🗑</button>
     </div>
-    <button class="cmd-action-btn cmd-action-btn--del"
-      onclick="deleteReward('${r.id}', '${r.shared ? 'shared' : 'personal'}')" title="Izbriši">🗑</button>
+    <div style="display:grid;grid-template-columns:1fr 60px 60px;gap:6px;padding:0 4px">
+      <div>
+        <label style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:3px">Naziv</label>
+        <input value="${r.label}"
+          onchange="updateReward('${r.id}','${type}','label',this.value)"
+          style="width:100%;padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.1);color:var(--text);font-size:.82rem;outline:none;font-family:'DM Sans',sans-serif"/>
+      </div>
+      <div>
+        <label style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:3px">🪙</label>
+        <input type="number" value="${r.cost}" min="0"
+          onchange="updateReward('${r.id}','${type}','cost',this.value)"
+          style="width:100%;padding:6px 8px;border-radius:10px;background:rgba(255,214,10,.08);border:1px solid rgba(255,214,10,.2);color:#FFD60A;font-size:.82rem;font-weight:800;outline:none;font-family:'DM Sans',sans-serif"/>
+      </div>
+      <div>
+        <label style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:3px">Ikona</label>
+        <input value="${r.icon}"
+          onchange="updateReward('${r.id}','${type}','icon',this.value)"
+          style="width:100%;padding:6px 8px;border-radius:10px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.1);color:var(--text);font-size:1rem;text-align:center;outline:none;font-family:'DM Sans',sans-serif"/>
+      </div>
+    </div>
   </div>`;
 
   document.getElementById('cmd-rewards-personal').innerHTML =
-    (LONA_CONFIG.rewards.personal || []).map(mkRow).join('') ||
+    (LONA_CONFIG.rewards.personal || []).map(r => mkRow(r,'personal')).join('') ||
     '<p style="color:var(--text-muted);font-size:.82rem;padding:8px">Ni osebnih nagrad.</p>';
 
   document.getElementById('cmd-rewards-shared').innerHTML =
-    (LONA_CONFIG.rewards.shared || []).map(mkRow).join('') ||
+    (LONA_CONFIG.rewards.shared || []).map(r => mkRow(r,'shared')).join('') ||
     '<p style="color:var(--text-muted);font-size:.82rem;padding:8px">Ni skupnih nagrad.</p>';
+}
+
+function updateReward(id, type, field, val) {
+  const list = LONA_CONFIG.rewards[type];
+  const r = list.find(x => x.id === id);
+  if (!r) return;
+  if (field === 'cost')  r.cost  = parseInt(val) || 0;
+  if (field === 'label') r.label = val.trim();
+  if (field === 'icon')  r.icon  = val.trim();
+  localStorage.setItem('lona_custom_rewards', JSON.stringify(LONA_CONFIG.rewards));
 }
 
 function deleteReward(id, type) {
@@ -520,6 +693,91 @@ function deleteReward(id, type) {
   localStorage.setItem('lona_custom_rewards', JSON.stringify(LONA_CONFIG.rewards));
   renderRewardsList();
   showMsg('Nagrada izbrisana.');
+}
+
+// ── MOJE MISIJE ──────────────────────────────────────────────
+function addMineMission() {
+  const icon  = document.getElementById('mm-icon').value.trim() || '⭐';
+  const label = document.getElementById('mm-label').value.trim();
+  const xp    = parseInt(document.getElementById('mm-xp').value) || 25;
+  const coins = parseInt(document.getElementById('mm-coins').value) || 10;
+  const desc  = document.getElementById('mm-desc').value.trim();
+
+  if (!label) { showMsg('Vnesi naziv misije!', true); return; }
+
+  const existing = JSON.parse(localStorage.getItem('lona_custom_missions') || '[]');
+  const id = 'mine_' + Date.now();
+  existing.push({ id, label, icon, xp, coins, desc,
+    category:'custom', location:'any',
+    cooldownHrs:48, season:'osnovno', visible:true, state:'available' });
+  localStorage.setItem('lona_custom_missions', JSON.stringify(existing));
+
+  showMsg(`⭐ "${label}" dodana v Moje misije!`);
+  document.getElementById('mm-label').value = '';
+  document.getElementById('mm-icon').value  = '';
+  document.getElementById('mm-desc').value  = '';
+  renderMineList();
+}
+
+function renderMineList() {
+  const el = document.getElementById('mine-list');
+  if (!el) return;
+  const all = JSON.parse(localStorage.getItem('lona_custom_missions') || '[]')
+    .filter(m => m.id.startsWith('mine_') || m.category === 'custom');
+
+  if (!all.length) {
+    el.innerHTML = '<p style="color:var(--text-muted);font-size:.82rem;text-align:center;padding:16px">Še ni tvojih misij.</p>';
+    return;
+  }
+  el.innerHTML = all.map(m => `
+    <div class="cmd-mission-row" style="flex-direction:column;align-items:stretch;gap:8px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="cmd-mission-row__icon">${m.icon||'⭐'}</span>
+        <div class="cmd-mission-row__body">
+          <p class="cmd-mission-row__name">${m.label}</p>
+          <p class="cmd-mission-row__meta">${m.desc||''}</p>
+        </div>
+        <button class="cmd-action-btn cmd-action-btn--del" onclick="deleteMineMission('${m.id}')">🗑</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:6px;padding:0 4px">
+        <div>
+          <label style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:3px">XP</label>
+          <input type="number" value="${m.xp||m.baseXp||0}" min="0" max="500"
+            onchange="updateMineVal('${m.id}','xp',this.value)"
+            style="width:100%;padding:7px 10px;border-radius:10px;background:rgba(90,175,122,.08);border:1px solid rgba(120,160,255,.25);color:#72D68A;font-size:.88rem;font-weight:800;outline:none;font-family:'DM Sans',sans-serif"/>
+        </div>
+        <div>
+          <label style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:3px">🪙 Kovanci</label>
+          <input type="number" value="${m.coins||0}" min="0" max="500"
+            onchange="updateMineVal('${m.id}','coins',this.value)"
+            style="width:100%;padding:7px 10px;border-radius:10px;background:rgba(255,214,10,.08);border:1px solid rgba(255,214,10,.2);color:#FFD60A;font-size:.88rem;font-weight:800;outline:none;font-family:'DM Sans',sans-serif"/>
+        </div>
+        <div style="display:flex;align-items:flex-end">
+          <button onclick="updateMineVal('${m.id}','save')"
+            style="padding:7px 12px;border-radius:10px;background:rgba(120,160,255,.2);border:1px solid rgba(90,175,122,.3);color:#72D68A;font-size:.75rem;font-weight:800;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif">
+            ✓
+          </button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function updateMineVal(id, field, val) {
+  const all = JSON.parse(localStorage.getItem('lona_custom_missions') || '[]');
+  const m = all.find(x => x.id === id);
+  if (!m) return;
+  if (field === 'xp')    { m.xp = parseInt(val) || 0; m.baseXp = m.xp; }
+  if (field === 'coins') { m.coins = parseInt(val) || 0; }
+  if (field === 'save')  { showMsg('✓ Shranjeno!'); }
+  localStorage.setItem('lona_custom_missions', JSON.stringify(all));
+}
+
+function deleteMineMission(id) {
+  const all = JSON.parse(localStorage.getItem('lona_custom_missions') || '[]')
+    .filter(m => m.id !== id);
+  localStorage.setItem('lona_custom_missions', JSON.stringify(all));
+  renderMineList();
+  showMsg('Misija izbrisana.');
 }
 
 // ── ADD MISSION ───────────────────────────────────────────
@@ -581,7 +839,7 @@ function showMsg(msg, isError) {
     padding:10px 18px;border-radius:30px;font-size:.85rem;font-weight:700;
     background:${isError ? 'rgba(255,59,48,.2)' : 'rgba(45,125,82,.3)'};
     border:1px solid ${isError ? 'rgba(255,59,48,.4)' : 'rgba(90,175,122,.4)'};
-    color:${isError ? '#FF6B6B' : '#5AAF7A'};
+    color:${isError ? '#FF6B6B' : '#72D68A'};
     z-index:9999;backdrop-filter:blur(8px);white-space:nowrap`;
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 2500);
@@ -597,6 +855,7 @@ if(savedRewards) {
 document.addEventListener('DOMContentLoaded', () => {
   renderAgents();
   renderMissionList();
+  renderMineList();
   renderRewardsList();
 });
 </script>
