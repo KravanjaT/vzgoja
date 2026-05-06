@@ -10,7 +10,7 @@
 
 /* ── TOKENS ────────────────────────────────────────────── */
 :root {
-  --font-body:    'DM Sans', system-ui, sans-serif;
+  --font-body:    'DM Sans', system-ui, -apple-system, sans-serif;
   --font-display: 'DM Serif Display', serif;
 
   --bg:           #232840;
@@ -42,8 +42,16 @@
 
 /* ── BASE ──────────────────────────────────────────────── */
 html { -webkit-text-size-adjust: 100%; }
+
+/* Emoji font fallback za vse platforme */
+@font-face {
+  font-family: 'Emoji';
+  src: local('Apple Color Emoji'), local('Segoe UI Emoji'),
+       local('Noto Color Emoji'), local('Android Emoji');
+  unicode-range: U+1F000-1FFFF, U+2600-27FF, U+FE0F;
+}
 body {
-  font-family: var(--font-body);
+  font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100dvh;

@@ -637,33 +637,35 @@ function deleteCustom(id) {
 function renderRewardsList() {
   const mkRow = (r, type) => `<div class="cmd-mission-row" style="flex-direction:column;align-items:stretch;gap:8px">
     <div style="display:flex;align-items:center;gap:10px">
-      <span style="font-size:1.2rem">${r.icon}</span>
+      <span id="icon-${r.id}" style="font-size:1.4rem">${r.icon}</span>
       <div style="flex:1">
         <p style="font-size:.85rem;font-weight:700;color:var(--text);margin:0">${r.label}</p>
+        <p style="font-size:.65rem;color:#FFD60A;margin:1px 0 0">🪙 ${r.cost}</p>
       </div>
       <button class="cmd-action-btn cmd-action-btn--del"
         onclick="deleteReward('${r.id}','${type}')">🗑</button>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 60px 60px;gap:6px;padding:0 4px">
+    <div style="display:grid;grid-template-columns:1fr 70px 50px;gap:6px;padding:0 4px">
       <div>
         <label style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:3px">Naziv</label>
-        <input value="${r.label}"
-          onchange="updateReward('${r.id}','${type}','label',this.value)"
+        <input id="label-${r.id}" value="${r.label}"
           style="width:100%;padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.1);color:var(--text);font-size:.82rem;outline:none;font-family:'DM Sans',sans-serif"/>
       </div>
       <div>
-        <label style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:3px">🪙</label>
-        <input type="number" value="${r.cost}" min="0"
-          onchange="updateReward('${r.id}','${type}','cost',this.value)"
+        <label style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:3px">🪙 Cena</label>
+        <input type="number" id="cost-${r.id}" value="${r.cost}" min="0"
           style="width:100%;padding:6px 8px;border-radius:10px;background:rgba(255,214,10,.08);border:1px solid rgba(255,214,10,.2);color:#FFD60A;font-size:.82rem;font-weight:800;outline:none;font-family:'DM Sans',sans-serif"/>
       </div>
       <div>
         <label style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:3px">Ikona</label>
-        <input value="${r.icon}"
-          onchange="updateReward('${r.id}','${type}','icon',this.value)"
-          style="width:100%;padding:6px 8px;border-radius:10px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.1);color:var(--text);font-size:1rem;text-align:center;outline:none;font-family:'DM Sans',sans-serif"/>
+        <input id="icon-input-${r.id}" value="${r.icon}"
+          style="width:100%;padding:6px 4px;border-radius:10px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.1);color:var(--text);font-size:1rem;text-align:center;outline:none;font-family:'DM Sans',sans-serif"/>
       </div>
     </div>
+    <button onclick="saveReward('${r.id}','${type}')"
+      style="width:100%;padding:9px;border-radius:10px;background:rgba(114,214,138,.15);border:1px solid rgba(114,214,138,.35);color:#72D68A;font-size:.82rem;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif">
+      ✓ Shrani spremembe
+    </button>
   </div>`;
 
   document.getElementById('cmd-rewards-personal').innerHTML =
@@ -683,6 +685,21 @@ function updateReward(id, type, field, val) {
   if (field === 'label') r.label = val.trim();
   if (field === 'icon')  r.icon  = val.trim();
   localStorage.setItem('lona_custom_rewards', JSON.stringify(LONA_CONFIG.rewards));
+}
+
+function saveReward(id, type) {
+  const label = document.getElementById('label-' + id)?.value.trim();
+  const cost  = parseInt(document.getElementById('cost-' + id)?.value) || 0;
+  const icon  = document.getElementById('icon-input-' + id)?.value.trim();
+  const list  = LONA_CONFIG.rewards[type];
+  const r     = list.find(x => x.id === id);
+  if (!r) return;
+  if (label) r.label = label;
+  r.cost = cost;
+  if (icon) r.icon = icon;
+  localStorage.setItem('lona_custom_rewards', JSON.stringify(LONA_CONFIG.rewards));
+  showMsg(`✓ "${r.label}" shranjeno!`);
+  renderRewardsList();
 }
 
 function deleteReward(id, type) {
