@@ -554,35 +554,52 @@ function renderMissionList() {
       organisation:'Organizacija',fitness:'Telovadba',outdoor:'Outdoor',
       eq:'EQ',fear:'Strah',creativity:'Branje',custom:'Moje',
       social:'Socialne',money:'Denar',body:'Telo',safety:'Varnost'}[m.category] || m.category;
+    const xp    = m.xp || m.baseXp || 0;
+    const coins = m.coins || 0;
+
     return `<div class="cmd-mission-row ${isHidden ? 'cmd-mission-row--hidden' : ''}" style="flex-direction:column;align-items:stretch;gap:8px">
       <div style="display:flex;align-items:center;gap:10px">
-        <span class="cmd-mission-row__icon">${m.icon||'📋'}</span>
-        <div class="cmd-mission-row__body">
-          <p class="cmd-mission-row__name">${m.label}</p>
-          <p class="cmd-mission-row__meta">${catName}</p>
+        <span style="font-size:1.3rem">${m.icon||'📋'}</span>
+        <div style="flex:1">
+          <p style="font-size:.88rem;font-weight:700;color:var(--text);margin:0">${m.label}</p>
+          <p style="font-size:.65rem;color:var(--text-muted);margin:1px 0 0">${catName} · +${xp} XP · 🪙${coins}</p>
         </div>
         <div style="display:flex;gap:4px">
           <button class="cmd-action-btn" onclick="addToMine('${m.id}')"
-            title="Dodaj v Moje" style="color:#FF9500;border-color:rgba(255,149,0,.3);font-size:.65rem;width:auto;padding:0 8px;white-space:nowrap">⭐</button>
+            style="color:#FF9500;border-color:rgba(255,149,0,.3);font-size:.65rem;width:auto;padding:0 8px">⭐</button>
           <button class="cmd-action-btn ${isHidden?'cmd-action-btn--show':'cmd-action-btn--hide'}"
             onclick="setHidden('${m.id}',${!isHidden})">${isHidden?'👁':'🙈'}</button>
           ${isCustom?`<button class="cmd-action-btn cmd-action-btn--del" onclick="deleteCustom('${m.id}')">🗑</button>`:''}
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 4px">
+      <div style="display:grid;grid-template-columns:1fr 50px;gap:6px">
+        <div>
+          <label style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:3px">Naziv</label>
+          <input id="mlabel-${m.id}" value="${m.label}"
+            style="width:100%;padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);color:var(--text);font-size:.85rem;outline:none;font-family:'DM Sans',sans-serif"/>
+        </div>
+        <div>
+          <label style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:3px">Ikona</label>
+          <input id="micon-${m.id}" value="${m.icon||'📋'}"
+            style="width:100%;padding:6px 6px;border-radius:10px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);color:var(--text);font-size:1rem;text-align:center;outline:none;font-family:'DM Sans',sans-serif"/>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
         <div>
           <label style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:3px">XP</label>
-          <input type="number" value="${m.xp||m.baseXp||0}" min="0"
-            onchange="updateMissionVal('${m.id}','xp',this.value,'${isCustom}')"
-            style="width:100%;padding:6px 10px;border-radius:10px;background:rgba(90,175,122,.08);border:1px solid rgba(120,160,255,.25);color:#72D68A;font-size:.85rem;font-weight:800;outline:none;font-family:'DM Sans',sans-serif"/>
+          <input type="number" id="mxp-${m.id}" value="${xp}" min="0"
+            style="width:100%;padding:6px 10px;border-radius:10px;background:rgba(114,214,138,.08);border:1px solid rgba(114,214,138,.2);color:#72D68A;font-size:.85rem;font-weight:800;outline:none;font-family:'DM Sans',sans-serif"/>
         </div>
         <div>
           <label style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:3px">🪙 Kovanci</label>
-          <input type="number" value="${m.coins||0}" min="0"
-            onchange="updateMissionVal('${m.id}','coins',this.value,'${isCustom}')"
+          <input type="number" id="mcoins-${m.id}" value="${coins}" min="0"
             style="width:100%;padding:6px 10px;border-radius:10px;background:rgba(255,214,10,.08);border:1px solid rgba(255,214,10,.2);color:#FFD60A;font-size:.85rem;font-weight:800;outline:none;font-family:'DM Sans',sans-serif"/>
         </div>
       </div>
+      <button onclick="saveMissionVal('${m.id}','${isCustom}')"
+        style="width:100%;padding:9px;border-radius:10px;background:rgba(114,214,138,.15);border:1px solid rgba(114,214,138,.35);color:#72D68A;font-size:.82rem;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif">
+        ✓ Shrani
+      </button>
     </div>`;
   }).join('') || '<p style="color:var(--text-muted);font-size:.82rem;text-align:center;padding:20px">Ni misij.</p>';
 }
@@ -603,28 +620,38 @@ function addToMine(missionId) {
   renderMineList();
 }
 
-function updateMissionVal(id, field, val, isCustom) {
+function saveMissionVal(id, isCustom) {
+  const label = document.getElementById('mlabel-' + id)?.value.trim();
+  const icon  = document.getElementById('micon-' + id)?.value.trim();
+  const xp    = parseInt(document.getElementById('mxp-' + id)?.value) || 0;
+  const coins = parseInt(document.getElementById('mcoins-' + id)?.value) || 0;
+
   if (isCustom === 'true') {
-    // Custom misija — shrani v localStorage
     const all = JSON.parse(localStorage.getItem('lona_custom_missions') || '[]');
     const m = all.find(x => x.id === id);
     if (m) {
-      if (field === 'xp')    { m.xp = parseInt(val)||0; m.baseXp = m.xp; }
-      if (field === 'coins') { m.coins = parseInt(val)||0; }
-      localStorage.setItem('lona_custom_missions', JSON.stringify(all));
+      if (label) m.label = label;
+      if (icon)  m.icon  = icon;
+      m.xp = xp; m.baseXp = xp; m.coins = coins;
     }
+    localStorage.setItem('lona_custom_missions', JSON.stringify(all));
   } else {
-    // Config misija — shrani override v localStorage
     const overrides = JSON.parse(localStorage.getItem('lona_mission_overrides') || '{}');
     if (!overrides[id]) overrides[id] = {};
-    overrides[id][field] = parseInt(val)||0;
+    if (label) overrides[id].label = label;
+    if (icon)  overrides[id].icon  = icon;
+    overrides[id].xp = xp; overrides[id].coins = coins;
     localStorage.setItem('lona_mission_overrides', JSON.stringify(overrides));
-    // Posodobi config v spominu
     if (LONA_CONFIG.missions[id]) {
-      if (field === 'xp')    { LONA_CONFIG.missions[id].xp = parseInt(val)||0; LONA_CONFIG.missions[id].baseXp = parseInt(val)||0; }
-      if (field === 'coins') { LONA_CONFIG.missions[id].coins = parseInt(val)||0; }
+      if (label) LONA_CONFIG.missions[id].label = label;
+      if (icon)  LONA_CONFIG.missions[id].icon  = icon;
+      LONA_CONFIG.missions[id].xp     = xp;
+      LONA_CONFIG.missions[id].baseXp = xp;
+      LONA_CONFIG.missions[id].coins  = coins;
     }
   }
+  showMsg(`✓ "${label || id}" shranjeno!`);
+  renderMissionList();
 }
 
 function deleteCustom(id) {

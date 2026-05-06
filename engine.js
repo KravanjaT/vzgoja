@@ -1104,9 +1104,9 @@ function setLocation(loc) {
   _currentLocation = loc;
 
   // Posodobi aktivni gumb
-  ['eq','indoor','outdoor'].forEach(l => {
-    const btn = document.getElementById('loc-' + l);
-    if (btn) btn.classList.toggle('loc-btn--active', l === loc);
+  ['eq','indoor','outdoor','mine','all'].forEach(l => {
+    const btn = document.querySelector('.loc-pick-btn--' + l);
+    if (btn) btn.classList.toggle('loc-pick-btn--active', l === loc);
   });
 
   // Prikaži/skrij reshuffle gumb
@@ -1628,8 +1628,8 @@ function _showRandomMission(loc, animate) {
       if (hidden.includes(m.id)) return false;
       if (typeof isOnCooldown === 'function' && isOnCooldown(m.id)) return false;
       if (loc === 'eq')      return m.category === 'eq';
-      if (loc === 'indoor')  return m.location === 'indoor' && m.category !== 'eq';
-      if (loc === 'outdoor') return (m.location === 'outdoor' || m.category === 'outdoor' || m.category === 'body' || m.category === 'fear') && m.category !== 'eq';
+      if (loc === 'indoor')  return (m.location === 'indoor' || m.location === 'any') && m.category !== 'eq';
+      if (loc === 'outdoor') return (m.location === 'outdoor' || m.location === 'any' || m.category === 'outdoor' || m.category === 'body' || m.category === 'fear') && m.category !== 'eq';
       return true;
     });
   }
@@ -1680,7 +1680,7 @@ function _renderScratch(loc) {
   card.innerHTML = `
     <div class="rmc-scratch" onclick="_rmcReveal()">
       <span class="rmc-scratch__q">🎁</span>
-      <p class="rmc-scratch__label">${labels[loc] || 'Misija te čaka...'}</p>
+      <p class="rmc-scratch__label">${{eq:'Tvoja EQ misija te čaka...', indoor:'Misija v hiši te čaka...', outdoor:'Zunanja misija te čaka...', mine:'Posebna misija te čaka...', all:'Naključna misija te čaka...'}[loc] || 'Misija te čaka...'}</p>
       <button class="rmc-scratch__btn" onclick="event.stopPropagation();_rmcReveal()">🎲 Vrzi kocko</button>
     </div>`;
 }
@@ -1810,12 +1810,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const _savedNames = JSON.parse(localStorage.getItem('lona_agent_names') || '{}');
     LONA_CONFIG.agents.forEach(a => { if (_savedNames[a.id]) a.name = _savedNames[a.id]; });
 
-    // Naloži XP/coins overrides za config misije (nastavljeno v commander)
+    // Naloži XP/coins/naziv/ikona overrides za config misije
     const _overrides = JSON.parse(localStorage.getItem('lona_mission_overrides') || '{}');
     Object.entries(_overrides).forEach(([id, vals]) => {
       if (LONA_CONFIG.missions[id]) {
         if (vals.xp    !== undefined) { LONA_CONFIG.missions[id].xp = vals.xp; LONA_CONFIG.missions[id].baseXp = vals.xp; }
         if (vals.coins !== undefined) LONA_CONFIG.missions[id].coins = vals.coins;
+        if (vals.label !== undefined) LONA_CONFIG.missions[id].label = vals.label;
+        if (vals.icon  !== undefined) LONA_CONFIG.missions[id].icon  = vals.icon;
       }
     });
 
