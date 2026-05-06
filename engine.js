@@ -1,3 +1,16 @@
+const CAT_COLORS = {
+  hygiene:'#34C759',kitchen:'#FF9500',cleaning:'#007AFF',organisation:'#AF52DE',
+  care:'#FF2D55',outdoor:'#30D158',body:'#FF3B30',safety:'#FF3B30',
+  money:'#FFD60A',social:'#5AC8FA',creativity:'#FF9500',custom:'#72D68A',
+  fear:'#AF52DE',independence:'#007AFF',eq:'#AF52DE',fitness:'#FF6B00',
+};
+const CAT_NAMES = {
+  hygiene:'Higiena',kitchen:'Kuhinja',cleaning:'Čiščenje',organisation:'Organizacija',
+  care:'Skrb',outdoor:'Outdoor',body:'Telo',safety:'Varnost',money:'Denar',
+  social:'Socialne',creativity:'Ustvarjalnost',custom:'Moje',fear:'Strah',
+  independence:'Samostojnost',eq:'EQ',
+};
+
 // ============================================================
 //  LONA OS — engine.js  (v2.6)
 //  Vstopna točka — inicializira vse module
@@ -11,9 +24,24 @@ function logMission(agentId, missionId, xp, modifier, compromised) {
     modifier: modifier?.label || "—",
     date: new Date().toISOString(),
   });
-  // Max 100 vnosov
   if (log.length > 100) log.splice(0, log.length - 100);
   localStorage.setItem("lona_mission_log", JSON.stringify(log));
+
+  // Štej dnevne misije
+  if (typeof addDailyCount === "function") {
+    const count = addDailyCount(agentId);
+    if (count >= DAILY_MAX) {
+      lonaToast("🔒 Dnevni limit dosežen! Odlično! 🏆", "gold");
+      setTimeout(() => renderMissionsGrid(), 200);
+    }
+  }
+  // Dodaj kovance
+  if (typeof addCoins === "function" && xp > 0) {
+    const mission = LONA_CONFIG.missions[missionId];
+    const coins   = mission?.coins || Math.round(xp * (LONA_CONFIG.coinsPerXp || 0.4));
+    addCoins(agentId, coins);
+    if (typeof renderCmdAgents === "function") renderCmdAgents();
+  }
 }
 
 // ── CURRENT AGENT ─────────────────────────────────────────
@@ -23,7 +51,7 @@ function getCurrentAgent() {
 
 // ── TOAST ──────────────────────────────────────────────────
 function lonaToast(msg, color) {
-  const c = { green:"#2D7D52", gold:"#C47D1A", red:"#C4352A", cyan:"#2563EB" };
+  const c = { green:"#4A9E6A", gold:"#C47D1A", red:"#C4352A", cyan:"#2563EB" };
   const bg = { green:"#EAF4EE", gold:"#FDF3E3", red:"#FDECEA", cyan:"#EEF3FD" };
   const clr = c[color] || c.green;
   const bgClr = bg[color] || bg.green;
@@ -346,41 +374,49 @@ function showAgentPicker(callback) {
 
 // ── QUALITY CHECK (Mission Compromised) ───────────────────
 function showQualityCheck(agentId, mission, mod, callback) {
-  const name = LONA_CONFIG.agents.find(a => a.id === agentId)?.name || agentId;
+  const name   = LONA_CONFIG.agents.find(a => a.id === agentId)?.name || agentId;
+  const xp     = mission.baseXp || mission.xp || 20;
+  const coins  = mission.coins  || Math.round(xp * (LONA_CONFIG.coinsPerXp || 0.4));
+  const isEqAc = mission.eqType === "akcija";
+
   const d = document.createElement("div");
   d.className = "joker-dialog";
   d.innerHTML = `<div class="joker-dialog__box">
-    <div class="joker-dialog__icon">🔍</div>
-    <p class="joker-dialog__title">Kakovostni pregled</p>
-    <p class="joker-dialog__body">
-      Je <strong>${name}</strong> opravil misijo<br>
-      <strong>${mission.label}</strong> pravilno?
-    </p>
-    <div class="joker-dialog__btns">
-      <button class="joker-dialog__cancel" style="border-color:rgba(255,60,90,.3);color:var(--neon-red)">
-        ⚠️ Površno
-      </button>
-      <button class="joker-dialog__confirm">
-        ✓ Opravljeno
-      </button>
+    <div style="font-size:2.2rem">${mission.icon || "📋"}</div>
+    <p style="font-family:'DM Serif Display',serif;font-size:1.05rem;color:#F0EEF8;margin:0;text-align:center">${mission.label}</p>
+    <p style="font-size:.78rem;color:rgba(240,238,248,.65);text-align:center;margin:2px 0 10px">${mission.desc || ""}</p>
+
+    <div style="display:flex;gap:8px;width:100%;justify-content:center;margin-bottom:6px">
+      <div style="text-align:center;padding:8px 12px;background:rgba(120,160,255,.18);border:1px solid rgba(90,175,122,.25);border-radius:12px;flex:1">
+        <p style="font-size:1.2rem;font-weight:800;color:#72D68A;margin:0">+${xp}</p>
+        <p style="font-size:.6rem;color:rgba(240,238,248,.6);margin:0;text-transform:uppercase">XP</p>
+      </div>
+      <div style="text-align:center;padding:8px 12px;background:rgba(255,214,10,.1);border:1px solid rgba(255,214,10,.2);border-radius:12px;flex:1">
+        <p style="font-size:1.2rem;font-weight:800;color:#FFD60A;margin:0">+${coins}</p>
+        <p style="font-size:.6rem;color:rgba(240,238,248,.6);margin:0;text-transform:uppercase">🪙</p>
+      </div>
+      ${isEqAc ? `<div style="text-align:center;padding:8px 12px;background:rgba(255,209,102,.1);border:1px solid rgba(255,209,102,.2);border-radius:12px;flex:1">
+        <p style="font-size:1.2rem;font-weight:800;color:#FFD60A;margin:0">+1</p>
+        <p style="font-size:.6rem;color:rgba(240,238,248,.6);margin:0;text-transform:uppercase">🃏</p>
+      </div>` : ""}
     </div>
-    <p style="font-size:.7rem;color:var(--text-dim);text-align:center;margin-top:-4px">
-      Površno = pol točk, misija ostane odprta
-    </p>
+
+    <div class="joker-dialog__btns">
+      <button class="joker-dialog__cancel" style="border-color:rgba(255,60,90,.3);color:#FF3B30">⚠️ Površno</button>
+      <button class="joker-dialog__confirm">✓ Potrdi</button>
+    </div>
+    <p style="font-size:.68rem;color:rgba(240,238,248,.45);text-align:center;margin-top:2px">Površno = pol točk</p>
   </div>`;
   document.body.appendChild(d);
 
-  // Površno — pol točk, brez cooldowna
   d.querySelector(".joker-dialog__cancel").addEventListener("click", () => {
     d.remove();
-    lonaToast(`⚠️ Površno — samo +${Math.floor(mission.baseXp/2)} XP`, "red");
+    lonaToast(`⚠️ Površno — +${Math.floor(xp/2)} XP`, "red");
     callback(true, false);
   });
-
-  // Opravljeno — polne točke + cooldown
   d.querySelector(".joker-dialog__confirm").addEventListener("click", () => {
     d.remove();
-    lonaToast(`+${mission.baseXp} XP zasluženo! ✓`, "green");
+    lonaToast(`+${xp} XP +${coins} 🪙 ✓`, "green");
     callback(false, false);
   });
 }
@@ -565,7 +601,7 @@ function onMissionClick(btn) {
       <p class="joker-dialog__body">
         <strong>${agentName}</strong> mora opraviti:<br>
         <strong style="font-size:1.1rem">${picked.label}</strong><br>
-        <span style="color:#2D7D52;font-weight:600">+${picked.baseXp} XP</span>
+        <span style="color:#4A9E6A;font-weight:600">+${picked.baseXp} XP</span>
       </p>
       <div class="joker-dialog__btns">
         <button class="joker-dialog__cancel">Prekliči</button>
@@ -587,35 +623,28 @@ function onMissionClick(btn) {
     return;
   }
 
-  // FUNNEL: Modifikator → Joker check → Zaključek
+  // Direktno na Commander potrditev
   const agentId = getCurrentAgent();
-  showModifier(missionId, mod => {
-    showMissionConfirm(agentId, mission.label, mod, (jokerUsed) => {
-      if (jokerUsed) return;
-      showQualityCheck(agentId, mission, mod, (compromised) => {
-            const xp = compromised
-              ? Math.floor(mission.baseXp / 2)  // pol točk
-              : mission.baseXp;
+  showQualityCheck(agentId, mission, null, (compromised) => {
+    const xp = compromised ? Math.floor((mission.baseXp || mission.xp || 20) / 2) : (mission.baseXp || mission.xp || 20);
 
-            addXp(agentId, xp);
+    addXp(agentId, xp);
 
-            // Cooldown samo če ni compromised
-            if (!compromised && mission.cooldownHrs) {
-              setCooldown(missionId, mission.cooldownHrs);
-              _lockBtn(btn);
-              renderCooldown(missionId);
-            }
+    if (!compromised && mission.cooldownHrs) {
+      setCooldown(missionId, mission.cooldownHrs);
+    }
 
-            // Log
-            logMission(agentId, missionId, xp, mod, compromised);
-            if (!compromised) {
-              lonaToast(`+${xp} XP zasluženo! ✓`, "green");
-            } else {
-              lonaToast(`⚠️ Površno — +${xp} XP`, "red");
-            }
-            setTimeout(updateMissionsBadge, 100);
-      });
-    });
+    logMission(agentId, missionId, xp, { label: mission.label }, compromised);
+
+    if (typeof showXpFloat === "function") showXpFloat(xp);
+
+    const coins = mission.coins || Math.round(xp * (LONA_CONFIG.coinsPerXp || 0.4));
+    lonaToast(compromised ? `⚠️ Površno — +${xp} XP` : `+${xp} XP  +${coins} 🪙 ✓`, compromised ? "red" : "green");
+
+    setTimeout(() => {
+      if (typeof _refreshCurrentView === "function") _refreshCurrentView();
+      if (typeof renderCmdAgents     === "function") renderCmdAgents();
+    }, 150);
   });
 }
 
@@ -642,14 +671,6 @@ const CAT_LABELS = {
   independence: "🎯 Samostojnost", custom: "✏️ Moje Misije",
 };
 
-const CAT_COLORS = {
-  hygiene: "#34C759", kitchen: "#FF9500", cleaning: "#007AFF",
-  organisation: "#AF52DE", care: "#FF2D55", outdoor: "#2DB84B",
-  body: "#FF3B30", safety: "#FF3B30", money: "#FFD60A",
-  social: "#5AC8FA", creativity: "#FF9500", eq: "#FF6B35",
-  fear: "#AF52DE", independence: "#007AFF", custom: "#AF52DE",
-};
-
 let currentCat = "all";
 
 function renderMissionsGrid(cat) {
@@ -664,7 +685,8 @@ function renderMissionsGrid(cat) {
 
   // Dodaj custom misije
   if (typeof customLoad === "function") {
-    customLoad().forEach(m => { allMissions[m.id] = m; });
+    const customs = customLoad();
+    (Array.isArray(customs) ? customs : Object.values(customs)).forEach(m => { allMissions[m.id] = m; });
   }
 
   // Filtriraj po kategoriji
@@ -687,24 +709,21 @@ function renderMissionsGrid(cat) {
     badgeEl.style.background = avail > 0 ? "var(--green)" : "var(--ink-4)";
   }
 
-  // Animacija
-  grid.classList.remove("missions-grid--switching");
-  void grid.offsetWidth;
-  grid.classList.add("missions-grid--switching");
+  // Render carousel
+  grid.innerHTML = filtered.map(m => buildMissionBtn(m, agentId)).join("");
 
-  // Render
-  grid.innerHTML = filtered.map(m => {
-    return buildMissionBtn(m, agentId);
-  }).join("");
-
-  // Event listenerji
-  grid.querySelectorAll(".mission-btn[data-mission]").forEach(btn => {
-    btn.addEventListener("click", (e) => { addRipple(btn, e); popBtn(btn); onMissionClick(btn); });
+  // Event listenerji — klik na kartico
+  grid.querySelectorAll(".mc-card[data-mission]").forEach(card => {
+    card.addEventListener("click", () => {
+      const idx = parseInt(card.dataset.carouselIdx || 0);
+      if (idx !== _mcState.cur) { _mcSnapTo(idx); return; }
+      if (navigator.vibrate) navigator.vibrate(15);
+      onMissionClick(card);
+    });
   });
 
-  // Carousel dots + drag scroll
-  initCarouselDots(grid, filtered.length);
-  initDragScroll(grid);
+  // Inicializiraj carousel
+  initMissionCarousel(grid);
 }
 
 // ── MOUSE DRAG SCROLL z inercijo ─────────────────────────────
@@ -812,7 +831,7 @@ function initCarouselDots(grid, total) {
 function buildMissionBtn(mission, agentId) {
   const mId       = mission.id;
   const onCooldown = typeof isOnCooldown === "function" && isOnCooldown(mId);
-  const xp        = mission.baseXp || 0;
+  const xp        = mission.baseXp || mission.xp || 0;
 
   let cls = "mission-btn";
   let innerStyle = "";
@@ -875,18 +894,49 @@ function buildMissionBtn(mission, agentId) {
     cooldownHtml = `<p class="mission-btn__cooldown">⏱ ${hrs}h</p>`;
   }
 
-  return `<button class="${cls}" data-mission="${mId}"
-    style="background:none;border:none;padding:0;--after-bg:${afterBg}">
-    <div class="mission-btn-inner" style="${innerStyle}">
-      <span class="mission-btn__icon">${mission.icon || "📋"}</span>
-      <div class="mission-btn__info">
-        <p class="mission-btn__name">${mission.label}</p>
-        ${cooldownHtml}
-      </div>
-      <span class="mission-btn__xp">${xpLabel}</span>
-      ${!onCooldown ? '<span class="mission-btn__avail-dot"></span>' : ''}
+  // CAT_COLORS in CAT_NAMES so globalni (definirani na vrhu)
+
+  const clr   = onCooldown ? 'rgba(240,238,248,.25)' : (CAT_COLORS[mission.category] || '#72D68A');
+  const bg    = onCooldown ? 'rgba(255,255,255,.10)' : clr.replace(')', ',.12)').replace('rgb(','rgba(');
+  const border= onCooldown ? 'rgba(255,255,255,.10)' : clr.replace(')', ',.25)').replace('rgb(','rgba(');
+  const iconBg= onCooldown ? 'rgba(255,255,255,.09)' : clr.replace(')', ',.18)').replace('rgb(','rgba(');
+  const catName = CAT_NAMES[mission.category] || '';
+  const isEqAction = mission.isEq && mission.eqType === 'akcija';
+  const xpTxt = onCooldown ? '🔒' : mission.isProgressive ? '3×' : `+${xp}`;
+  const desc  = mission.desc || catName;
+
+  const agentJokers = typeof getJokers === "function" ? getJokers(agentId) : 0;
+  const dailyLocked = typeof isDailyLocked === "function" ? isDailyLocked(agentId) : false;
+
+  // Joker = preskoči misijo (cooldown ostane, ne šteje v 4)
+  const showJoker  = agentJokers > 0 && !mission.isEq && !dailyLocked && !onCooldown;
+
+  // Zaklenjeno stanje
+  const isLocked   = dailyLocked || onCooldown;
+  const lockReason = dailyLocked ? '🔒 Dnevni limit (4/4)' : onCooldown ? '⏱ 3-dnevni cooldown' : '';
+
+  const cardBg     = isLocked ? 'rgba(255,255,255,.03)' : bg;
+  const cardBorder = isLocked ? 'rgba(255,255,255,.09)' : border;
+  const cardOpacity= isLocked ? '.4' : '1';
+
+  return `<div class="mc-card ${isLocked ? 'mc-locked' : ''}" data-mission="${mId}"
+    style="background:${cardBg};border:1px solid ${cardBorder};opacity:${cardOpacity}">
+    <div class="mc-card__icon" style="background:${isLocked ? 'rgba(255,255,255,.09)' : iconBg}">${mission.icon||'📋'}</div>
+    <div class="mc-card__body">
+      <p class="mc-card__name">${mission.label}</p>
+      <p class="mc-card__desc">${isLocked ? lockReason : desc}</p>
     </div>
-  </button>`;
+    <div class="mc-card__right" style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+      ${showJoker
+        ? `<button onclick="event.stopPropagation();useJokerOnMission('${mId}')"
+            style="padding:5px 10px;border-radius:12px;background:rgba(255,209,102,.15);
+            border:1px solid rgba(255,209,102,.4);color:#FFD60A;font-size:12px;font-weight:800;
+            cursor:pointer;white-space:nowrap">🃏 Preskoči</button>`
+        : `<p class="mc-card__xp" style="color:${isLocked ? 'rgba(240,238,248,.25)' : clr};margin:0">${isLocked ? '—' : xpTxt + ' XP'}</p>`
+      }
+      ${isEqAction && !isLocked ? '<p class="mc-card__joker">+1 🃏</p>' : ''}
+    </div>
+  </div>`;
 }
 
 // Kategorija klik
@@ -903,13 +953,892 @@ function initCategoryFilter() {
   });
 }
 
+
+// ══════════════════════════════════════════════════════════
+//  MISSION CAROUSEL
+// ══════════════════════════════════════════════════════════
+
+const _mcState = { cur: 0, drag: false, sx: 0, ss: 0, vx: 0, lx: 0, lt: 0, raf: null, track: null };
+
+function _mcSnapTo(i) {
+  const { track } = _mcState;
+  if (!track) return;
+  const cards = [...track.querySelectorAll('.mc-card')];
+  _mcState.cur = Math.max(0, Math.min(i, cards.length - 1));
+  const c = cards[_mcState.cur];
+  if (!c) return;
+  const target = c.offsetLeft - (track.clientWidth - c.offsetWidth) / 2;
+  track.style.scrollBehavior = 'smooth';
+  track.scrollLeft = target;
+  _mcUpdateActive();
+}
+
+function _mcUpdateActive() {
+  const { track, cur } = _mcState;
+  if (!track) return;
+  const cards = [...track.querySelectorAll('.mc-card')];
+  cards.forEach((c, i) => {
+    c.classList.remove('mc-active', 'mc-adj');
+    c.dataset.carouselIdx = i;
+    if (i === cur) c.classList.add('mc-active');
+    else if (Math.abs(i - cur) === 1) c.classList.add('mc-adj');
+  });
+  // Dots
+  const dotsEl = track.parentElement?.querySelector('.mc-dots');
+  if (dotsEl) {
+    [...dotsEl.querySelectorAll('.mc-dot')].forEach((d, i) =>
+      d.classList.toggle('mc-dot--on', i === cur)
+    );
+  }
+}
+
+function initMissionCarousel(grid) {
+  // Wrapper
+  const wrapper = grid.parentElement;
+  wrapper.style.cssText = 'position:relative;overflow:hidden';
+
+  // Track = grid postane carousel track
+  grid.style.cssText = `
+    display:flex!important;gap:14px!important;
+    padding:20px calc(50% - 100px)!important;
+    overflow-x:scroll!important;scroll-snap-type:x mandatory!important;
+    -webkit-overflow-scrolling:touch!important;scrollbar-width:none!important;
+    cursor:grab!important;align-items:center!important;
+    grid-template-columns:unset!important;
+  `;
+
+  _mcState.track = grid;
+  _mcState.cur = 0;
+
+  // Dots
+  wrapper.querySelector('.mc-dots')?.remove();
+  const cards = [...grid.querySelectorAll('.mc-card')];
+  if (cards.length > 1) {
+    const dotsEl = document.createElement('div');
+    dotsEl.className = 'mc-dots';
+    cards.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'mc-dot' + (i === 0 ? ' mc-dot--on' : '');
+      dotsEl.appendChild(d);
+    });
+    wrapper.after(dotsEl);
+  }
+
+  // Scroll → parallax + active
+  grid.addEventListener('scroll', () => {
+    const tx = grid.scrollLeft + grid.clientWidth / 2;
+    let bi = 0, bd = Infinity;
+    cards.forEach((c, i) => {
+      // Parallax
+      const bg = c.querySelector('.mc-bg');
+      if (bg) {
+        const cx = c.offsetLeft + c.offsetWidth / 2;
+        bg.style.transform = `translateX(${(cx - tx) * -0.12}px)`;
+      }
+      // Closest
+      const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - tx);
+      if (d < bd) { bd = d; bi = i; }
+    });
+    if (bi !== _mcState.cur) { _mcState.cur = bi; _mcUpdateActive(); }
+  }, { passive: true });
+
+  // Mouse drag
+  grid.addEventListener('mousedown', e => {
+    _mcState.drag = true; _mcState.sx = e.pageX;
+    _mcState.ss = grid.scrollLeft; _mcState.lx = e.pageX;
+    _mcState.lt = Date.now(); _mcState.vx = 0;
+    grid.style.scrollBehavior = 'auto';
+    grid.style.cursor = 'grabbing';
+    cancelAnimationFrame(_mcState.raf);
+  });
+  window.addEventListener('mouseup', () => {
+    if (!_mcState.drag) return;
+    _mcState.drag = false;
+    grid.style.cursor = 'grab';
+    _mcSnapNearest();
+  });
+  window.addEventListener('mousemove', e => {
+    if (!_mcState.drag) return;
+    const now = Date.now();
+    _mcState.vx = (_mcState.lx - e.pageX) / (now - _mcState.lt || 1) * 14;
+    _mcState.lx = e.pageX; _mcState.lt = now;
+    grid.scrollLeft = _mcState.ss - (e.pageX - _mcState.sx);
+  });
+
+  // Touch
+  grid.addEventListener('touchstart', e => {
+    _mcState.sx = e.touches[0].pageX; _mcState.ss = grid.scrollLeft;
+    _mcState.lx = _mcState.sx; _mcState.lt = Date.now(); _mcState.vx = 0;
+    grid.style.scrollBehavior = 'auto';
+  }, { passive: true });
+  grid.addEventListener('touchend', () => _mcSnapNearest(), { passive: true });
+  grid.addEventListener('touchmove', e => {
+    const now = Date.now();
+    _mcState.vx = (_mcState.lx - e.touches[0].pageX) / (now - _mcState.lt || 1) * 14;
+    _mcState.lx = e.touches[0].pageX; _mcState.lt = now;
+    grid.scrollLeft = _mcState.ss - (e.touches[0].pageX - _mcState.sx);
+  }, { passive: true });
+
+  function _mcSnapNearest() {
+    const tx = grid.scrollLeft + grid.clientWidth / 2;
+    let bi = 0, bd = Infinity;
+    cards.forEach((c, i) => {
+      const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - tx);
+      if (d < bd) { bd = d; bi = i; }
+    });
+    _mcSnapTo(bi);
+  }
+
+  _mcUpdateActive();
+  setTimeout(() => _mcSnapTo(0), 80);
+}
+
+
+// ══════════════════════════════════════════════════════════
+//  LOCATION PICKER — EQ / Indoor / Outdoor
+// ══════════════════════════════════════════════════════════
+
+let _currentLocation = 'eq';
+
+function setLocation(loc) {
+  _currentLocation = loc;
+
+  // Posodobi aktivni gumb
+  ['eq','indoor','outdoor','mine','all'].forEach(l => {
+    const btn = document.querySelector('.loc-pick-btn--' + l);
+    if (btn) btn.classList.toggle('loc-pick-btn--active', l === loc);
+  });
+
+  // Prikaži/skrij reshuffle gumb
+  const reshuffleBtn = document.getElementById('reshuffle-btn');
+  if (reshuffleBtn) reshuffleBtn.style.display = loc !== 'eq' ? 'block' : 'none';
+
+  // Posodobi naslov
+  const titleEl = document.getElementById('missions-cat-title');
+  if (titleEl) titleEl.textContent = {
+    eq: '⚡ EQ Misije',
+    indoor: '🏠 V hiši',
+    outdoor: '🌲 Zunaj',
+  }[loc];
+
+  // Render misije
+  renderLocationMissions(loc);
+}
+
+function renderLocationMissions(loc) {
+  const grid    = document.getElementById('missions-grid');
+  const agentId = getCurrentAgent();
+  if (!grid) return;
+
+  let missions = Object.values(LONA_CONFIG.missions);
+
+  if (loc === 'eq') {
+    missions = missions.filter(m => m.category === 'eq');
+  } else if (loc === 'indoor') {
+    missions = missions.filter(m =>
+      m.location === 'indoor' && m.category !== 'eq'
+    );
+    // Naključnih 5
+    missions = _shuffle(missions).slice(0, 5);
+  } else if (loc === 'outdoor') {
+    missions = missions.filter(m =>
+      (m.location === 'outdoor' || m.category === 'outdoor' ||
+       m.category === 'body' || m.category === 'social' ||
+       m.category === 'fear')
+      && m.category !== 'eq'
+    );
+    missions = _shuffle(missions).slice(0, 5);
+  }
+
+  grid.innerHTML = missions.map(m => buildMissionBtn(m, agentId)).join('');
+
+  // Event listenerji
+  grid.querySelectorAll('.mc-card[data-mission]').forEach(card => {
+    card.addEventListener('click', () => {
+      if (card.classList.contains('mc-locked')) return;
+      if (navigator.vibrate) navigator.vibrate(12);
+      onMissionClick(card);
+    });
+  });
+
+  // Staggered animacija
+  setTimeout(() => {
+    grid.querySelectorAll('.mc-card').forEach((c, i) => {
+      setTimeout(() => c.classList.add('mc-visible'), i * 60);
+    });
+  }, 30);
+}
+
+function reshuffleMissions() {
+  renderLocationMissions(_currentLocation);
+  if (navigator.vibrate) navigator.vibrate(8);
+}
+
+function _shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Override renderMissionsGrid — zdaj gre skozi location sistem
+function renderMissionsGrid(cat) {
+  setLocation(_currentLocation || 'eq');
+}
+
+
+// ── JOKER — otrok sam preskoči misijo ──────────────────
+function useJokerOnMission(missionId) {
+  const agentId = getCurrentAgent();
+  const jokers  = getJokers(agentId);
+  const mission = LONA_CONFIG.missions[missionId];
+  const name    = LONA_CONFIG.agents.find(a => a.id === agentId)?.name || agentId;
+
+  if (jokers <= 0) { lonaToast("Nimaš jokerjev! 🃏", "red"); return; }
+
+  const d = document.createElement("div");
+  d.className = "joker-dialog";
+  d.innerHTML = `<div class="joker-dialog__box" style="border-color:rgba(255,209,102,.5);box-shadow:0 0 40px rgba(255,209,102,.15)">
+    <div class="joker-dialog__icon" style="font-size:2.5rem">🃏</div>
+    <p class="joker-dialog__title" style="color:#FFD60A">Porabi Joker?</p>
+    <p class="joker-dialog__body">
+      <strong>${mission?.label}</strong> bo preskočena.<br>
+      <span style="font-size:.75rem;opacity:.6">Ostane ti ${jokers - 1} joker${jokers - 1 !== 1 ? 'jev' : ''}</span>
+    </p>
+    <div class="joker-dialog__btns">
+      <button class="joker-dialog__cancel">Ne</button>
+      <button class="joker-dialog__confirm" style="background:rgba(255,209,102,.15);border-color:rgba(255,209,102,.5);color:#FFD60A">Da, preskoči 🃏</button>
+    </div>
+  </div>`;
+  document.body.appendChild(d);
+
+  d.querySelector(".joker-dialog__cancel").addEventListener("click", () => d.remove());
+  d.querySelector(".joker-dialog__confirm").addEventListener("click", () => {
+    d.remove();
+    spendJoker(agentId);
+    // Joker = preskoči, ne šteje v dnevni limit, cooldown ostane
+    const log = JSON.parse(localStorage.getItem("lona_mission_log") || "[]");
+    log.push({ agentId, missionId, xp: 0, compromised: false,
+      modifier: "🃏 Preskočeno", date: new Date().toISOString() });
+    localStorage.setItem("lona_mission_log", JSON.stringify(log));
+    lonaToast(`🃏 ${name} preskočil ${mission?.label} — ne šteje v 4!`, "gold");
+    setTimeout(() => renderLocationMissions(_currentLocation || "eq"), 150);
+  });
+}
+
+
+// ══════════════════════════════════════════════════════════
+//  DAILY LIMIT — max 4 misije na dan
+// ══════════════════════════════════════════════════════════
+
+const DAILY_MAX = 4;
+
+function dailyKey(agentId) {
+  return `lona_daily_${agentId}_${new Date().toDateString()}`;
+}
+
+function getDailyCount(agentId) {
+  return parseInt(localStorage.getItem(dailyKey(agentId)) || "0");
+}
+
+function addDailyCount(agentId) {
+  const c = getDailyCount(agentId) + 1;
+  localStorage.setItem(dailyKey(agentId), String(c));
+  return c;
+}
+
+function isDailyLocked(agentId) {
+  return getDailyCount(agentId) >= DAILY_MAX;
+}
+
+function getDailyRemaining(agentId) {
+  return Math.max(0, DAILY_MAX - getDailyCount(agentId));
+}
+
+// Prikaži daily progress v header
+function renderDailyProgress(agentId) {
+  const el = document.getElementById('daily-progress');
+  if (!el) return;
+  const done = getDailyCount(agentId);
+  const locked = isDailyLocked(agentId);
+  el.innerHTML = Array.from({length: DAILY_MAX}, (_,i) =>
+    `<div style="width:10px;height:10px;border-radius:50%;background:${i < done ? '#72D68A' : 'rgba(255,255,255,.15)'}"></div>`
+  ).join('') + `<span style="font-size:11px;font-weight:700;color:${locked ? '#FF3B30' : 'rgba(240,238,248,.7)'}">
+    ${locked ? '🔒 Zaklenjeno' : done + '/' + DAILY_MAX}
+  </span>`;
+}
+
+
+// ══════════════════════════════════════════════════════════
+//  PS5/XBOX UI — Carousel + Drawer + Ribbon
+// ══════════════════════════════════════════════════════════
+
+const CAT_TILES = {
+  eq: [
+    { id:'eq_akcija',  label:'EQ Akcija',    icon:'⚡', sub:'Joker nagrada', grad:['#2d0050','#7700cc','#aa44ff'], filter: m => m.category==='eq' && m.eqType==='akcija' },
+    { id:'eq_ref',     label:'EQ Refleksija',icon:'📋', sub:'Pogovor',       grad:['#2d1500','#884400','#cc6600'], filter: m => m.category==='eq' && m.eqType==='refleksija' },
+  ],
+  indoor: [
+    { id:'cleaning',   label:'Čiščenje',     icon:'🧹', sub:'', grad:['#001a3d','#003d99','#0066ff'], filter: m => m.category==='cleaning' },
+    { id:'hygiene',    label:'Higiena',      icon:'🦷', sub:'', grad:['#1a2d00','#446600','#66aa00'], filter: m => m.category==='hygiene' },
+    { id:'kitchen',    label:'Kuhinja',      icon:'🍳', sub:'', grad:['#2d1a00','#7d4a00','#cc7a00'], filter: m => m.category==='kitchen' },
+    { id:'organisation',label:'Organizacija',icon:'📦', sub:'', grad:['#1a002d','#550080','#8800cc'], filter: m => m.category==='organisation' },
+    { id:'fitness',     label:'Telovadba',   icon:'💪', sub:'', grad:['#1a0d00','#5c3300','#994400'], filter: m => m.category==='fitness' },
+  ],
+  outdoor: [
+    { id:'outdoor',    label:'Aktivnosti',   icon:'🏃', sub:'', grad:['#001a0d','#005530','#008844'], filter: m => m.category==='outdoor' || m.category==='body' },
+    { id:'social',     label:'Socialne',     icon:'🤝', sub:'', grad:['#001a2d','#004a7d','#0077cc'], filter: m => m.category==='social' },
+    { id:'fear',       label:'Strah',        icon:'⚡', sub:'', grad:['#1a0028','#550077','#880099'], filter: m => m.category==='fear' || m.category==='independence' },
+  ],
+};
+
+let _curView = 'eq';
+let _curTile  = { eq:0, indoor:0, outdoor:0 };
+
+function switchView(v) {
+  _curView = v;
+  document.querySelectorAll('.view-tab').forEach(t =>
+    t.classList.toggle('view-tab--active', t.classList.contains('view-tab--' + v))
+  );
+  document.querySelectorAll('.view').forEach(el =>
+    el.classList.toggle('active', el.id === 'view-' + v)
+  );
+  if (v === 'all') _renderRibbon();
+}
+
+function _refreshCurrentView() {
+  const v = _curView || 'eq';
+  if (v === 'all') _renderRibbon();
+  else _renderDrawer(v, _curTile[v] || 0);
+  _renderDailyDots();
+}
+
+function _mkClr(hex, a) {
+  try {
+    const h = hex.startsWith('#') ? hex : '#72D68A';
+    const r = parseInt(h.slice(1,3),16);
+    const g = parseInt(h.slice(3,5),16);
+    const b = parseInt(h.slice(5,7),16);
+    return `rgba(${r},${g},${b},${a})`;
+  } catch(e) { return `rgba(90,175,122,${a})`; }
+}
+
+// ── CAROUSEL ──────────────────────────────────────────────
+function _renderCarousel(view) {
+  const el = document.getElementById('carousel-' + view);
+  if (!el) return;
+  const tiles = CAT_TILES[view];
+  const agentId = getCurrentAgent();
+  el.innerHTML = tiles.map((t,i) => {
+    const missions = Object.values(LONA_CONFIG.missions).filter(t.filter);
+    const count = missions.length;
+    return `<div class="cat-tile ${i===(_curTile[view]||0)?'active':''}" onclick="_tileClick('${view}',${i})">
+      <div class="cat-tile__bg" style="background:linear-gradient(135deg,${t.grad[0]},${t.grad[1]},${t.grad[2]})"></div>
+      <div class="cat-tile__overlay"></div>
+      <div class="cat-tile__body">
+        <span class="cat-tile__icon">${t.icon}</span>
+        <p class="cat-tile__name">${t.label}</p>
+        <p class="cat-tile__count">${count} misij</p>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function _tileClick(view, idx) {
+  _curTile[view] = idx;
+  // Posodobi tile aktivno stanje
+  document.querySelectorAll(`#carousel-${view} .cat-tile`).forEach((t,i) =>
+    t.classList.toggle('active', i===idx)
+  );
+  _renderDrawer(view, idx);
+}
+
+// ── DRAWER ────────────────────────────────────────────────
+function _renderDrawer(view, tileIdx) {
+  const tiles   = CAT_TILES[view];
+  if (!tiles) return;
+  const tile    = tiles[tileIdx];
+  if (!tile) return;
+  const listEl = document.getElementById('list-' + view);
+  if (!listEl) return; // Stran nima tega elementa
+
+  const agentId = getCurrentAgent();
+  const jokers  = typeof getJokers === 'function' ? getJokers(agentId) : 0;
+  const daily   = typeof getDailyCount === 'function' ? getDailyCount(agentId) : 0;
+  const locked  = typeof isDailyLocked === 'function' ? isDailyLocked(agentId) : false;
+
+  const titleEl = document.getElementById('drawer-' + view + '-title');
+  if (titleEl) titleEl.textContent = tile.icon + ' ' + tile.label;
+
+  // Missions — za indoor/outdoor naključnih 5, za EQ vse
+  const _hidden = window._hiddenMissions || JSON.parse(localStorage.getItem('lona_hidden_missions') || '[]');
+  let missions = Object.values(LONA_CONFIG.missions).filter(m => tile.filter(m) && !_hidden.includes(m.id));
+  if (view !== 'eq') missions = _shuffle(missions).slice(0, 5);
+
+
+
+  const clr = {
+    eq_akcija:'#CF8FFF', eq_ref:'#FF8C60',
+    cleaning:'#007AFF', hygiene:'#34C759', kitchen:'#FF9500',
+    organisation:'#AF52DE', outdoor:'#30D158', social:'#5AC8FA',
+    fear:'#AF52DE', independence:'#007AFF',
+  }[tile.id] || '#72D68A';
+
+  listEl.innerHTML = missions.map((m,i) => {
+    const onCD  = typeof isOnCooldown === 'function' && isOnCooldown(m.id);
+    const isLocked = locked || onCD;
+    const lockReason = locked ? '🔒 Dnevni limit' : onCD ? '⏱ 3-dnevni cooldown' : '';
+    const isEqAction = m.eqType === 'akcija';
+    const showJoker = jokers > 0 && !isLocked && !isEqAction;
+    const xp = m.baseXp || m.xp || 0;
+
+    const bg  = isLocked ? 'rgba(255,255,255,.10)' : _mkClr(clr, .12);
+    const ibg = isLocked ? 'rgba(255,255,255,.10)' : _mkClr(clr, .2);
+    const xpClr = isLocked ? 'rgba(240,238,248,.25)' : clr;
+
+    return `<div class="mc ${isLocked?'mc-locked':''}" data-mission="${m.id}"
+      style="background:${bg};border:1px solid ${isLocked?'rgba(255,255,255,.09)':clr+'33'};transition-delay:${i*50}ms">
+      <div class="mc__icon" style="background:${ibg}">${m.icon||'📋'}</div>
+      <div class="mc__body">
+        <p class="mc__name">${m.label}</p>
+        <p class="mc__desc">${isLocked ? lockReason : (m.desc || CAT_NAMES[m.category] || '')}</p>
+      </div>
+      <div class="mc__right">
+        ${showJoker
+          ? `<p class="mc__xp" style="color:${xpClr}">+${xp} XP</p>
+             <button class="mc__joker-btn" onclick="event.stopPropagation();useJokerOnMission('${m.id}')">🃏 Preskoči</button>`
+          : `<p class="mc__xp" style="color:${xpClr}">${isLocked?'—':'+'+xp+' XP'}</p>
+             ${isEqAction && !isLocked ? '<p class="mc__joker">+1 🃏 Joker</p>' : ''}`
+        }
+      </div>
+    </div>`;
+  }).join('');
+
+  // Event listenerji
+  listEl.querySelectorAll('.mc[data-mission]:not(.mc-locked)').forEach(card => {
+    card.addEventListener('click', () => {
+      if (navigator.vibrate) navigator.vibrate(12);
+      onMissionClick(card);
+    });
+  });
+
+  // Staggered animacija
+  console.log(`[PS5] _renderDrawer(${view}, ${tileIdx}) → ${missions.length} misij v #list-${view}`);
+  setTimeout(() => {
+    listEl.querySelectorAll('.mc').forEach(c => c.classList.add('mc-in'));
+  }, 30);
+}
+
+// ── RIBBON (vse misije) ───────────────────────────────────
+function _renderRibbon() {
+  const el = document.getElementById('ribbon-all');
+  if (!el) return;
+
+  const agentId = getCurrentAgent();
+  const daily   = typeof getDailyCount === 'function' ? getDailyCount(agentId) : 0;
+  const locked  = typeof isDailyLocked === 'function' ? isDailyLocked(agentId) : false;
+
+  const missions = Object.values({
+    ...LONA_CONFIG.missions,
+    ...(() => {
+      const c = typeof customLoad==='function' ? customLoad() : [];
+      return Object.fromEntries((Array.isArray(c)?c:Object.values(c)).map(m=>[m.id,m]));
+    })()
+  });
+
+  const cntEl = document.getElementById('all-count');
+  if (cntEl) cntEl.textContent = missions.length + ' misij';
+
+  el.innerHTML = missions.map((m,i) => {
+    const onCD = typeof isOnCooldown === 'function' && isOnCooldown(m.id);
+    const isLocked = locked || onCD;
+    const clr = (CAT_COLORS[m.category]) || '#72D68A';
+    const bg  = isLocked ? 'rgba(255,255,255,.10)' : _mkClr(clr, .1);
+    const ibg = isLocked ? 'rgba(255,255,255,.10)' : _mkClr(clr, .18);
+
+    return `<div class="rb ${isLocked?'mc-locked':''}" data-mission="${m.id}"
+      style="background:${bg};border:1px solid ${isLocked?'rgba(255,255,255,.09)':clr+'33'};transition-delay:${Math.min(i,20)*28}ms">
+      <div class="rb__icon" style="background:${ibg}">${m.icon||'📋'}</div>
+      <div class="rb__body">
+        <p class="rb__name">${m.label}</p>
+        <p class="rb__cat">${CAT_NAMES[m.category]||''}</p>
+      </div>
+      <span class="rb__xp" style="color:${isLocked?'rgba(240,238,248,.25)':clr}">${isLocked?'—':'+'+m.baseXp}</span>
+    </div>`;
+  }).join('');
+
+  listEl_addEvents(el, '.rb');
+
+  setTimeout(() => {
+    el.querySelectorAll('.rb').forEach((c,i) => {
+      setTimeout(() => c.classList.add('rb-in'), i * 22);
+    });
+  }, 30);
+}
+
+function listEl_addEvents(container, sel) {
+  container.querySelectorAll(sel + '[data-mission]:not(.mc-locked)').forEach(card => {
+    card.addEventListener('click', () => {
+      if (navigator.vibrate) navigator.vibrate(12);
+      onMissionClick(card);
+    });
+  });
+}
+
+// ── DAILY DOTS ────────────────────────────────────────────
+function _renderDailyDots() {
+  const agentId = getCurrentAgent();
+  const done    = typeof getDailyCount === 'function' ? getDailyCount(agentId) : 0;
+  const locked  = typeof isDailyLocked === 'function' ? isDailyLocked(agentId) : false;
+
+  ['eq','indoor','outdoor'].forEach(v => {
+    const el = document.getElementById('daily-dots-' + v);
+    if (!el) return;
+    el.innerHTML = Array.from({length: DAILY_MAX || 4}, (_,i) =>
+      `<div class="daily-dot ${i < done ? (locked && i === done-1 ? 'locked' : 'done') : ''}"></div>`
+    ).join('') + `<span style="font-size:10px;font-weight:700;color:${locked?'#FF3B30':'rgba(240,238,248,.5)'};margin-left:4px">${done}/${DAILY_MAX||4}</span>`;
+  });
+}
+
+function shuffleIndoor()  { _renderDrawer('indoor',  _curTile.indoor  || 0); }
+function shuffleOutdoor() { _renderDrawer('outdoor', _curTile.outdoor || 0); }
+
+function _shuffle(arr) {
+  const a = [...arr];
+  for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+// Override renderMissionsGrid
+function renderMissionsGrid() {
+  _refreshCurrentView();
+}
+
+
+// ══════════════════════════════════════════════════════════
+//  COMMANDER POTRDITEV
+// ══════════════════════════════════════════════════════════
+
+function showCommanderConfirm(agentId, mission, onConfirm) {
+  const coins = mission.coins || Math.round((mission.baseXp || mission.xp || 20) * (LONA_CONFIG.coinsPerXp || 0.4));
+  const xp    = mission.baseXp || mission.xp || 20;
+  const isEqAction = mission.eqType === "akcija";
+
+  const d = document.createElement("div");
+  d.className = "joker-dialog";
+  d.innerHTML = `<div class="joker-dialog__box">
+    <div style="font-size:2.5rem">${mission.icon || "📋"}</div>
+    <p style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:#F0EEF8;margin:0">${mission.label}</p>
+    <p style="font-size:.82rem;color:rgba(240,238,248,.7);text-align:center;margin:4px 0 8px">${mission.desc || ""}</p>
+
+    <div style="display:flex;gap:10px;width:100%;justify-content:center">
+      <div style="text-align:center;padding:10px 16px;background:rgba(120,160,255,.18);border:1px solid rgba(90,175,122,.25);border-radius:14px">
+        <p style="font-size:1.3rem;font-weight:800;color:#72D68A;margin:0">+${xp}</p>
+        <p style="font-size:.65rem;color:rgba(240,238,248,.6);margin:0;text-transform:uppercase;letter-spacing:.08em">XP</p>
+      </div>
+      <div style="text-align:center;padding:10px 16px;background:rgba(255,214,10,.1);border:1px solid rgba(255,214,10,.25);border-radius:14px">
+        <p style="font-size:1.3rem;font-weight:800;color:#FFD60A;margin:0">+${coins}</p>
+        <p style="font-size:.65rem;color:rgba(240,238,248,.6);margin:0;text-transform:uppercase;letter-spacing:.08em">🪙 Kovanci</p>
+      </div>
+      ${isEqAction ? `<div style="text-align:center;padding:10px 16px;background:rgba(255,209,102,.1);border:1px solid rgba(255,209,102,.25);border-radius:14px">
+        <p style="font-size:1.3rem;font-weight:800;color:#FFD60A;margin:0">+1</p>
+        <p style="font-size:.65rem;color:rgba(240,238,248,.6);margin:0;text-transform:uppercase;letter-spacing:.08em">🃏 Joker</p>
+      </div>` : ""}
+    </div>
+
+    <p style="font-size:.72rem;color:rgba(240,238,248,.5);text-align:center">Poveljnik potrdi opravljeno misijo</p>
+
+    <div class="joker-dialog__btns">
+      <button class="joker-dialog__cancel">Prekliči</button>
+      <button class="joker-dialog__confirm">✓ Potrdi</button>
+    </div>
+  </div>`;
+  document.body.appendChild(d);
+
+  d.querySelector(".joker-dialog__cancel").addEventListener("click", () => d.remove());
+  d.querySelector(".joker-dialog__confirm").addEventListener("click", () => {
+    d.remove();
+    onConfirm();
+  });
+}
+
+// ── COMMANDER PANEL v home.html ────────────────────────────
+function renderCmdPanel() {
+  // Pokliče renderCmdAgents — commander panel je renderCmdAgents
+  if (typeof renderCmdAgents === "function") renderCmdAgents();
+}
+
+
+// ══════════════════════════════════════════════════════════
+//  RANDOM MISSION — Klikneš lokacijo, dobiš misijo
+// ══════════════════════════════════════════════════════════
+
+const CAT_GRADS = {
+  hygiene:     ['#0d2b0d','#1e5c1e','#2d7d2d'],
+  cleaning:    ['#00102d','#003580','#0055cc'],
+  kitchen:     ['#2d1a00','#7d4a00','#c47000'],
+  organisation:['#1a002d','#550080','#8800cc'],
+  fitness:     ['#2d1200','#7d3500','#cc5500'],
+  outdoor:     ['#001a0d','#005530','#008844'],
+  eq:          ['#1a0028','#550077','#880099'],
+  fear:        ['#1a0028','#550077','#880099'],
+  creativity:  ['#001a2d','#004a7d','#0077cc'],
+  social:      ['#001a2d','#004a7d','#0077cc'],
+  custom:      ['#0d2b0d','#1e5c1e','#2d7d2d'],
+};
+
+let _rmcCurrentMission = null;
+
+function pickLocation(loc) {
+  // Posodobi aktivni gumb
+  document.querySelectorAll('.loc-pick-btn').forEach(b => b.classList.remove('loc-pick-btn--active'));
+  const activeBtn = document.querySelector('.loc-pick-btn--' + loc);
+  if (activeBtn) activeBtn.classList.add('loc-pick-btn--active');
+
+  // Skrij stare views, pokaži rmc
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const wrap = document.getElementById('random-mission-wrap');
+  if (wrap) wrap.style.display = 'block';
+
+  _showRandomMission(loc, false);
+}
+
+function _showRandomMission(loc, animate) {
+  const agentId = getCurrentAgent();
+  const hidden  = window._hiddenMissions || JSON.parse(localStorage.getItem('lona_hidden_missions') || '[]');
+  const daily   = typeof isDailyLocked === 'function' ? isDailyLocked(agentId) : false;
+
+  // Custom (starš dodane) misije
+  const customs = typeof customLoad === 'function'
+    ? (Array.isArray(customLoad()) ? customLoad() : Object.values(customLoad()))
+    : [];
+
+  let pool = [];
+
+  if (loc === 'mine') {
+    // Samo custom misije ki jih je dodal starš
+    pool = customs.filter(m =>
+      !hidden.includes(m.id) &&
+      !(typeof isOnCooldown === 'function' && isOnCooldown(m.id))
+    );
+  } else {
+    pool = Object.values(LONA_CONFIG.missions).filter(m => {
+      if (hidden.includes(m.id)) return false;
+      if (typeof isOnCooldown === 'function' && isOnCooldown(m.id)) return false;
+      if (loc === 'eq')      return m.category === 'eq';
+      if (loc === 'indoor')  return (m.location === 'indoor' || m.location === 'any') && m.category !== 'eq';
+      if (loc === 'outdoor') return (m.location === 'outdoor' || m.location === 'any' || m.category === 'outdoor' || m.category === 'body' || m.category === 'fear') && m.category !== 'eq';
+      return true;
+    });
+  }
+
+  if (!pool.length) { _showRmcEmpty(loc); return; }
+
+  const card = document.getElementById('random-mission-card');
+
+  // Animacija kocke
+  if (animate && card && card.innerHTML) {
+    card.classList.remove('rmc--rolling', 'rmc--flip');
+    void card.offsetWidth;
+    card.classList.add('rmc--rolling');
+
+    // Hitri tresljaji med "vrtanjem"
+    let ticks = 0;
+    const maxTicks = 5;
+    const interval = setInterval(() => {
+      ticks++;
+      // Med animacijo hitreje menjaj ikone (napetost)
+      const tmp = pool[Math.floor(Math.random() * pool.length)];
+      const ic = card.querySelector('.rmc__icon');
+      const nm = card.querySelector('.rmc__name');
+      if (ic) ic.textContent = tmp.icon || '📋';
+      if (nm) { nm.style.opacity = '.3'; setTimeout(() => { if(nm) nm.style.opacity = '1'; }, 80); }
+      if (ticks >= maxTicks) {
+        clearInterval(interval);
+        // Na koncu animacije — shrani misijo in pokaži scratch
+        setTimeout(() => {
+          const mission = pool[Math.floor(Math.random() * pool.length)];
+          _rmcCurrentMission = { mission, agentId, daily, loc };
+          _renderScratch(loc);
+        }, 100);
+      }
+    }, 80);
+  } else {
+    const mission = pool[Math.floor(Math.random() * pool.length)];
+    _rmcCurrentMission = { mission, agentId, daily, loc };
+    _renderScratch(loc);
+  }
+}
+
+function _renderScratch(loc) {
+  // Prikaži "zaprti" scratch card
+  const card = document.getElementById('random-mission-card');
+  if (!card) return;
+  const labels = {eq:'Tvoja EQ misija te čaka...', indoor:'Misija v hiši te čaka...', outdoor:'Zunanja misija te čaka...', mine:'Posebna misija te čaka...'};
+  card.innerHTML = `
+    <div class="rmc-scratch" onclick="_rmcReveal()">
+      <span class="rmc-scratch__q">🎁</span>
+      <p class="rmc-scratch__label">${{eq:'Tvoja EQ misija te čaka...', indoor:'Misija v hiši te čaka...', outdoor:'Zunanja misija te čaka...', mine:'Posebna misija te čaka...', all:'Naključna misija te čaka...'}[loc] || 'Misija te čaka...'}</p>
+      <button class="rmc-scratch__btn" onclick="event.stopPropagation();_rmcReveal()">🎲 Vrzi kocko</button>
+    </div>`;
+}
+
+function _rmcReveal() {
+  if (!_rmcCurrentMission) return;
+  const { mission, agentId, daily } = _rmcCurrentMission;
+
+  const card = document.getElementById('random-mission-card');
+  if (!card) return;
+
+  // Spinning efekt
+  const scratch = card.querySelector('.rmc-scratch');
+  if (scratch) {
+    scratch.classList.add('rmc-spinning');
+    if (navigator.vibrate) navigator.vibrate([20, 30, 20]);
+  }
+
+  setTimeout(() => _renderRmc(mission, agentId, daily), 280);
+}
+
+function _renderRmc(mission, agentId, daily) {
+  const card = document.getElementById('random-mission-card');
+  if (!card) return;
+
+  const xp      = mission.baseXp || mission.xp || 20;
+  const coins   = mission.coins  || Math.round(xp * (LONA_CONFIG.coinsPerXp || 0.4));
+  const g       = CAT_GRADS[mission.category] || CAT_GRADS.hygiene;
+  const jokers  = typeof getJokers === 'function' ? getJokers(agentId) : 0;
+  const isEqAc  = mission.eqType === 'akcija';
+  const catName = CAT_NAMES[mission.category] || '';
+
+  card.innerHTML = `
+    <div class="rmc-revealed">
+      <div class="rmc-revealed__bg" style="background:linear-gradient(135deg,${g[0]},${g[1]},${g[2]})"></div>
+      <div class="rmc-revealed__overlay"></div>
+      <div class="rmc-revealed__body">
+        <p class="rmc-revealed__cat">${mission.icon || ''} ${catName}</p>
+        <span class="rmc-revealed__icon">${mission.icon || '📋'}</span>
+        <p class="rmc-revealed__name">${mission.label}</p>
+        <p class="rmc-revealed__desc">${mission.desc || ''}</p>
+        <div class="rmc-pills">
+          <span class="rmc-pill rmc-pill--xp">+${xp} XP</span>
+          <span class="rmc-pill rmc-pill--coins">🪙 ${coins}</span>
+          ${isEqAc ? '<span class="rmc-pill rmc-pill--joker">+1 🃏</span>' : ''}
+        </div>
+        <div class="rmc-btns">
+          <button class="rmc-btn-do" onclick="_rmcDo()">✓ Opravi</button>
+          ${jokers > 0 && !daily ? '<button class="rmc-btn-sm rmc-btn-skip" onclick="_rmcSkip()">🃏</button>' : ''}
+          <button class="rmc-btn-sm rmc-btn-next" onclick="_rmcNext()">↻</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function _showRmcEmpty(loc) {
+  const card = document.getElementById('random-mission-card');
+  if (!card) return;
+  card.innerHTML = `
+    <div class="rmc-revealed">
+      <div class="rmc-revealed__bg" style="background:linear-gradient(135deg,#0d1a0d,#2A3050,#232840)"></div>
+      <div class="rmc-revealed__overlay"></div>
+      <div class="rmc-revealed__body">
+        <span class="rmc-revealed__icon">🔒</span>
+        <p class="rmc-revealed__name">Vse opravljeno!</p>
+        <p class="rmc-revealed__desc">Jutri prihajajo nove misije.</p>
+      </div>
+    </div>`;
+}
+
+function _rmcDo() {
+  if (!_rmcCurrentMission) return;
+  const { mission, loc } = _rmcCurrentMission;
+  const agentId = getCurrentAgent();
+
+  if (!isGatekeeperApproved()) {
+    lonaToast("Najprej opravi Standard 0! 🔒", "red");
+    return;
+  }
+  if (typeof isDailyLocked === 'function' && isDailyLocked(agentId)) {
+    lonaToast("Dnevni limit dosežen! 🔒", "red");
+    return;
+  }
+
+  showQualityCheck(agentId, mission, null, (compromised) => {
+    const xp    = compromised ? Math.floor((mission.baseXp || mission.xp || 20) / 2) : (mission.baseXp || mission.xp || 20);
+    const coins = mission.coins || Math.round(xp * (LONA_CONFIG.coinsPerXp || 0.4));
+
+    addXp(agentId, xp);
+    if (!compromised && mission.cooldownHrs) setCooldown(mission.id, mission.cooldownHrs);
+    logMission(agentId, mission.id, xp, { label: mission.label }, compromised);
+    if (typeof showXpFloat === 'function') showXpFloat(xp);
+    lonaToast(compromised ? `⚠️ Površno — +${xp} XP` : `+${xp} XP  +${coins} 🪙 ✓`, compromised ? 'red' : 'green');
+
+    // Naslednja misija
+    setTimeout(() => {
+      if (typeof renderCmdAgents === 'function') renderCmdAgents();
+      _showRandomMission(loc, true);
+    }, 400);
+  });
+}
+
+function _rmcSkip() {
+  if (!_rmcCurrentMission) return;
+  const { mission, loc } = _rmcCurrentMission;
+  const agentId = getCurrentAgent();
+  if (typeof useJokerOnMission === 'function') {
+    useJokerOnMission(mission.id);
+  }
+  setTimeout(() => _showRandomMission(loc), 300);
+}
+
+function _rmcNext() {
+  if (!_rmcCurrentMission) return;
+  if (navigator.vibrate) navigator.vibrate([15, 10, 15]);
+  _showRandomMission(_rmcCurrentMission.loc, true);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   try {
-    if (typeof initGatekeeper === "function") initGatekeeper();
-    else console.error("initGatekeeper not found");
-
-    if (typeof initXp === "function") initXp();
+    // Inicializiraj XP, jokerje in kovance PRVO
+    if (typeof initXp     === "function") initXp();
     if (typeof initJokers === "function") initJokers();
+    if (typeof initCoins  === "function") initCoins();
+
+    // Naloži shranjena imena agentov
+    const _savedNames = JSON.parse(localStorage.getItem('lona_agent_names') || '{}');
+    LONA_CONFIG.agents.forEach(a => { if (_savedNames[a.id]) a.name = _savedNames[a.id]; });
+
+    // Naloži XP/coins/naziv/ikona overrides za config misije
+    const _overrides = JSON.parse(localStorage.getItem('lona_mission_overrides') || '{}');
+    Object.entries(_overrides).forEach(([id, vals]) => {
+      if (LONA_CONFIG.missions[id]) {
+        if (vals.xp    !== undefined) { LONA_CONFIG.missions[id].xp = vals.xp; LONA_CONFIG.missions[id].baseXp = vals.xp; }
+        if (vals.coins !== undefined) LONA_CONFIG.missions[id].coins = vals.coins;
+        if (vals.label !== undefined) LONA_CONFIG.missions[id].label = vals.label;
+        if (vals.icon  !== undefined) LONA_CONFIG.missions[id].icon  = vals.icon;
+      }
+    });
+
+    // Naloži custom nagrade iz localStorage (dodane v commander)
+    const _savedRewards = localStorage.getItem('lona_custom_rewards');
+    if (_savedRewards) {
+      try { Object.assign(LONA_CONFIG.rewards, JSON.parse(_savedRewards)); } catch(e) {}
+    }
+
+    // Naloži hidden misije
+    window._hiddenMissions = JSON.parse(localStorage.getItem('lona_hidden_missions') || '[]');
+
+    // Nastavi agenta če ni
+    if (!localStorage.getItem("lona_current_agent")) {
+      localStorage.setItem("lona_current_agent", LONA_CONFIG.agents[0].id);
+    }
+
+    // Osveži foto če je bila spremenjena na profilu
+    localStorage.removeItem("lona_photo_updated");
+
+    if (typeof initGatekeeper === "function") initGatekeeper();
     if (typeof initActionPrompt === "function") initActionPrompt();
     if (typeof initCooldownTicker === "function") initCooldownTicker();
 
@@ -925,6 +1854,23 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(renderTreasury, 150);
     if (typeof initDoubleXpButton === "function") initDoubleXpButton();
     if (typeof renderCmdAgents === "function") renderCmdAgents();
+
+    // Ponovni render avatarja po 100ms
+    setTimeout(() => {
+      if (typeof renderCmdAgents === "function") renderCmdAgents();
+    }, 100);
+
+    // Random mission init — EQ kot default
+    if (typeof pickLocation === "function") {
+      pickLocation('eq');
+    }
+
+    // Pokaži ime agenta v top baru
+    const _agentEl = document.getElementById("current-agent-name");
+    if (_agentEl) {
+      const _a = LONA_CONFIG.agents.find(a => a.id === getCurrentAgent());
+      if (_a) _agentEl.textContent = _a.avatar + " " + _a.name;
+    }
     if (typeof initSeason === "function") initSeason();
     if (typeof initEquipment === "function") initEquipment();
     if (typeof initBank === "function") initBank();
@@ -1192,7 +2138,7 @@ function _playSound(type) {
 
 /** Pečat animacija — mission complete */
 function showStamp(text, color) {
-  const color_cls = color === "red" ? "stamp--red" : color === "gold" ? "stamp--gold" : color === "green" ? "stamp--green" : "";
+  const color_cls = color === "red" ? "stamp--red" : color === "gold" ? "stamp--gold" : "";
   const overlay = document.createElement("div");
   overlay.className = "stamp-overlay";
   const stamp = document.createElement("div");
@@ -1241,7 +2187,7 @@ function addRipple(btn, e) {
 
 /** Confetti za rank up */
 function showConfetti() {
-  const colors = ["#2D7D52","#C47D1A","#2563EB","#C4352A","#5AAF7A"];
+  const colors = ["#4A9E6A","#C47D1A","#2563EB","#C4352A","#72D68A"];
   for (let i = 0; i < 40; i++) {
     setTimeout(() => {
       const el = document.createElement("div");
@@ -1334,6 +2280,7 @@ function renderCmdAgents() {
   const maxXp   = getMaxXp(agentId);
   const rank    = getRank(maxXp);
   const jokers  = typeof getJokers === "function" ? getJokers(agentId) : 0;
+  const coins   = typeof getCoins  === "function" ? getCoins(agentId)  : 0;
   const streak  = typeof getStreak === "function" ? getStreak(agentId) : { count: 0 };
 
   // XP bar
@@ -1343,69 +2290,54 @@ function renderCmdAgents() {
   const hi     = ranks[ci]?.minXp ?? lo + 300;
   const pct    = Math.min(100, Math.round(((maxXp - lo) / (hi - lo)) * 100));
 
-  const avatarHtml = a.photo
-    ? `<img src="${a.photo}" alt="${a.name}" style="width:100%;height:100%;object-fit:cover;object-position:center top;border-radius:50%">`
-    : `<span style="font-size:3.5rem">${a.avatar}</span>`;
+  const _savedPhoto = localStorage.getItem("lona_photo_" + agentId);
+  const avatarHtml = (_savedPhoto || a.photo)
+    ? `<img src="${_savedPhoto || a.photo}" alt="${a.name}" style="width:100%;height:100%;object-fit:cover;object-position:center top;border-radius:50%">`
+    : `<span style="font-size:1.8rem">${a.avatar}</span>`;
 
   const flameCount = Math.min(streak.count || 0, 7);
   const flames = flameCount > 0 ? "🔥".repeat(flameCount) : "";
 
   section.innerHTML = `
-    <div class="hero-panel">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(255,255,255,.10);border-bottom:1px solid rgba(255,255,255,.09)">
 
-      <!-- Streak banner -->
-      <div id="streak-display" class="streak-display"></div>
-
-      <!-- Avatar center -->
-      <div class="hero-avatar-wrap">
-        <div class="hero-avatar-ring">
-          <svg class="hero-ring-svg" viewBox="0 0 120 120">
-            <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="8"/>
-            <circle cx="60" cy="60" r="54" fill="none" stroke="#FFD60A" stroke-width="8"
-              stroke-dasharray="${Math.round(339 * pct / 100)} 339"
-              stroke-linecap="round"
-              transform="rotate(-90 60 60)"
-              style="transition:stroke-dasharray .8s ease"/>
-          </svg>
-          <div class="hero-avatar">${avatarHtml}</div>
-        </div>
-        <div class="hero-xp-badge">
-          <span class="hero-xp-num">${xp}</span>
-          <span class="hero-xp-lbl">XP</span>
+      <!-- Avatar kompakten -->
+      <div style="position:relative;width:44px;height:44px;flex-shrink:0">
+        <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 44 44">
+          <circle cx="22" cy="22" r="20" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="3"/>
+          <circle cx="22" cy="22" r="20" fill="none" stroke="#FFD60A" stroke-width="3"
+            stroke-dasharray="${Math.round(125 * pct / 100)} 125"
+            stroke-linecap="round" transform="rotate(-90 22 22)"/>
+        </svg>
+        <div style="position:absolute;inset:4px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:1.1rem">
+          ${avatarHtml}
         </div>
       </div>
 
-      <!-- Ime + rang -->
-      <div class="hero-identity">
-        <h2 class="hero-name">${a.name}</h2>
-        <p class="hero-rank">${rank}</p>
-        ${flames ? `<p class="hero-flames">${flames}</p>` : ""}
+      <!-- Info -->
+      <div style="flex:1;min-width:0">
+        <p style="font-size:.95rem;font-weight:800;color:#F0EEF8;margin:0;line-height:1">${a.name}</p>
+        <p style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#FFD60A;margin:2px 0 0">${rank}</p>
       </div>
 
-      <!-- Stats row -->
-      <div class="hero-stats">
-        <div class="hero-stat">
-          <span class="hero-stat__val">${streak.count || 0}</span>
-          <span class="hero-stat__lbl">Streak</span>
+      <!-- Stats kompaktni -->
+      <div style="display:flex;gap:10px;align-items:center;flex-shrink:0">
+        <div style="text-align:center">
+          <p style="font-size:.9rem;font-weight:800;color:#72D68A;margin:0;line-height:1">${xp}</p>
+          <p style="font-size:.58rem;color:rgba(240,238,248,.6);margin:1px 0 0;text-transform:uppercase">XP</p>
         </div>
-        <div class="hero-stat">
-          <span class="hero-stat__val">${jokers}</span>
-          <span class="hero-stat__lbl">Jokerji</span>
+        <div style="text-align:center">
+          <p style="font-size:.9rem;font-weight:800;color:#FFD60A;margin:0;line-height:1">${coins}</p>
+          <p style="font-size:.58rem;color:rgba(240,238,248,.6);margin:1px 0 0;text-transform:uppercase">🪙</p>
         </div>
-        <div class="hero-stat">
-          <span class="hero-stat__val">${pct}%</span>
-          <span class="hero-stat__lbl">Do ranga</span>
+        <div style="text-align:center">
+          <p style="font-size:.9rem;font-weight:800;color:#CF8FFF;margin:0;line-height:1">${jokers}</p>
+          <p style="font-size:.58rem;color:rgba(240,238,248,.6);margin:1px 0 0;text-transform:uppercase">🃏</p>
         </div>
-      </div>
-
-      <!-- Bonus gumbi -->
-      <div class="cmd-bonus" style="margin-top:0">
-        <div class="cmd-bonus__btns">
-          <button class="cmd-bonus__btn" onclick="grantManualBonus(10)">+10 XP</button>
-          <button class="cmd-bonus__btn" onclick="grantManualBonus(25)">+25 XP</button>
-          <button class="cmd-bonus__btn cmd-bonus__btn--special" onclick="showSituationPicker()">📍 Situacija</button>
-          <button class="cmd-bonus__btn" onclick="showProposals()">📬</button>
-        </div>
+        ${streak.count > 1 ? `<div style="text-align:center">
+          <p style="font-size:.9rem;font-weight:800;color:#FF9500;margin:0;line-height:1">${streak.count}</p>
+          <p style="font-size:.58rem;color:rgba(240,238,248,.6);margin:1px 0 0;text-transform:uppercase">🔥</p>
+        </div>` : ""}
       </div>
 
     </div>
