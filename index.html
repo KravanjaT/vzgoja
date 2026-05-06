@@ -21,13 +21,13 @@ body {
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   padding: 24px;
-  position: relative; overflow: hidden;
+  position: relative; overflow-x: hidden;
 }
 
 /* Ozadje — živahni delci */
 .bg-particles {
   position: fixed; inset: 0; pointer-events: none; z-index: 0;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 .particle {
   position: absolute; border-radius: 50%;
@@ -35,7 +35,7 @@ body {
   animation: float-particle linear infinite;
 }
 @keyframes float-particle {
-  0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+  0%   { transform: translateY(100dvh) scale(0); opacity: 0; }
   10%  { opacity: 1; }
   90%  { opacity: .3; }
   100% { transform: translateY(-100px) scale(1); opacity: 0; }
@@ -96,7 +96,7 @@ body {
   background: rgba(255,255,255,.10);
   border: 1.5px solid rgba(255,255,255,.12);
   cursor: pointer; transition: all 250ms ease;
-  position: relative; overflow: hidden;
+  position: relative; overflow-x: hidden;
 }
 .agent-card::before {
   content: '';
@@ -119,7 +119,7 @@ body {
   display: flex; align-items: center; justify-content: center;
   font-size: 1.8rem; flex-shrink: 0;
   position: relative; z-index: 1;
-  overflow: hidden;
+  overflow-x: hidden;
   box-shadow: 0 0 0 4px rgba(45,125,82,.1), 0 4px 16px rgba(0,0,0,.3);
 }
 .agent-card__avatar img {

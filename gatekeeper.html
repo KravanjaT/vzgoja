@@ -21,17 +21,17 @@ body {
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   padding: 24px;
-  position: relative; overflow: hidden;
+  position: relative; overflow-x: hidden;
 }
 
-.bg-particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.bg-particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow-x: hidden; }
 .particle {
   position: absolute; border-radius: 50%;
   background: rgba(45,125,82,.12);
   animation: float-particle linear infinite;
 }
 @keyframes float-particle {
-  0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+  0%   { transform: translateY(100dvh) scale(0); opacity: 0; }
   10%  { opacity: 1; }
   90%  { opacity: .3; }
   100% { transform: translateY(-100px) scale(1); opacity: 0; }
@@ -150,7 +150,7 @@ body {
 .progress-wrap { width: 100%; margin-bottom: 24px; }
 .progress-bar {
   height: 4px; background: rgba(255,255,255,.12);
-  border-radius: 2px; overflow: hidden;
+  border-radius: 2px; overflow-x: hidden;
 }
 .progress-bar__fill {
   height: 100%; background: #72D68A;
@@ -171,7 +171,7 @@ body {
   font-family: 'DM Serif Display', serif;
   font-size: 1.1rem; letter-spacing: .04em;
   cursor: pointer; transition: all 250ms ease;
-  position: relative; overflow: hidden;
+  position: relative; overflow-x: hidden;
 }
 .cta-btn--locked {
   background: rgba(255,255,255,.09);
