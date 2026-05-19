@@ -14,7 +14,7 @@
 
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Nunito Sans','DM Sans',system-ui,sans-serif;background:#87CEEB;color:#1C1C2E;min-height:100dvh;padding-bottom:var(--page-padding-bottom);overflow-x:hidden}
+body{font-family:'Nunito Sans','DM Sans',system-ui,sans-serif;background:#F0F4FF;color:#1C1C2E;min-height:100dvh;padding-bottom:var(--page-padding-bottom);overflow-x:hidden}
 
 /* TOP BAR */
 .top-bar{display:flex;align-items:center;gap:10px;padding:var(--topbar-padding);background:rgba(255,255,255,.95);border-bottom:2.5px solid rgba(0,0,0,.07);backdrop-filter:blur(16px);position:sticky;top:0;z-index:100}
@@ -128,68 +128,18 @@ body{font-family:'Nunito Sans','DM Sans',system-ui,sans-serif;background:#87CEEB
 <link rel="stylesheet" href="desktop.css"/>
 
 <style>
-/* ── OZADJE ────────────────────────────────────────────── */
-body {
-  background: #87CEEB;
-}
-
-/* Top bar in nav ostaneta čista */
-.top-bar {
-  background: rgba(255,255,255,.88) !important;
-  backdrop-filter: blur(16px) !important;
-}
-
-/* Arena area — rahlo transparentna kartice */
-.da-loc-btn {
-  background: rgba(255,255,255,.92) !important;
-  backdrop-filter: blur(8px);
-}
-.da-loc-btn:not(.da-loc--active) {
-  box-shadow: 0 4px 0 rgba(0,0,0,.12), 0 0 0 1.5px rgba(255,255,255,.6) !important;
-}
-
-/* Mission kartice — frosted glass */
-.mc, .rb {
-  background: rgba(255,255,255,.88) !important;
-  backdrop-filter: blur(12px) !important;
-  border-color: rgba(255,255,255,.6) !important;
-}
-
-/* Section label */
-.sec-lbl, .section-header__title {
-  text-shadow: 0 1px 4px rgba(255,255,255,.8);
-}
-
-/* Main scroll — brez trdega ozadja */
-.main-scroll {
-  background: transparent !important;
-}
-
-/* Bottom nav — frosted glass */
-.bottom-nav {
-  background: rgba(255,255,255,.88) !important;
-  backdrop-filter: blur(20px) !important;
-  border-color: rgba(255,255,255,.5) !important;
-}
-
-/* Settings overlay box */
-#settings-panel > div {
-  backdrop-filter: blur(20px);
-}
-
-/* Arena center ring — bela obroba da izstopa čez ozadje */
-#arena-circle {
-  box-shadow: 0 8px 0 rgba(0,0,0,.15), 0 0 0 6px rgba(255,255,255,.95) !important;
-}
+body { background: #87CEEB; }
+.top-bar { background: rgba(255,255,255,.88) !important; backdrop-filter: blur(16px) !important; }
+.da-loc-btn { background: rgba(255,255,255,.92) !important; }
+.mc, .rb { background: rgba(255,255,255,.88) !important; backdrop-filter: blur(10px) !important; border-color: rgba(255,255,255,.5) !important; }
+.main-scroll { background: transparent !important; }
+.bottom-nav { background: rgba(255,255,255,.88) !important; backdrop-filter: blur(20px) !important; z-index: 200 !important; }
+#arena-circle { box-shadow: 0 8px 0 rgba(0,0,0,.15), 0 0 0 6px rgba(255,255,255,.95) !important; }
 </style>
 </head>
 <body>
 
-<div id="bg-wrap" style="position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none">
-  <img src="assets/bg-day.png" alt="" aria-hidden="true"
-       style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block"/>
-</div>
-
+<div style="position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none"><img src="assets/bg-day.png" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center top"></div>
 <header class="top-bar" style="position:relative;z-index:100">
   <div class="top-bar__logo" onclick="location.replace('index.html')" style="cursor:pointer">[LONA<span class="logo-accent">_OS</span>]</div>
   <div class="top-bar__agent" onclick="location.replace('index.html')" title="Zamenjaj agenta">
@@ -203,7 +153,7 @@ body {
     style="width:34px;height:34px;border-radius:50%;background:#F5EEFF;border:2.5px solid #AF52DE;color:#AF52DE;font-size:14px;cursor:pointer;flex-shrink:0;box-shadow:0 2px 0 #7B2FA8" title="Commander Panel">🎖️</button>
 </header>
 
-<main class="main-scroll" style="position:relative;z-index:1" style="padding:0 0 100px;gap:0;max-width:100%">
+<main class="main-scroll" style="padding:0 0 100px;gap:0;max-width:100%;position:relative;z-index:1">
   <section id="cmd-panel-section"></section>
 
   <!-- DESKTOP ARENA (JS ga zgradi na 768px+) -->
@@ -326,21 +276,10 @@ function _initDesktopArena() {
              style="position:absolute;top:50%;left:50%;
                     transform:translate(-50%,-50%);
                     width:${circleSize}px;height:${circleSize}px;
-                    border-radius:50%;overflow:hidden;z-index:2;
-                    background:linear-gradient(135deg,#2d1a50,#4a1580,#6a20aa);
+                    border-radius:50%;overflow:visible;z-index:2;
+                    background:transparent;
                     display:flex;flex-direction:column;align-items:center;
-                    justify-content:center;text-align:center;cursor:pointer;
-                    border:2px solid rgba(255,255,255,.15)">
-          <span id="arena-q" style="font-size:${Math.round(circleSize*0.22)}px;display:block;animation:float-q 3s ease-in-out infinite;filter:drop-shadow(0 2px 6px rgba(0,0,0,.2))">🎯</span>
-          <p id="arena-lbl" style="font-size:${Math.max(8,Math.round(circleSize*0.055))}px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);margin:4px 0;padding:0 10%">Naključna misija</p>
-          <button id="arena-btn" onclick="_arenaReveal()"
-            style="padding:${Math.round(circleSize*0.04)}px ${Math.round(circleSize*0.1)}px;
-                   border-radius:12px;background:rgba(255,255,255,.18);
-                   border:1px solid rgba(255,255,255,.35);color:#fff;
-                   font-size:${Math.max(9,Math.round(circleSize*0.065))}px;
-                   font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif">
-            Izvleči 🎲
-          </button>
+                    justify-content:flex-end;text-align:center;cursor:pointer;">
         </div>
       </div>
     </div>`;
@@ -416,17 +355,24 @@ function _arenaShowScratch(loc) {
   const labels = {eq:'EQ misija te čaka',indoor:'Misija v hiši te čaka',
     outdoor:'Zunanja misija',mine:'Posebna misija',skupaj:'Skupna misija',all:'Naključna misija'};
 
-  circle.style.background = 'linear-gradient(135deg,#7B2FA8,#AF52DE,#BF5AF2)';
-  circle.style.boxShadow = '0 8px 0 rgba(0,0,0,.15), 0 0 0 5px rgba(255,255,255,.9)';
+  circle.style.background = 'transparent';
+  circle.style.boxShadow = 'none';
+  circle.style.overflow = 'visible';
   circle.onclick = _arenaReveal;
+  const ms1 = Math.round(sz * 1.15);
   circle.innerHTML = `
-    <span style="font-size:${Math.round(sz*0.22)}px;display:block;animation:float-q 3s ease-in-out infinite;filter:drop-shadow(0 2px 6px rgba(0,0,0,.2))">🎯</span>
-    <p style="font-size:${Math.max(8,Math.round(sz*0.055))}px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.9);margin:4px 8px;line-height:1.3;font-family:'Nunito',sans-serif;font-weight:900">${labels[loc]||'Misija te čaka'}</p>
+    <img src="assets/mascot.png" alt="maskota"
+      style="width:${ms1}px;height:${ms1}px;object-fit:contain;object-position:bottom;
+             display:block;margin-bottom:-${Math.round(sz*0.06)}px;
+             filter:drop-shadow(0 6px 12px rgba(0,0,0,.2));
+             animation:float-q 3s ease-in-out infinite;pointer-events:none"/>
     <button onclick="event.stopPropagation();_arenaReveal()"
-      style="padding:${Math.round(sz*0.04)}px ${Math.round(sz*0.1)}px;border-radius:12px;
-             background:#fff;border:none;
-             color:#7B2FA8;font-size:${Math.max(9,Math.round(sz*0.065))}px;
-             font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:6px;box-shadow:0 3px 0 rgba(0,0,0,.12);border-radius:50px">
+      style="padding:${Math.round(sz*0.035)}px ${Math.round(sz*0.1)}px;border-radius:50px;
+             background:#AF52DE;border:3px solid #7B2FA8;
+             color:#fff;font-size:${Math.max(9,Math.round(sz*0.062))}px;
+             font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;
+             box-shadow:0 4px 0 #7B2FA8;margin-bottom:${Math.round(sz*0.04)}px;
+             position:relative;z-index:5;white-space:nowrap">
       Izvleči 🎲
     </button>`;
 }
@@ -461,13 +407,25 @@ function _arenaReveal() {
   };
   const g = CAT_G[m.category] || ['#007AFF','#0055B3'];
 
-  circle.style.background = `linear-gradient(135deg,${g[0]},${g[1]})`;
+  circle.style.background = 'transparent';
+  circle.style.boxShadow = 'none';
+  circle.style.overflow = 'visible';
   circle.onclick = () => { _arenaPickMission(_arenaLoc); _arenaShowScratch(_arenaLoc); };
+  const ms2 = Math.round(sz * 1.15);
   circle.innerHTML = `
-    <span style="font-size:${Math.round(sz*0.18)}px;margin-bottom:4px">${m.icon||'📋'}</span>
-    <p style="font-family:'Nunito',sans-serif;font-size:${Math.max(10,Math.round(sz*0.08))}px;color:#fff;margin:0 6%;line-height:1.2;font-weight:900;text-shadow:0 1px 3px rgba(0,0,0,.2)">${m.label}</p>
-    <p style="font-size:${Math.max(7,Math.round(sz*0.05))}px;color:rgba(255,255,255,.8);margin:2px 10%;line-height:1.3;font-weight:600">${m.desc||''}</p>
-    <div style="display:flex;gap:5px;margin-top:6px;justify-content:center">
+    <img src="assets/mascot.png" alt="maskota"
+      style="width:${ms2}px;height:${ms2}px;object-fit:contain;object-position:bottom;
+             display:block;margin-bottom:-${Math.round(sz*0.06)}px;
+             filter:drop-shadow(0 6px 12px rgba(0,0,0,.2));pointer-events:none"/>
+    <div style="background:${g[0]};border:3px solid rgba(0,0,0,.12);border-radius:18px;
+                padding:8px 12px;box-shadow:0 5px 0 ${g[1]};
+                text-align:center;margin-bottom:${Math.round(sz*0.04)}px;
+                position:relative;z-index:5;min-width:${Math.round(sz*0.85)}px">
+      <div style="font-size:${Math.round(sz*0.13)}px">${m.icon||'📋'}</div>
+      <p style="font-family:'Nunito',sans-serif;font-size:${Math.max(9,Math.round(sz*0.072))}px;
+               color:#fff;font-weight:900;line-height:1.2;
+               text-shadow:0 1px 2px rgba(0,0,0,.2)">${m.label}</p>
+      <div style="display:flex;gap:3px;justify-content:center;margin-top:3px">
       <span style="font-size:${Math.max(8,Math.round(sz*0.055))}px;font-weight:900;color:#fff;background:rgba(0,0,0,.2);padding:3px 9px;border-radius:20px;font-family:'Nunito',sans-serif">+${xp} XP</span>
       <span style="font-size:${Math.max(8,Math.round(sz*0.055))}px;font-weight:900;color:#FFD60A;background:rgba(0,0,0,.2);padding:3px 9px;border-radius:20px;font-family:'Nunito',sans-serif">🪙${coins}</span>
     </div>
@@ -506,7 +464,7 @@ window.addEventListener('resize', () => {
 });
 </script>
 
-<nav class="bottom-nav" style="z-index:200" aria-label="Navigacija">
+<nav class="bottom-nav" aria-label="Navigacija">
   <button class="bottom-nav__item bottom-nav__item--active" aria-current="page">
     <svg viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
     <span>Baza</span>

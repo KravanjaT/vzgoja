@@ -2,411 +2,414 @@
 <html lang="sl">
 <head>
 <meta charset="UTF-8"/>
-<link rel="icon" type="image/png" href="favicon.ico"/>
-
+<link rel="icon" type="image/png" href="favicon.png"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
-<meta name="theme-color" content="#1E2438"/>
+<meta name="theme-color" content="#87CEEB"/>
 <link rel="manifest" href="manifest.json"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="LONA OS"/>
 <title>LONA OS</title>
 
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root {
+  --green:     #34C759;
+  --green-deep:#248A3D;
+  --gold:      #FFD60A;
+  --gold-deep: #B89800;
+  --purple:    #AF52DE;
+  --purple-deep:#7B2FA8;
+  --blue:      #007AFF;
+  --red:       #FF3B30;
+  --white:     #FFFFFF;
+  --text:      #1C1C2E;
+  --text-dim:  #3A3A4C;
+  --text-muted:#8E8E93;
+}
+
+html { -webkit-text-size-adjust:100%; touch-action:manipulation; }
 
 body {
-  font-family: 'DM Sans', sans-serif;
-  background: #1E2438;
+  font-family: 'Nunito Sans', system-ui, sans-serif;
   min-height: 100dvh;
   display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 24px;
-  position: relative; overflow-x: hidden;
-}
-
-/* Ozadje — živahni delci */
-.bg-particles {
-  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  align-items: center; justify-content: flex-start;
   overflow-x: hidden;
-}
-.particle {
-  position: absolute; border-radius: 50%;
-  background: rgba(45,125,82,.15);
-  animation: float-particle linear infinite;
-}
-@keyframes float-particle {
-  0%   { transform: translateY(100dvh) scale(0); opacity: 0; }
-  10%  { opacity: 1; }
-  90%  { opacity: .3; }
-  100% { transform: translateY(-100px) scale(1); opacity: 0; }
+  background: #87CEEB;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Vsebina */
-.login-wrap {
+/* ── OZADJE ─────────────────────────────────────────────── */
+#bg-img {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+}
+#bg-img img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top;
+  display: block;
+}
+
+/* ── VSEBINA ─────────────────────────────────────────────── */
+.screen {
   position: relative; z-index: 1;
+  width: 100%; max-width: 400px;
+  min-height: 100dvh;
   display: flex; flex-direction: column;
-  align-items: center; width: 100%; max-width: 340px;
-  gap: 0;
+  align-items: center;
+  padding: 0 20px calc(40px + env(safe-area-inset-bottom));
+  padding-top: max(48px, env(safe-area-inset-top));
 }
 
-/* Logo */
-.logo-block { text-align: center; margin-bottom: 40px; }
+/* ── LOGO BLOK ───────────────────────────────────────────── */
+.logo-block {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
 .logo-badge {
   display: inline-block;
-  font-size: .6rem; font-weight: 700; letter-spacing: .2em;
-  text-transform: uppercase; color: rgba(90,175,122,.7);
-  border: 1px solid rgba(45,125,82,.3);
-  border-radius: 20px; padding: 4px 12px; margin-bottom: 16px;
-  background: rgba(45,125,82,.08);
+  font-size: .62rem; font-weight: 900;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--purple-deep);
+  background: rgba(255,255,255,.9);
+  border: 2.5px solid var(--purple);
+  border-radius: 30px;
+  padding: 5px 14px;
+  margin-bottom: 14px;
+  box-shadow: 0 3px 0 rgba(175,82,222,.25);
 }
+
+.logo-cloud {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
 .logo-title {
-  font-family: 'DM Serif Display', serif;
-  font-size: 3.2rem; color: #F0EEF8;
-  letter-spacing: .04em; line-height: 1;
-  margin-bottom: 6px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 4rem; font-weight: 900;
+  color: var(--white);
+  letter-spacing: -.01em; line-height: 1;
+  text-shadow:
+    3px 3px 0 rgba(0,0,0,.15),
+    0 6px 20px rgba(0,0,0,.2);
+  position: relative; z-index: 1;
 }
-.logo-title span { color: #72D68A; }
+.logo-title em {
+  font-style: normal;
+  color: var(--gold);
+  text-shadow:
+    3px 3px 0 rgba(0,0,0,.15),
+    0 0 30px rgba(255,214,10,.4);
+}
+
 .logo-sub {
-  font-size: .7rem; letter-spacing: .16em;
-  text-transform: uppercase; color: rgba(240,238,248,.45);
+  font-size: .68rem; font-weight: 800;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: rgba(255,255,255,.75);
+  text-shadow: 0 1px 4px rgba(0,0,0,.2);
+  margin-top: 4px;
 }
 
-/* Misija briefing */
+/* ── BRIFING BOX ─────────────────────────────────────────── */
 .briefing-box {
-  width: 100%; padding: 16px 18px;
-  background: rgba(45,125,82,.08);
-  border: 1px solid rgba(45,125,82,.2);
-  border-left: 3px solid #72D68A;
-  border-radius: 14px; margin-bottom: 32px;
+  width: 100%;
+  background: rgba(255,255,255,.88);
+  backdrop-filter: blur(12px);
+  border: 2.5px solid rgba(255,255,255,.6);
+  border-radius: 20px;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 0 rgba(0,0,0,.08), 0 8px 24px rgba(0,0,0,.1);
+  display: flex; align-items: flex-start; gap: 12px;
 }
-.briefing-box__label {
-  font-size: .58rem; font-weight: 700; letter-spacing: .14em;
-  text-transform: uppercase; color: #72D68A; margin-bottom: 6px;
+.briefing-icon {
+  font-size: 1.6rem; flex-shrink: 0; margin-top: 2px;
 }
-.briefing-box__text {
-  font-size: .82rem; color: rgba(240,238,248,.7); line-height: 1.5;
+.briefing-content {}
+.briefing-label {
+  font-size: .58rem; font-weight: 900;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--purple); margin-bottom: 3px;
+}
+.briefing-text {
+  font-size: .88rem; font-weight: 700;
+  color: var(--text-dim); line-height: 1.4;
 }
 
-/* Agent kartice */
-.agents { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+/* ── AGENT KARTICE ───────────────────────────────────────── */
+.agents {
+  display: flex; flex-direction: column;
+  gap: 12px; width: 100%;
+}
 
 .agent-card {
-  display: flex; align-items: center; gap: 16px;
-  padding: 18px 20px; border-radius: 18px;
-  background: rgba(255,255,255,.10);
-  border: 1.5px solid rgba(255,255,255,.12);
-  cursor: pointer; transition: all 250ms ease;
-  position: relative; overflow-x: hidden;
+  width: 100%;
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(12px);
+  border: 2.5px solid rgba(255,255,255,.7);
+  border-radius: 22px;
+  cursor: pointer;
+  position: relative; overflow: hidden;
+  text-align: left;
+  font-family: 'Nunito Sans', sans-serif;
+  box-shadow: 0 5px 0 rgba(0,0,0,.08), 0 8px 20px rgba(0,0,0,.1);
+  transition: transform .15s ease, box-shadow .15s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
+.agent-card:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 rgba(0,0,0,.08);
+}
+
+/* Barvna leva bordura glede na agenta */
 .agent-card::before {
   content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(45,125,82,.15), transparent);
-  opacity: 0; transition: opacity 250ms ease;
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 5px;
+  border-radius: 22px 0 0 22px;
+  background: var(--agent-color, var(--green));
 }
-.agent-card:hover::before { opacity: 1; }
-.agent-card:hover {
-  border-color: rgba(90,175,122,.5);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(45,125,82,.2);
-}
-.agent-card:active { transform: scale(.97); }
 
-.agent-card__avatar {
-  width: 64px; height: 64px; border-radius: 50%;
-  background: rgba(45,125,82,.15);
-  border: 2.5px solid rgba(90,175,122,.4);
+/* XP progress bar na dnu */
+.agent-card::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0;
+  height: 3px; width: var(--xp-pct, 0%);
+  background: var(--agent-color, var(--green));
+  border-radius: 0 0 0 22px;
+  opacity: .5;
+  transition: width .8s ease;
+}
+
+.agent-avatar {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: rgba(0,0,0,.06);
+  border: 3px solid var(--agent-color, var(--green));
   display: flex; align-items: center; justify-content: center;
   font-size: 1.8rem; flex-shrink: 0;
-  position: relative; z-index: 1;
-  overflow-x: hidden;
-  box-shadow: 0 0 0 4px rgba(45,125,82,.1), 0 4px 16px rgba(0,0,0,.3);
+  box-shadow: 0 4px 0 rgba(0,0,0,.1);
+  overflow: hidden; position: relative;
 }
-.agent-card__avatar img {
+.agent-avatar img {
   width: 100%; height: 100%;
   object-fit: cover; object-position: center top;
   border-radius: 50%;
 }
-.agent-card:hover .agent-card__avatar {
-  border-color: #72D68A;
-  box-shadow: 0 0 0 4px rgba(45,125,82,.2), 0 0 20px rgba(45,125,82,.3);
-}
-.agent-card__info { flex: 1; position: relative; z-index: 1; }
-.agent-card__name {
-  font-family: 'DM Serif Display', serif;
-  font-size: 1.2rem; color: #F0EEF8; margin-bottom: 4px;
-}
-.agent-card__rank {
-  font-size: .6rem; font-weight: 600; letter-spacing: .1em;
-  text-transform: uppercase; color: #72D68A;
-}
-.agent-card__xp {
-  font-size: .78rem; font-weight: 600; color: rgba(240,238,248,.6);
-  margin-top: 1px;
-}
-.agent-card__arrow {
-  font-size: 1.1rem; color: rgba(240,238,248,.2);
-  transition: all 250ms ease; position: relative; z-index: 1;
-}
-.agent-card:hover .agent-card__arrow { color: #72D68A; transform: translateX(4px); }
-
-/* XP mini bar */
-.agent-card__bar {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-  background: rgba(255,255,255,.05);
-}
-.gk-checks {
-  display: flex; flex-direction: column; gap: 10px;
-  width: 100%; margin-bottom: 16px;
-}
-.gk-check-item {
-  display: flex; align-items: center; gap: 14px;
-  padding: 14px 18px; border-radius: 16px;
-  background: rgba(255,255,255,.10);
-  border: 2px solid rgba(255,255,255,.12);
-  cursor: pointer; transition: all 200ms ease;
-  -webkit-tap-highlight-color: transparent;
-}
-.gk-check-item--done {
-  background: rgba(52,199,89,.12);
-  border-color: rgba(52,199,89,.4);
-}
-.gk-check-item__box {
-  width: 28px; height: 28px; border-radius: 8px;
-  border: 2.5px solid rgba(255,255,255,.2);
+.agent-avatar-camera {
+  position: absolute; bottom: -2px; right: -2px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--white);
+  border: 2px solid var(--agent-color, var(--green));
   display: flex; align-items: center; justify-content: center;
-  font-size: 1rem; flex-shrink: 0; transition: all 200ms ease;
-  background: rgba(255,255,255,.05);
-}
-.gk-check-item--done .gk-check-item__box {
-  background: #34C759; border-color: #34C759;
-  animation: checkbox-bounce .3s cubic-bezier(.17,.67,.35,1.5);
-}
-@keyframes checkbox-bounce {
-  0%  { transform: scale(0.5); }
-  60% { transform: scale(1.2); }
-  100%{ transform: scale(1); }
-}
-.gk-check-item__label {
-  font-size: .95rem; font-weight: 700; color: rgba(240,238,248,.7);
-  transition: color 200ms ease;
-}
-.gk-check-item--done .gk-check-item__label {
-  color: #72D68A; text-decoration: line-through;
-}
-.gk-confirm-btn {
-  width: 100%; padding: 16px; border-radius: 16px;
-  font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 900;
-  background: rgba(255,255,255,.09); color: rgba(240,238,248,.6);
-  border: 2px solid rgba(255,255,255,.12);
-  transition: all 250ms ease; cursor: not-allowed;
-}
-.gk-confirm-btn--ready {
-  background: #34C759 !important; color: white !important;
-  border-color: #34C759 !important; cursor: pointer !important;
-  box-shadow: 0 5px 0 rgba(52,199,89,.4);
-  animation: btn-ready .4s ease;
-}
-@keyframes btn-ready {
-  0%  { transform: scale(.95); }
-  60% { transform: scale(1.03); }
-  100%{ transform: scale(1); }
-}
-.gk-confirm-btn--ready:hover { transform: translateY(-2px); box-shadow: 0 7px 0 rgba(52,199,89,.4); }
-.gk-confirm-btn--ready:active { transform: translateY(2px); box-shadow: none; }
-
-/* Step transitions */
-@keyframes step-in {
-  from { opacity: 0; transform: translateY(20px) scale(.97); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-.step-animate { animation: step-in .35s cubic-bezier(.17,.67,.35,1.1) forwards; }
-
-.agent-card__bar-fill {
-  height: 100%; background: #72D68A;
-  transition: width .6s ease;
+  font-size: .6rem; z-index: 2;
 }
 
-/* Divider */
+.agent-info { flex: 1; min-width: 0; }
+.agent-name {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.1rem; font-weight: 900;
+  color: var(--text); margin-bottom: 2px;
+}
+.agent-rank {
+  font-size: .62rem; font-weight: 900;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--agent-color, var(--green));
+  margin-bottom: 2px;
+}
+.agent-xp {
+  font-size: .78rem; font-weight: 700;
+  color: var(--text-muted);
+}
+
+.agent-arrow {
+  font-size: 1.2rem;
+  color: var(--agent-color, var(--green));
+  flex-shrink: 0;
+  font-weight: 900;
+}
+
+/* ── DIVIDER ─────────────────────────────────────────────── */
 .or-divider {
-  display: flex; align-items: center; gap: 12px;
-  width: 100%; padding: 4px 0;
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 2px 0;
 }
 .or-divider::before, .or-divider::after {
-  content: ''; flex: 1; height: 1px;
-  background: rgba(255,255,255,.09);
+  content: ''; flex: 1; height: 2px;
+  background: rgba(255,255,255,.5);
+  border-radius: 2px;
 }
 .or-divider span {
-  font-size: .62rem; color: rgba(240,238,248,.2);
+  font-size: .65rem; font-weight: 900;
+  color: rgba(255,255,255,.7);
   letter-spacing: .1em; text-transform: uppercase;
+  text-shadow: 0 1px 3px rgba(0,0,0,.2);
 }
 
-/* Footer */
+/* ── FOOTER ──────────────────────────────────────────────── */
 .login-footer {
-  margin-top: 40px; text-align: center;
-  font-size: .6rem; letter-spacing: .1em;
-  text-transform: uppercase; color: rgba(240,238,248,.15);
+  margin-top: 28px;
+  text-align: center;
+  font-size: .62rem; font-weight: 800;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: rgba(255,255,255,.5);
+  text-shadow: 0 1px 3px rgba(0,0,0,.15);
 }
 
-/* Loading animacija */
-@keyframes card-in {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* ── ANIMACIJE ───────────────────────────────────────────── */
+@keyframes bounce-in {
+  0%  { opacity:0; transform:translateY(20px) scale(.92); }
+  60% { transform:translateY(-4px) scale(1.02); }
+  100%{ opacity:1; transform:translateY(0) scale(1); }
 }
-.agent-card { animation: card-in .4s ease forwards; opacity: 0; }
-.agent-card:nth-child(1) { animation-delay: .1s; }
-.agent-card:nth-child(3) { animation-delay: .2s; }
+@keyframes float-logo {
+  0%,100%{ transform: translateY(0); }
+  50%    { transform: translateY(-6px); }
+}
+@keyframes spin-star {
+  to { transform: rotate(360deg); }
+}
+
+.logo-cloud { animation: float-logo 4s ease-in-out infinite; }
+
+.agent-card {
+  opacity: 0;
+  animation: bounce-in .4s cubic-bezier(.17,.67,.35,1.1) forwards;
+}
+.agent-card:nth-child(1) { animation-delay: .15s; }
+.agent-card:nth-child(2) { animation-delay: .25s; }
+.agent-card:nth-child(3) { animation-delay: .35s; }
+
+/* Zvezde v ozadju */
+.star {
+  position: fixed;
+  pointer-events: none; z-index: 0;
+  font-size: 1.2rem;
+  animation: spin-star 8s linear infinite;
+  opacity: .15;
+}
 </style>
-<link rel="stylesheet" href="shared.css"/>
 </head>
 <body>
 
-<div class="bg-particles" id="particles"></div>
+<!-- Ozadje -->
+<div id="bg-img">
+  <img src="assets/bg-day.png" id="bg-source" alt=""/>
+</div>
 
-<div class="login-wrap">
+<!-- Dekorativne zvezde -->
+<div class="star" style="top:8%;left:5%;animation-duration:6s">⭐</div>
+<div class="star" style="top:12%;right:8%;animation-duration:9s;animation-direction:reverse">✨</div>
+<div class="star" style="top:6%;left:40%;animation-duration:7s">🌟</div>
 
+<div class="screen">
+
+  <!-- LOGO -->
   <div class="logo-block">
-    <div class="logo-badge">Poveljniški Terminal</div>
-    <h1 class="logo-title">LONA<span>_OS</span></h1>
-    <p class="logo-sub">v2.6 · Stealth Learning</p>
+    <div class="logo-badge">🎖️ Poveljniški Terminal</div>
+    <div class="logo-cloud">
+      <h1 class="logo-title">LON<em>A</em></h1>
+    </div>
+    <p class="logo-sub">Misije · XP · Nagrade</p>
   </div>
 
+  <!-- BRIFING -->
   <div class="briefing-box">
-    <p class="briefing-box__label">Dnevni Brifing</p>
-    <p class="briefing-box__text" id="briefing-text">Kateri agent prevzema danes misijo?</p>
+    <div class="briefing-icon" id="briefing-icon">📋</div>
+    <div class="briefing-content">
+      <div class="briefing-label">Dnevni brifing</div>
+      <div class="briefing-text" id="briefing-text">Kateri agent prevzema danes misijo?</div>
+    </div>
   </div>
 
+  <!-- AGENT KARTICE -->
   <div class="agents" id="agents-list"></div>
 
-  <p class="login-footer">LONA OS · Sezona 1</p>
+  <p class="login-footer">LONA OS · Sezona 1 · v2.6</p>
 
 </div>
 
 <script src="config.js"></script>
 <script>
-// ── GATEKEEPER ──────────────────────────────────────────────
-const GK_KEY = "lona_gatekeeper_date";
-function gkTodayStr() { return new Date().toISOString().slice(0,10); }
-function isGkApproved() { return localStorage.getItem(GK_KEY) === gkTodayStr(); }
+// ── OZADJE glede na čas ─────────────────────────────────────
+(function() {
+  const h = new Date().getHours();
+  if (h >= 19 || h < 6) {
+    const img = document.getElementById('bg-source');
+    const night = 'assets/bg-night.png';
+    const testImg = new Image();
+    testImg.onload = () => { img.src = night; };
+    testImg.src = night;
+    document.body.style.background = '#1A1446';
+  }
+})();
 
-function initGatekeeperLogin() {
-  const checks   = LONA_CONFIG.gatekeeper.checks;
-  const el       = document.getElementById("gk-checks");
-  const confirmBtn = document.getElementById("gk-confirm");
-  const state    = {};
-
-  el.innerHTML = checks.map(c => `
-    <div class="gk-check-item" id="gkc-${c.id}" onclick="toggleGkCheck('${c.id}')">
-      <div class="gk-check-item__box" id="gkbox-${c.id}"></div>
-      <span class="gk-check-item__label">${c.label}</span>
-    </div>
-  `).join("");
-
-  window.toggleGkCheck = function(id) {
-    state[id] = !state[id];
-    const item = document.getElementById("gkc-" + id);
-    const box  = document.getElementById("gkbox-" + id);
-    if (state[id]) {
-      item.classList.add("gk-check-item--done");
-      box.textContent = "✓";
-      // Vibriraj
-      if (navigator.vibrate) navigator.vibrate(30);
-    } else {
-      item.classList.remove("gk-check-item--done");
-      box.textContent = "";
-    }
-    // Preveri ali so vse odkljukane
-    const allDone = checks.every(c => state[c.id]);
-    confirmBtn.disabled = !allDone;
-    confirmBtn.classList.toggle("gk-confirm-btn--ready", allDone);
-  };
-}
-
-window.confirmGatekeeper = function() {
-  localStorage.setItem(GK_KEY, gkTodayStr());
-  // Animacija prehoda
-  const step1 = document.getElementById("step-gatekeeper");
-  const step2 = document.getElementById("step-agents");
-  step1.style.animation = "stamp-out .25s ease forwards";
-  setTimeout(() => {
-    step1.style.display = "none";
-    step2.style.display = "block";
-    step2.classList.add("step-animate");
-  }, 250);
-};
-
-// ── DELCI V OZADJU
-const container = document.getElementById("particles");
-for (let i = 0; i < 12; i++) {
-  const el = document.createElement("div");
-  el.className = "particle";
-  const size = 4 + Math.random() * 20;
-  el.style.cssText = `
-    width:${size}px; height:${size}px;
-    left:${Math.random()*100}%;
-    animation-duration:${8 + Math.random()*12}s;
-    animation-delay:${Math.random()*8}s;
-  `;
-  container.appendChild(el);
-}
-
-// Dinamični brifing glede na uro
+// ── BRIFING glede na uro ────────────────────────────────────
 const h = new Date().getHours();
 const briefings = [
-  [6,  "Jutro, Agent. Standard 0 čaka na potrditev."],
-  [10, "Dopoldne. Baza je aktivna. Misije so odprte."],
-  [14, "Popoldanski sektor. Čas za akcijo."],
-  [18, "Večerni brifing. Preveri zakladnico."],
-  [21, "Nočna izmena. Zaključi dan z odliko."],
+  [6,  '🌅', 'Jutro, Agent! Standard 0 te čaka.'],
+  [10, '☀️', 'Dopoldne. Baza je aktivna. Misije so odprte!'],
+  [14, '🌤️', 'Popoldanski sektor. Čas za akcijo!'],
+  [18, '🌆', 'Večerni brifing. Preveri zakladnico.'],
+  [21, '🌙', 'Nočna izmena. Zaključi dan z odliko!'],
 ];
-const msg = briefings.reverse().find(([t]) => h >= t)?.[1] || "Baza je aktivna. Misije čakajo.";
-document.getElementById("briefing-text").textContent = msg;
+const [, bIcon, bText] = [...briefings].reverse().find(([t]) => h >= t) || briefings[0];
+document.getElementById('briefing-icon').textContent = bIcon;
+document.getElementById('briefing-text').textContent = bText;
 
-// Rang iz XP
+// ── RANG iz XP ──────────────────────────────────────────────
 function getRank(xp) {
   const ranks = [...LONA_CONFIG.ranks].reverse();
   return ranks.find(r => xp >= r.minXp)?.label || LONA_CONFIG.ranks[0].label;
 }
-
 function getXp(agentId) {
-  const s = localStorage.getItem("lona_xp_state");
+  const s = localStorage.getItem('lona_xp_state');
   if (s) return JSON.parse(s)[agentId] ?? 0;
   return LONA_CONFIG.agents.find(a => a.id === agentId)?.xp ?? 0;
 }
-
 function getMaxXp(agentId) {
-  const s = localStorage.getItem("lona_rank_state");
+  const s = localStorage.getItem('lona_rank_state');
   if (s) return JSON.parse(s)[agentId] ?? getXp(agentId);
   return getXp(agentId);
 }
-
-// Izračun XP bara
 function xpPct(agentId) {
-  const xp    = getMaxXp(agentId);
+  const xp = getMaxXp(agentId);
   const ranks = LONA_CONFIG.ranks;
-  const ci    = ranks.findIndex(r => r.minXp > xp);
-  const lo    = ranks[Math.max(0,ci-1)]?.minXp ?? 0;
-  const hi    = ranks[ci]?.minXp ?? lo + 300;
-  return Math.min(100, Math.round(((xp-lo)/(hi-lo))*100));
+  const ci = ranks.findIndex(r => r.minXp > xp);
+  const lo = ranks[Math.max(0, ci - 1)]?.minXp ?? 0;
+  const hi = ranks[ci]?.minXp ?? lo + 300;
+  return Math.min(100, Math.round(((xp - lo) / (hi - lo)) * 100));
 }
-
-// Misij ta teden
 function weekMissions(agentId) {
-  const log = JSON.parse(localStorage.getItem("lona_mission_log") || "[]");
-  const now  = new Date();
+  const log = JSON.parse(localStorage.getItem('lona_mission_log') || '[]');
+  const now = new Date();
   const jan1 = new Date(now.getFullYear(), 0, 1);
-  const wk   = Math.ceil(((now-jan1)/86400000 + jan1.getDay()+1)/7);
-  const key  = now.getFullYear() + "-W" + wk;
+  const wk = Math.ceil(((now - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+  const key = now.getFullYear() + '-W' + wk;
   return log.filter(e => e.agentId === agentId && e.week === key).length;
 }
 
-const list = document.getElementById("agents-list");
+// Barve za agente — vsak agent dobi svojo barvo
+const AGENT_COLORS = ['#34C759', '#007AFF', '#AF52DE', '#FF9500', '#FF2D55'];
+
+// ── AGENT KARTICE ────────────────────────────────────────────
+const list = document.getElementById('agents-list');
 
 LONA_CONFIG.agents.forEach((agent, i) => {
   if (i > 0) {
-    const div = document.createElement("div");
-    div.className = "or-divider";
-    div.innerHTML = "<span>ali</span>";
+    const div = document.createElement('div');
+    div.className = 'or-divider';
+    div.innerHTML = '<span>ali</span>';
     list.appendChild(div);
   }
 
@@ -414,48 +417,45 @@ LONA_CONFIG.agents.forEach((agent, i) => {
   const rank  = getRank(getMaxXp(agent.id));
   const pct   = xpPct(agent.id);
   const wkMis = weekMissions(agent.id);
+  const color = AGENT_COLORS[i % AGENT_COLORS.length];
+  const photo = localStorage.getItem('lona_photo_' + agent.id);
 
-  const _photo = localStorage.getItem("lona_photo_" + agent.id);
+  const card = document.createElement('button');
+  card.className = 'agent-card';
+  card.style.setProperty('--agent-color', color);
+  card.style.setProperty('--xp-pct', pct + '%');
 
-  // Wrapper
-  const wrap = document.createElement("div");
-  wrap.style.cssText = "position:relative;width:100%";
+  const avatarHTML = photo
+    ? `<img src="${photo}" alt="${agent.name}"/>`
+    : agent.avatar;
 
-  const card = document.createElement("button");
-  card.className = "agent-card";
   card.innerHTML = `
-    <div class="agent-card__avatar" id="avatar-${agent.id}" style="position:relative;overflow:visible">
-      ${_photo ? `<img src="${_photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : agent.avatar}
-      <div style="position:absolute;bottom:-2px;right:-2px;width:20px;height:20px;border-radius:50%;
-        background:#4A9E6A;border:2px solid #1E2438;display:flex;align-items:center;
-        justify-content:center;font-size:.55rem;z-index:2">📷</div>
+    <div class="agent-avatar" style="border-color:${color}">
+      ${avatarHTML}
+      <div class="agent-avatar-camera">📷</div>
     </div>
-    <div class="agent-card__info">
-      <p class="agent-card__name">${agent.name}</p>
-      <p class="agent-card__rank">${rank}</p>
-      <p class="agent-card__xp">${xp} XP · ${wkMis} misij ta teden</p>
+    <div class="agent-info">
+      <div class="agent-name">${agent.name}</div>
+      <div class="agent-rank">${rank}</div>
+      <div class="agent-xp">${xp} XP · ${wkMis} misij ta teden</div>
     </div>
-    <span class="agent-card__arrow">→</span>
-    <div class="agent-card__bar">
-      <div class="agent-card__bar-fill" style="width:${pct}%"></div>
-    </div>
+    <div class="agent-arrow">→</div>
   `;
 
-  card.addEventListener("click", () => {
-    localStorage.setItem("lona_current_agent", agent.id);
-    card.style.transform = "scale(.95)"; card.style.opacity = ".7";
-    setTimeout(() => { location.href = "gatekeeper.html"; }, 180);
+  card.addEventListener('click', () => {
+    localStorage.setItem('lona_current_agent', agent.id);
+    card.style.transform = 'translateY(4px)';
+    card.style.boxShadow = '0 1px 0 rgba(0,0,0,.08)';
+    setTimeout(() => { location.href = 'gatekeeper.html'; }, 180);
   });
 
-  wrap.appendChild(card);
-  list.appendChild(wrap);
+  list.appendChild(card);
 });
-</script>
 
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
-  }
+// ── SERVICE WORKER ──────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
 </script>
 </body>
 </html>
