@@ -136,10 +136,28 @@ body { background: #87CEEB; }
 .bottom-nav { background: rgba(255,255,255,.88) !important; backdrop-filter: blur(20px) !important; z-index: 200 !important; }
 #arena-circle { box-shadow: 0 8px 0 rgba(0,0,0,.15), 0 0 0 6px rgba(255,255,255,.95) !important; }
 </style>
+
+<style>
+/* ── PARALLAX ─────────────────────────────────────────────── */
+[data-parallax] {
+  transition: transform 0.05s linear;
+  will-change: transform;
+}
+/* Ozadje mora biti večje da ni vidnih robov med premikanjem */
+#bg-wrap img {
+  width: 110% !important;
+  height: 110% !important;
+  margin: -5% !important;
+}
+/* Arena wrapper mora imeti overflow visible za maskoto */
+#da-mission-row[data-parallax] {
+  overflow: visible !important;
+}
+</style>
 </head>
 <body>
 
-<div style="position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none"><img src="assets/bg-day.png" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center top"></div>
+<div data-parallax="1" id="bg-wrap" style="position:fixed;inset:-5%;z-index:0;overflow:hidden;pointer-events:none"><img src="assets/bg-day.png" id="bg-source" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center top"></div>
 <header class="top-bar" style="position:relative;z-index:100">
   <div class="top-bar__logo" onclick="location.replace('index.html')" style="cursor:pointer">[LONA<span class="logo-accent">_OS</span>]</div>
   <div class="top-bar__agent" onclick="location.replace('index.html')" title="Zamenjaj agenta">
@@ -194,7 +212,7 @@ body { background: #87CEEB; }
     </div>
   </div>
 
-  <div class="ribbon-wrap">
+  <div class="ribbon-wrap" data-parallax="2.5">
     <div class="ribbon" id="ribbon-all"></div>
   </div>
 </main>
@@ -242,6 +260,19 @@ window.addEventListener('pageshow', () => {
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
 
+// Nočno ozadje
+(function() {
+  const h = new Date().getHours();
+  if (h >= 19 || h < 6) {
+    const img = document.getElementById('bg-source');
+    if (img) {
+      const t = new Image();
+      t.onload = () => { img.src = 'assets/bg-night.png'; document.body.style.background = '#1A1446'; };
+      t.src = 'assets/bg-night.png';
+    }
+  }
+})();
+
 /* ── ARENA — mobil + desktop ───────────────────────────── */
 function _initDesktopArena() {
   const wrap = document.getElementById('desktop-arena-wrap');
@@ -269,10 +300,10 @@ function _initDesktopArena() {
       <div class="da-agent-row">
         <div class="da-agent-circle" id="desktop-agent-card"></div>
       </div>
-      <div id="da-mission-row"
+      <div id="da-mission-row" data-parallax="2"
            style="position:relative;width:${size}px;height:${size}px;
                   flex-shrink:0;overflow:visible;margin:0 auto">
-        <div id="arena-circle"
+        <div id="arena-circle" data-parallax="3"
              style="position:absolute;top:50%;left:50%;
                     transform:translate(-50%,-50%);
                     width:${circleSize}px;height:${circleSize}px;
@@ -483,5 +514,6 @@ window.addEventListener('resize', () => {
   </button>
 </nav>
 
+<script src="parallax.js"></script>
 </body>
 </html>
