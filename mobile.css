@@ -1,0 +1,70 @@
+/* ============================================================
+   LONA OS — mobile.css
+   Vrednosti za TELEFON. Urejaj tukaj za mobilni prikaz.
+   Naloži PRED desktop.css.
+   ============================================================ */
+
+:root {
+  /* ── Skupni prostor ── */
+  --page-padding-x:     16px;
+  --page-padding-bottom: calc(100px + env(safe-area-inset-bottom));
+  --content-max-width:  100%;
+
+  /* ── Top bar ── */
+  --topbar-padding:     14px 16px;
+  --topbar-logo-size:   1rem;
+  --topbar-agent-size:  .72rem;
+
+  /* ── Location picker ── */
+  --locpick-cols:       repeat(6, 1fr);
+  --locpick-gap:        5px;
+  --locpick-padding:    12px 16px 0;
+  --locpick-btn-pad:    10px 4px;
+  --locpick-icon-size:  20px;
+  --locpick-label-size: 9px;
+  --locpick-radius:     14px;
+
+  /* ── Mission cards (mc) ── */
+  --mc-padding:         12px 14px;
+  --mc-radius:          15px;
+  --mc-gap:             7px;
+  --mc-icon-size:       42px;
+  --mc-icon-font:       19px;
+  --mc-name-size:       13px;
+  --mc-desc-size:       11px;
+  --mc-xp-size:         14px;
+
+  /* ── Ribbon (vse misije) ── */
+  --rb-padding:         10px 12px;
+  --rb-radius:          13px;
+  --rb-gap:             6px;
+  --rb-icon-size:       36px;
+  --rb-icon-font:       16px;
+  --rb-name-size:       13px;
+  --rb-xp-size:         12px;
+
+  /* ── Random mission card ── */
+  --rmc-min-height:     220px;
+  --rmc-radius:         22px;
+  --rmc-padding:        32px 20px;
+  --rmc-icon-size:      2.8rem;
+  --rmc-title-size:     1.6rem;
+  --rmc-desc-size:      .78rem;
+
+  /* ── Bottom nav ── */
+  --nav-max-width:      400px;
+  --nav-width:          calc(100% - 32px);
+  --nav-padding:        8px 12px;
+  --nav-radius:         24px;
+  --nav-icon-size:      22px;
+  --nav-label-size:     10px;
+
+  /* ── Drawer ── */
+  --drawer-padding:     0 16px 16px;
+  --drawer-title-size:  1.1rem;
+
+  /* ── Settings dialog ── */
+  --dialog-max-width:   320px;
+  --dialog-padding:     24px 20px;
+  --dialog-radius:      24px;
+}

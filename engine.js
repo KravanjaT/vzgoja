@@ -1630,6 +1630,7 @@ function _showRandomMission(loc, animate) {
       if (loc === 'eq')      return m.category === 'eq';
       if (loc === 'indoor')  return (m.location === 'indoor' || m.location === 'any') && m.category !== 'eq';
       if (loc === 'outdoor') return (m.location === 'outdoor' || m.location === 'any' || m.category === 'outdoor' || m.category === 'body' || m.category === 'fear') && m.category !== 'eq';
+      if (loc === 'skupaj')  return m.category === 'social' || m.tags?.includes('skupaj') || m.tags?.includes('social') || m.location === 'any';
       return true;
     });
   }
@@ -1676,11 +1677,11 @@ function _renderScratch(loc) {
   // Prikaži "zaprti" scratch card
   const card = document.getElementById('random-mission-card');
   if (!card) return;
-  const labels = {eq:'Tvoja EQ misija te čaka...', indoor:'Misija v hiši te čaka...', outdoor:'Zunanja misija te čaka...', mine:'Posebna misija te čaka...'};
+  const labels = {eq:'Tvoja EQ misija te čaka...', indoor:'Misija v hiši te čaka...', outdoor:'Zunanja misija te čaka...', mine:'Posebna misija te čaka...', skupaj:'Skupna misija te čaka...'};
   card.innerHTML = `
     <div class="rmc-scratch" onclick="_rmcReveal()">
       <span class="rmc-scratch__q">🎁</span>
-      <p class="rmc-scratch__label">${{eq:'Tvoja EQ misija te čaka...', indoor:'Misija v hiši te čaka...', outdoor:'Zunanja misija te čaka...', mine:'Posebna misija te čaka...', all:'Naključna misija te čaka...'}[loc] || 'Misija te čaka...'}</p>
+      <p class="rmc-scratch__label">${{eq:'Tvoja EQ misija te čaka...', indoor:'Misija v hiši te čaka...', outdoor:'Zunanja misija te čaka...', mine:'Posebna misija te čaka...', all:'Naključna misija te čaka...', skupaj:'Skupna misija te čaka...'}[loc] || 'Misija te čaka...'}</p>
       <button class="rmc-scratch__btn" onclick="event.stopPropagation();_rmcReveal()">🎲 Vrzi kocko</button>
     </div>`;
 }
@@ -2342,6 +2343,34 @@ function renderCmdAgents() {
 
     </div>
   `;
+
+  // Desktop: velik agent krog v centru
+  if (window.innerWidth >= 768) {
+    const dc = document.getElementById('desktop-agent-card');
+    if (dc) {
+      const circumference = Math.round(2 * Math.PI * 70);
+      const dash = Math.round(circumference * pct / 100);
+      dc.innerHTML = `
+        <div style="position:relative;width:160px;height:160px">
+          <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 160 160">
+            <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="5"/>
+            <circle cx="80" cy="80" r="70" fill="none" stroke="#FFD60A" stroke-width="5"
+              stroke-dasharray="${dash} ${circumference}"
+              stroke-linecap="round" transform="rotate(-90 80 80)"/>
+          </svg>
+          <div style="position:absolute;inset:10px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:3rem">
+            ${avatarHtml}
+          </div>
+        </div>
+        <p style="font-family:'DM Serif Display',serif;font-size:1.5rem;color:#F0EEF8;margin:10px 0 2px;text-align:center">${a.name}</p>
+        <p style="font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#FFD60A;text-align:center">${rank}</p>
+        <div style="display:flex;gap:16px;margin-top:10px">
+          <div style="text-align:center"><p style="font-size:1.2rem;font-weight:800;color:#72D68A;margin:0">${xp}</p><p style="font-size:.6rem;color:rgba(240,238,248,.5);text-transform:uppercase">XP</p></div>
+          <div style="text-align:center"><p style="font-size:1.2rem;font-weight:800;color:#FFD60A;margin:0">${coins}</p><p style="font-size:.6rem;color:rgba(240,238,248,.5);text-transform:uppercase">🪙</p></div>
+          <div style="text-align:center"><p style="font-size:1.2rem;font-weight:800;color:#CF8FFF;margin:0">${jokers}</p><p style="font-size:.6rem;color:rgba(240,238,248,.5);text-transform:uppercase">🃏</p></div>
+        </div>`;
+    }
+  }
 
   // Inicializiraj streak display
   if (typeof renderStreak === "function") renderStreak(agentId);
