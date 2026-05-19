@@ -294,8 +294,12 @@ function _initDesktopArena() {
   const ribbonWrap = document.querySelector('.ribbon-wrap');
   if (ribbonWrap) ribbonWrap.style.display = 'none';
 
+  // Nastavi CSS custom property za circle velikost (za rmc stile)
+  document.documentElement.style.setProperty('--rmc-circle-px', circleSize + 'px');
+
   if (typeof renderCmdAgents === 'function') renderCmdAgents();
-  _dLoc('indoor');
+  // Počakaj en tick da je DOM pripravljen
+  setTimeout(() => _dLoc('indoor'), 50);
 }
 
 function _dLoc(loc) {

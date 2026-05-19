@@ -69,11 +69,11 @@
 /* ── MISIJA KROG — mobilna osnova ───────────────────────── */
 .da-mission-circle .rmc-scratch {
   border-radius: 50% !important;
-  min-height: 190px !important;
-  height: 190px !important;
-  width: 190px !important;
-  padding: 32px 20px !important;
-  gap: 8px !important;
+  min-height: var(--rmc-circle-px, 190px) !important;
+  height: var(--rmc-circle-px, 190px) !important;
+  width: var(--rmc-circle-px, 190px) !important;
+  padding: 20% 15% !important;
+  gap: 6px !important;
   text-align: center;
 }
 .da-mission-circle .rmc-scratch__q     { font-size: 2.6rem !important; }
@@ -82,9 +82,9 @@
 
 .da-mission-circle .rmc-revealed {
   border-radius: 50% !important;
-  min-height: 190px !important;
-  height: 190px !important;
-  width: 190px !important;
+  min-height: var(--rmc-circle-px, 190px) !important;
+  height: var(--rmc-circle-px, 190px) !important;
+  width: var(--rmc-circle-px, 190px) !important;
 }
 .da-mission-circle .rmc-revealed__body   { padding: 16px 18px !important; }
 .da-mission-circle .rmc-revealed__cat    { font-size: .54rem !important; margin-bottom: 4px !important; }
@@ -193,4 +193,21 @@
     gap: var(--rb-gap) !important;
     align-items: start;
   }
+}
+
+/* ── MOBIL: rmc-revealed body ne sme preseči kroga ───────── */
+.da-mission-circle .rmc-revealed__body {
+  padding: 12px 14px !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  overflow: hidden;
+}
+.da-mission-circle .rmc-scratch {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
