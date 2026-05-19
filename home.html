@@ -32,7 +32,7 @@ body{font-family:'DM Sans',system-ui,-apple-system,'Segoe UI Emoji','Apple Color
 .view.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-/* LOCATION PICKER — ohranimo za fallback, JS ga skrije */
+/* LOCATION PICKER */
 .loc-pick-wrap{display:grid;grid-template-columns:var(--locpick-cols);gap:var(--locpick-gap);padding:var(--locpick-padding)}
 .loc-pick-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:var(--locpick-btn-pad);border-radius:var(--locpick-radius);border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.10);cursor:pointer;transition:all .2s ease;-webkit-tap-highlight-color:transparent;font-family:var(--font-body);touch-action:manipulation}
 .loc-pick-btn:active{transform:scale(.93)}
@@ -144,11 +144,11 @@ body{font-family:'DM Sans',system-ui,-apple-system,'Segoe UI Emoji','Apple Color
 <main class="main-scroll" style="padding:0 0 100px;gap:0;max-width:100%">
   <section id="cmd-panel-section"></section>
 
-  <!-- ARENA — JS jo zgradi za VSE ekrane -->
+  <!-- DESKTOP ARENA (JS ga zgradi na 768px+) -->
   <div id="desktop-arena-wrap"></div>
 
-  <!-- FALLBACK: stari mobil layout (JS ga takoj skrije) -->
-  <div class="loc-pick-wrap" id="loc-pick-fallback">
+  <!-- MOBILE: LOCATION PICKER -->
+  <div class="loc-pick-wrap">
     <button class="loc-pick-btn loc-pick-btn--eq" onclick="pickLocation('eq')">
       <span class="loc-pick-btn__icon">⚡</span>
       <span class="loc-pick-btn__label">EQ</span>
@@ -175,7 +175,7 @@ body{font-family:'DM Sans',system-ui,-apple-system,'Segoe UI Emoji','Apple Color
     </button>
   </div>
 
-  <!-- FALLBACK: stara random mission (JS jo skrije) -->
+  <!-- MOBILE: RANDOM MISSION CARD -->
   <div id="random-mission-wrap" style="display:none">
     <div class="rmc-wrap">
       <div id="random-mission-card" style="min-height:220px;border-radius:22px;overflow:hidden"></div>
@@ -236,42 +236,54 @@ function _initDesktopArena() {
   if (!wrap || wrap.children.length > 0) return;
 
   const isMobile = window.innerWidth < 768;
+  const screenW  = Math.min(window.innerWidth, 480);
+
+  const circleSize = isMobile ? Math.round(screenW * 0.44) : 320;
+  const orbitR     = isMobile ? Math.round(screenW * 0.37) : 240;
+  const size       = isMobile ? Math.round(screenW * 1.0)  : 760;
+  const cX = size / 2, cY = size / 2;
 
   const locs = [
-    { key: 'eq',      icon: '⚡', label: 'EQ',     angle: -120 },
-    { key: 'skupaj',  icon: '👥', label: 'Skupaj', angle: -60  },
-    { key: 'indoor',  icon: '🏠', label: 'V hiši', angle: 0    },
-    { key: 'all',     icon: '🗂', label: 'Vse',    angle: 60   },
-    { key: 'mine',    icon: '⭐', label: 'Moje',   angle: 120  },
-    { key: 'outdoor', icon: '🌲', label: 'Zunaj',  angle: 180  },
+    { key:'eq',      icon:'⚡', label:'EQ',     angle:-120 },
+    { key:'skupaj',  icon:'👥', label:'Skupaj', angle:-60  },
+    { key:'indoor',  icon:'🏠', label:'V hiši', angle:0    },
+    { key:'all',     icon:'🗂', label:'Vse',    angle:60   },
+    { key:'mine',    icon:'⭐', label:'Moje',   angle:120  },
+    { key:'outdoor', icon:'🌲', label:'Zunaj',  angle:180  },
   ];
 
-  // Dimenzije glede na dejanski ekran
-  const screenW    = Math.min(window.innerWidth, 480);
-  const circleSize = isMobile ? Math.round(screenW * 0.42) : 320;
-  const orbitR     = isMobile ? Math.round(screenW * 0.36) : 240;
-  const size       = isMobile ? Math.round(screenW * 0.96) : 760;
-  const cX = size / 2;
-  const cY = size / 2;
-
   wrap.innerHTML = `
-    <div class="desktop-arena">
+    <div class="desktop-arena" style="overflow:visible">
       <div class="da-agent-row">
         <div class="da-agent-circle" id="desktop-agent-card"></div>
       </div>
-      <div class="da-mission-row" id="da-mission-row"
-           style="position:relative;width:${size}px;height:${size}px;flex-shrink:0;max-width:100vw;overflow:visible">
-        <div class="da-mission-circle"
-             style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+      <div id="da-mission-row"
+           style="position:relative;width:${size}px;height:${size}px;
+                  flex-shrink:0;overflow:visible;margin:0 auto">
+        <div id="arena-circle"
+             style="position:absolute;top:50%;left:50%;
+                    transform:translate(-50%,-50%);
                     width:${circleSize}px;height:${circleSize}px;
-                    border-radius:50%;overflow:hidden;z-index:2">
-          <div id="random-mission-card"
-               style="width:100%;height:100%;border-radius:50%;overflow:hidden"></div>
+                    border-radius:50%;overflow:hidden;z-index:2;
+                    background:linear-gradient(135deg,#2d1a50,#4a1580,#6a20aa);
+                    display:flex;flex-direction:column;align-items:center;
+                    justify-content:center;text-align:center;cursor:pointer;
+                    border:2px solid rgba(255,255,255,.15)">
+          <span id="arena-q" style="font-size:${Math.round(circleSize*0.22)}px;display:block;animation:float-q 3s ease-in-out infinite">❓</span>
+          <p id="arena-lbl" style="font-size:${Math.max(8,Math.round(circleSize*0.055))}px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);margin:4px 0;padding:0 10%">Naključna misija</p>
+          <button id="arena-btn" onclick="_arenaReveal()"
+            style="padding:${Math.round(circleSize*0.04)}px ${Math.round(circleSize*0.1)}px;
+                   border-radius:12px;background:rgba(255,255,255,.18);
+                   border:1px solid rgba(255,255,255,.35);color:#fff;
+                   font-size:${Math.max(9,Math.round(circleSize*0.065))}px;
+                   font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif">
+            Izvleči 🎲
+          </button>
         </div>
       </div>
     </div>`;
 
-  // Dodaj orbit gumbe
+  // Orbit gumbi
   const row = document.getElementById('da-mission-row');
   locs.forEach(l => {
     const rad = l.angle * Math.PI / 180;
@@ -285,29 +297,141 @@ function _initDesktopArena() {
     row.appendChild(btn);
   });
 
-  // Skrij fallback mobil layout
-  const fallback = document.getElementById('loc-pick-fallback');
-  if (fallback) fallback.style.display = 'none';
-  const mobileWrap = document.getElementById('random-mission-wrap');
-  if (mobileWrap) mobileWrap.style.display = 'none';
-  // Skrij ribbon (vse misije spodaj) — arena je glavni UI
-  const ribbonWrap = document.querySelector('.ribbon-wrap');
-  if (ribbonWrap) ribbonWrap.style.display = 'none';
-
-  // Nastavi CSS custom property za circle velikost (za rmc stile)
-  document.documentElement.style.setProperty('--rmc-circle-px', circleSize + 'px');
+  // Skrij staro
+  const fb = document.getElementById('loc-pick-fallback');
+  if (fb) fb.style.display = 'none';
+  const mw = document.getElementById('random-mission-wrap');
+  if (mw) mw.style.display = 'none';
+  const rw = document.querySelector('.ribbon-wrap');
+  if (rw) rw.style.display = 'none';
 
   if (typeof renderCmdAgents === 'function') renderCmdAgents();
-  // Počakaj en tick da je DOM pripravljen
-  setTimeout(() => _dLoc('indoor'), 50);
+  setTimeout(() => _dLoc('indoor'), 80);
 }
 
+// Trenutna lokacija in misija za areno
+let _arenaLoc = 'indoor';
+let _arenaMission = null;
+
 function _dLoc(loc) {
+  _arenaLoc = loc;
   document.querySelectorAll('.da-loc-btn').forEach(b => b.classList.remove('da-loc--active'));
   const btn = document.querySelector('.da-loc--' + loc);
   if (btn) btn.classList.add('da-loc--active');
-  // Pokliči _showRandomMission direktno — bypass pickLocation ki kaže stari wrapper
-  if (typeof _showRandomMission === 'function') _showRandomMission(loc, false);
+  _arenaPickMission(loc);
+  _arenaShowScratch(loc);
+}
+
+function _arenaPickMission(loc) {
+  if (typeof LONA_CONFIG === 'undefined') return;
+  const hidden = window._hiddenMissions || JSON.parse(localStorage.getItem('lona_hidden_missions') || '[]');
+  const customs = typeof customLoad === 'function'
+    ? (Array.isArray(customLoad()) ? customLoad() : Object.values(customLoad())) : [];
+
+  let pool = [];
+  if (loc === 'mine') {
+    pool = customs.filter(m => !hidden.includes(m.id) && !(typeof isOnCooldown==='function' && isOnCooldown(m.id)));
+  } else {
+    pool = Object.values(LONA_CONFIG.missions).filter(m => {
+      if (hidden.includes(m.id)) return false;
+      if (typeof isOnCooldown==='function' && isOnCooldown(m.id)) return false;
+      if (loc==='eq')      return m.category==='eq';
+      if (loc==='indoor')  return (m.location==='indoor'||m.location==='any') && m.category!=='eq';
+      if (loc==='outdoor') return (m.location==='outdoor'||m.location==='any'||m.category==='outdoor'||m.category==='body'||m.category==='fear') && m.category!=='eq';
+      if (loc==='skupaj')  return m.category==='social'||m.tags?.includes('skupaj')||m.location==='any';
+      return true;
+    });
+  }
+  if (!pool.length) { _arenaMission = null; return; }
+  _arenaMission = pool[Math.floor(Math.random() * pool.length)];
+}
+
+function _arenaShowScratch(loc) {
+  const circle = document.getElementById('arena-circle');
+  if (!circle) return;
+
+  const sz = parseInt(circle.style.width) || 180;
+  const labels = {eq:'EQ misija te čaka',indoor:'Misija v hiši te čaka',
+    outdoor:'Zunanja misija',mine:'Posebna misija',skupaj:'Skupna misija',all:'Naključna misija'};
+
+  circle.style.background = 'linear-gradient(135deg,#2d1a50,#4a1580,#6a20aa)';
+  circle.onclick = _arenaReveal;
+  circle.innerHTML = `
+    <span style="font-size:${Math.round(sz*0.22)}px;display:block;animation:float-q 3s ease-in-out infinite">❓</span>
+    <p style="font-size:${Math.max(8,Math.round(sz*0.055))}px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);margin:4px 8px;line-height:1.3">${labels[loc]||'Misija te čaka'}</p>
+    <button onclick="event.stopPropagation();_arenaReveal()"
+      style="padding:${Math.round(sz*0.04)}px ${Math.round(sz*0.1)}px;border-radius:12px;
+             background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);
+             color:#fff;font-size:${Math.max(9,Math.round(sz*0.065))}px;
+             font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px">
+      Izvleči 🎲
+    </button>`;
+}
+
+function _arenaReveal() {
+  const circle = document.getElementById('arena-circle');
+  if (!circle) return;
+
+  if (!_arenaMission) {
+    _arenaPickMission(_arenaLoc);
+    if (!_arenaMission) {
+      const sz2 = parseInt(circle.style.width)||180;
+      circle.style.background = 'linear-gradient(135deg,#1a2a1a,#2d4a2d)';
+      circle.innerHTML = `<span style="font-size:${Math.round(sz2*0.22)}px">🔒</span>
+        <p style="font-size:${Math.max(8,Math.round(sz2*0.06))}px;color:rgba(255,255,255,.7);margin:6px 10%;line-height:1.3;font-weight:700">Vse opravljeno!</p>`;
+      return;
+    }
+  }
+
+  const m   = _arenaMission;
+  const sz  = parseInt(circle.style.width) || 180;
+  const xp  = m.baseXp || m.xp || 20;
+  const coins = m.coins || Math.round(xp * (typeof LONA_CONFIG !== 'undefined' ? (LONA_CONFIG.coinsPerXp||0.4) : 0.4));
+
+  const CAT_G = {
+    hygiene:['#0d2b0d','#2d7d2d'],cleaning:['#00102d','#0055cc'],
+    kitchen:['#2d1a00','#c47000'],organisation:['#1a002d','#8800cc'],
+    fitness:['#2d1200','#cc5500'],outdoor:['#001a0d','#008844'],
+    eq:['#1a0028','#880099'],fear:['#1a0028','#880099'],
+    creativity:['#001a2d','#0077cc'],social:['#001a2d','#0077cc'],
+  };
+  const g = CAT_G[m.category] || ['#1a2a1a','#2d5a2d'];
+
+  circle.style.background = `linear-gradient(135deg,${g[0]},${g[1]})`;
+  circle.onclick = () => { _arenaPickMission(_arenaLoc); _arenaShowScratch(_arenaLoc); };
+  circle.innerHTML = `
+    <span style="font-size:${Math.round(sz*0.18)}px;margin-bottom:4px">${m.icon||'📋'}</span>
+    <p style="font-family:'DM Serif Display',serif;font-size:${Math.max(10,Math.round(sz*0.075))}px;color:#fff;margin:0 8%;line-height:1.2;font-weight:400">${m.label}</p>
+    <p style="font-size:${Math.max(7,Math.round(sz*0.05))}px;color:rgba(255,255,255,.5);margin:3px 10%;line-height:1.3">${m.desc||''}</p>
+    <div style="display:flex;gap:5px;margin-top:6px;justify-content:center">
+      <span style="font-size:${Math.max(8,Math.round(sz*0.055))}px;font-weight:800;color:#72D68A;background:rgba(114,214,138,.2);padding:2px 8px;border-radius:20px">+${xp} XP</span>
+      <span style="font-size:${Math.max(8,Math.round(sz*0.055))}px;font-weight:800;color:#FFD60A;background:rgba(255,214,10,.15);padding:2px 8px;border-radius:20px">🪙${coins}</span>
+    </div>
+    <button onclick="event.stopPropagation();_arenaDoMission()"
+      style="margin-top:6px;padding:${Math.round(sz*0.035)}px ${Math.round(sz*0.09)}px;
+             border-radius:10px;background:#fff;color:#1a1a2e;
+             font-size:${Math.max(8,Math.round(sz*0.06))}px;font-weight:800;
+             border:none;cursor:pointer;font-family:'DM Sans',sans-serif">
+      ✓ Opravi
+    </button>`;
+}
+
+function _arenaDoMission() {
+  if (!_arenaMission) return;
+  const agentId = getCurrentAgent();
+  if (!isGatekeeperApproved()) { lonaToast('Najprej opravi Standard 0! 🔒','red'); return; }
+  if (typeof isDailyLocked==='function' && isDailyLocked(agentId)) { lonaToast('Dnevni limit dosežen! 🔒','red'); return; }
+  showQualityCheck(agentId, _arenaMission, null, (compromised) => {
+    const xp = compromised ? Math.floor((_arenaMission.baseXp||_arenaMission.xp||20)/2) : (_arenaMission.baseXp||_arenaMission.xp||20);
+    const coins = _arenaMission.coins || Math.round(xp*(LONA_CONFIG.coinsPerXp||0.4));
+    addXp(agentId, xp);
+    if (!compromised && _arenaMission.cooldownHrs) setCooldown(_arenaMission.id, _arenaMission.cooldownHrs);
+    logMission(agentId, _arenaMission.id, xp, {label:_arenaMission.label}, compromised);
+    if (typeof showXpFloat==='function') showXpFloat(xp);
+    lonaToast(compromised ? `⚠️ Površno — +${xp} XP` : `+${xp} XP  +${coins} 🪙 ✓`, compromised?'red':'green');
+    if (typeof renderCmdAgents==='function') renderCmdAgents();
+    setTimeout(() => _dLoc(_arenaLoc), 400);
+  });
 }
 
 window.addEventListener('DOMContentLoaded', _initDesktopArena);
