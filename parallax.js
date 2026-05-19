@@ -37,7 +37,19 @@
     layers.forEach(({ el, depth }) => {
       const dx = x * depth * CFG.maxShift;
       const dy = y * depth * CFG.maxShift;
-      el.style.transform = `translate(${dx}px, ${dy}px)`;
+      // Shrani base transform ob prvem klicu
+      if (!el._baseTransform) {
+        const computed = window.getComputedStyle(el).transform;
+        // Če element nima custom transforma (samo identity), base je prazen
+        el._baseTransform = (computed === 'none' || computed === 'matrix(1, 0, 0, 1, 0, 0)')
+          ? '' : computed;
+      }
+      // Sestavi: base transform + parallax offset
+      if (el._baseTransform) {
+        el.style.transform = `${el._baseTransform} translate(${dx}px, ${dy}px)`;
+      } else {
+        el.style.transform = `translate(${dx}px, ${dy}px)`;
+      }
       el.style.willChange = 'transform';
     });
   }
