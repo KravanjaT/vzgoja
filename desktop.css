@@ -36,6 +36,7 @@
   box-shadow: 0 1px 0 rgba(0,0,0,.10) !important;
 }
 .da-icon  { font-size: 22px; line-height: 1; pointer-events: none; }
+.da-loc-btn img { display:block; pointer-events:none; border-radius:4px; }
 .da-label {
   font-size: 8px; font-weight: 900;
   letter-spacing: .04em; text-transform: uppercase;

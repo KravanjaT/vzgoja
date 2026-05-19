@@ -287,12 +287,12 @@ function _initDesktopArena() {
   const cX = size / 2, cY = size / 2;
 
   const locs = [
-    { key:'eq',      icon:'⚡', label:'EQ',     angle:-120 },
-    { key:'skupaj',  icon:'👥', label:'Skupaj', angle:-60  },
-    { key:'indoor',  icon:'🏠', label:'V hiši', angle:0    },
-    { key:'all',     icon:'🗂', label:'Vse',    angle:60   },
-    { key:'mine',    icon:'⭐', label:'Moje',   angle:120  },
-    { key:'outdoor', icon:'🌲', label:'Zunaj',  angle:180  },
+    { key:'eq',      icon:'⚡', img:'assets/icon-eq.png',      label:'EQ',     angle:-120 },
+    { key:'skupaj',  icon:'👥', img:'assets/icon-skupaj.png',  label:'Skupaj', angle:-60  },
+    { key:'indoor',  icon:'🏠', img:'assets/icon-indoor.png',  label:'V hiši', angle:0    },
+    { key:'all',     icon:'🗂', img:'',                         label:'Vse',    angle:60   },
+    { key:'mine',    icon:'⭐', img:'assets/icon-mine.png',    label:'Moje',   angle:120  },
+    { key:'outdoor', icon:'🌲', img:'assets/icon-outdoor.png', label:'Zunaj',  angle:180  },
   ];
 
   wrap.innerHTML = `
@@ -324,7 +324,12 @@ function _initDesktopArena() {
     const btn = document.createElement('button');
     btn.className = `da-loc-btn da-loc--${l.key}`;
     btn.style.cssText = `position:absolute;left:${x}px;top:${y}px;transform:translate(-50%,-50%)`;
-    btn.innerHTML = `<span class="da-icon">${l.icon}</span><span class="da-label">${l.label}</span>`;
+    const iconHTML = l.img
+      ? `<img src="${l.img}" alt="${l.label}"
+             style="width:${isMobile?'34px':'46px'};height:${isMobile?'34px':'46px'};
+                    object-fit:contain;display:block;pointer-events:none"/>`
+      : `<span class="da-icon">${l.icon}</span>`;
+    btn.innerHTML = `${iconHTML}<span class="da-label">${l.label}</span>`;
     btn.onclick = () => _dLoc(l.key);
     row.appendChild(btn);
   });
