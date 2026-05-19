@@ -246,10 +246,11 @@ function _initDesktopArena() {
     { key: 'outdoor', icon: '🌲', label: 'Zunaj',  angle: 180  },
   ];
 
-  // Dimenzije glede na ekran
-  const circleSize = isMobile ? 190 : 320;
-  const orbitR     = isMobile ? 158 : 240;
-  const size       = isMobile ? 510 : 760;
+  // Dimenzije glede na dejanski ekran
+  const screenW    = Math.min(window.innerWidth, 480);
+  const circleSize = isMobile ? Math.round(screenW * 0.42) : 320;
+  const orbitR     = isMobile ? Math.round(screenW * 0.36) : 240;
+  const size       = isMobile ? Math.round(screenW * 0.96) : 760;
   const cX = size / 2;
   const cY = size / 2;
 
@@ -259,7 +260,7 @@ function _initDesktopArena() {
         <div class="da-agent-circle" id="desktop-agent-card"></div>
       </div>
       <div class="da-mission-row" id="da-mission-row"
-           style="position:relative;width:${size}px;height:${size}px;flex-shrink:0;max-width:100vw">
+           style="position:relative;width:${size}px;height:${size}px;flex-shrink:0;max-width:100vw;overflow:visible">
         <div class="da-mission-circle"
              style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
                     width:${circleSize}px;height:${circleSize}px;
@@ -289,6 +290,9 @@ function _initDesktopArena() {
   if (fallback) fallback.style.display = 'none';
   const mobileWrap = document.getElementById('random-mission-wrap');
   if (mobileWrap) mobileWrap.style.display = 'none';
+  // Skrij ribbon (vse misije spodaj) — arena je glavni UI
+  const ribbonWrap = document.querySelector('.ribbon-wrap');
+  if (ribbonWrap) ribbonWrap.style.display = 'none';
 
   if (typeof renderCmdAgents === 'function') renderCmdAgents();
   _dLoc('indoor');
@@ -298,9 +302,8 @@ function _dLoc(loc) {
   document.querySelectorAll('.da-loc-btn').forEach(b => b.classList.remove('da-loc--active'));
   const btn = document.querySelector('.da-loc--' + loc);
   if (btn) btn.classList.add('da-loc--active');
-  const wrap = document.getElementById('random-mission-wrap');
-  if (wrap) wrap.style.display = 'block';
-  if (typeof pickLocation === 'function') pickLocation(loc);
+  // Pokliči _showRandomMission direktno — bypass pickLocation ki kaže stari wrapper
+  if (typeof _showRandomMission === 'function') _showRandomMission(loc, false);
 }
 
 window.addEventListener('DOMContentLoaded', _initDesktopArena);
