@@ -21,14 +21,14 @@
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   gap: 3px;
-  border: 3px solid rgba(0,0,0,.10);
-  background: #fff;
+  border: none;
+  background: transparent;
   cursor: pointer;
   font-family: 'Nunito', sans-serif;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   z-index: 3;
-  box-shadow: 0 4px 0 rgba(0,0,0,.10);
+  box-shadow: none;
   transition: transform .15s ease, box-shadow .15s ease;
 }
 .da-loc-btn:active {
@@ -40,25 +40,25 @@
 .da-label {
   font-size: 8px; font-weight: 900;
   letter-spacing: .04em; text-transform: uppercase;
-  color: rgba(0,0,0,.35); pointer-events: none;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,.6), 0 0 8px rgba(0,0,0,.4);
+  pointer-events: none;
   font-family: 'Nunito', sans-serif;
 }
 
 /* Aktivni — vsak z drugo barvo */
 .da-loc--active { transform: translate(-50%,-50%) scale(1.12) !important; }
 
-.da-loc--eq.da-loc--active     { background:#F5EEFF; border-color:#AF52DE; box-shadow:0 4px 0 #7B2FA8; }
-.da-loc--eq.da-loc--active .da-label { color:#AF52DE; }
-.da-loc--skupaj.da-loc--active  { background:#EFF6FF; border-color:#007AFF; box-shadow:0 4px 0 #0055B3; }
-.da-loc--skupaj.da-loc--active .da-label { color:#007AFF; }
-.da-loc--outdoor.da-loc--active { background:#EDFFF3; border-color:#34C759; box-shadow:0 4px 0 #248A3D; }
+/* Aktivni — ikona se poveča, label dobi barvo */
+.da-loc--active { transform: translate(-50%,-50%) scale(1.18) !important; }
+.da-loc--active img { filter: drop-shadow(0 4px 10px rgba(0,0,0,.3)) brightness(1.05) !important; }
+
+.da-loc--eq.da-loc--active .da-label      { color:#AF52DE; }
+.da-loc--skupaj.da-loc--active .da-label  { color:#007AFF; }
 .da-loc--outdoor.da-loc--active .da-label { color:#248A3D; }
-.da-loc--indoor.da-loc--active  { background:#FFF4E6; border-color:#FF9500; box-shadow:0 4px 0 #C47000; }
-.da-loc--indoor.da-loc--active .da-label { color:#C47000; }
-.da-loc--mine.da-loc--active    { background:#FFFBE6; border-color:#FFD60A; box-shadow:0 4px 0 #B89800; }
-.da-loc--mine.da-loc--active .da-label { color:#B89800; }
-.da-loc--all.da-loc--active     { background:#FFF0F3; border-color:#FF2D55; box-shadow:0 4px 0 #C0002E; }
-.da-loc--all.da-loc--active .da-label { color:#FF2D55; }
+.da-loc--indoor.da-loc--active .da-label  { color:#C47000; }
+.da-loc--mine.da-loc--active .da-label    { color:#B89800; }
+.da-loc--all.da-loc--active .da-label     { color:#FF2D55; }
 
 /* ── ARENA KROG ─────────────────────────────────────────── */
 #arena-circle {
