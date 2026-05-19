@@ -14,14 +14,14 @@
 
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',system-ui,-apple-system,'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif;background:#232840;color:#F0EEF8;min-height:100dvh;padding-bottom:var(--page-padding-bottom);overflow-x:hidden}
+body{font-family:'Nunito Sans','DM Sans',system-ui,sans-serif;background:#F0F4FF;color:#1C1C2E;min-height:100dvh;padding-bottom:var(--page-padding-bottom);overflow-x:hidden}
 
 /* TOP BAR */
-.top-bar{display:flex;align-items:center;gap:10px;padding:var(--topbar-padding);background:rgba(10,18,10,.95);border-bottom:1px solid rgba(120,160,255,.15);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
-.top-bar__logo{font-family:'DM Serif Display',serif;font-size:var(--topbar-logo-size);color:#F0EEF8;letter-spacing:.06em;flex-shrink:0}
+.top-bar{display:flex;align-items:center;gap:10px;padding:var(--topbar-padding);background:rgba(255,255,255,.95);border-bottom:2.5px solid rgba(0,0,0,.07);backdrop-filter:blur(16px);position:sticky;top:0;z-index:100}
+.top-bar__logo{font-family:'Nunito',sans-serif;font-size:var(--topbar-logo-size);color:#1C1C2E;font-weight:900;letter-spacing:.06em;flex-shrink:0}
 .logo-accent{color:#72D68A}
 .top-bar__agent{flex:1;display:flex;align-items:center;gap:6px;cursor:pointer;justify-content:center}
-.top-bar__agent-name{font-size:var(--topbar-agent-size);font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(240,238,248,.65)}
+.top-bar__agent-name{font-size:var(--topbar-agent-size);font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8E8E93}
 .status-dot{width:6px;height:6px;border-radius:50%;background:#72D68A;flex-shrink:0}
 
 /* CMD PANEL */
@@ -85,7 +85,7 @@ body{font-family:'DM Sans',system-ui,-apple-system,'Segoe UI Emoji','Apple Color
 .rmc-scratch__q{font-size:4rem;display:block;animation:float-q 3s ease-in-out infinite}
 @keyframes float-q{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 .rmc-scratch__label{font-size:.72rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.55)}
-.rmc-scratch__btn{padding:13px 28px;border-radius:16px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;font-size:.95rem;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s ease}
+.rmc-scratch__btn{padding:13px 28px;border-radius:16px;background:#fff;border:none;color:#fff;font-size:.95rem;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s ease}
 .rmc-scratch__btn:active{transform:scale(.95);background:rgba(255,255,255,.28)}
 .rmc-spinning .rmc-scratch__q{animation:spin-out .25s ease forwards}
 @keyframes spin-out{100%{opacity:0;transform:scale(.4) rotate(180deg)}}
@@ -122,6 +122,7 @@ body{font-family:'DM Sans',system-ui,-apple-system,'Segoe UI Emoji','Apple Color
 /* SETTINGS */
 .settings-overlay{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center}
 </style>
+<link rel="stylesheet" href="style.css"/>
 <link rel="stylesheet" href="shared.css"/>
 <link rel="stylesheet" href="mobile.css"/>
 <link rel="stylesheet" href="desktop.css"/>
@@ -136,9 +137,9 @@ body{font-family:'DM Sans',system-ui,-apple-system,'Segoe UI Emoji','Apple Color
     <span style="font-size:.65rem;opacity:.4">⇄</span>
   </div>
   <button onclick="document.getElementById('settings-panel').style.display='flex'"
-    style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.1);color:rgba(240,238,248,.7);font-size:14px;cursor:pointer;flex-shrink:0">⚙</button>
+    style="width:34px;height:34px;border-radius:50%;background:#F2F2F7;border:2.5px solid rgba(0,0,0,.08);color:#8E8E93;font-size:14px;cursor:pointer;flex-shrink:0;box-shadow:0 2px 0 rgba(0,0,0,.08)">⚙</button>
   <button onclick="location.href='commander.html'"
-    style="width:32px;height:32px;border-radius:50%;background:rgba(175,82,222,.12);border:1px solid rgba(175,82,222,.3);color:#CF8FFF;font-size:14px;cursor:pointer;flex-shrink:0" title="Commander Panel">🎖️</button>
+    style="width:34px;height:34px;border-radius:50%;background:#F5EEFF;border:2.5px solid #AF52DE;color:#AF52DE;font-size:14px;cursor:pointer;flex-shrink:0;box-shadow:0 2px 0 #7B2FA8" title="Commander Panel">🎖️</button>
 </header>
 
 <main class="main-scroll" style="padding:0 0 100px;gap:0;max-width:100%">
@@ -189,11 +190,11 @@ body{font-family:'DM Sans',system-ui,-apple-system,'Segoe UI Emoji','Apple Color
 
 <!-- SETTINGS -->
 <div id="settings-panel" class="settings-overlay">
-  <div style="background:#2A3050;border:1px solid rgba(120,160,255,.25);border-radius:24px;padding:24px 20px;max-width:320px;width:calc(100% - 32px);display:flex;flex-direction:column;gap:10px">
-    <p style="font-family:'DM Serif Display',serif;font-size:1rem;color:#F0EEF8">⚙️ Nastavitve</p>
-    <button onclick="lonaReset()" style="padding:12px;border-radius:14px;background:rgba(255,60,90,.1);border:1px solid rgba(255,60,90,.3);color:#FF3B30;font-size:.88rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer">🔄 Reset vse podatke</button>
-    <button onclick="lonaDebug();document.getElementById('settings-panel').style.display='none'" style="padding:12px;border-radius:14px;background:rgba(0,122,255,.1);border:1px solid rgba(0,122,255,.25);color:#007AFF;font-size:.88rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer">🔍 Debug (konzola)</button>
-    <button onclick="document.getElementById('settings-panel').style.display='none'" style="padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.1);color:rgba(240,238,248,.7);font-size:.88rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer">Zapri</button>
+  <div style="background:#fff;border:2.5px solid rgba(0,0,0,.08);border-radius:28px;padding:26px 20px;max-width:320px;width:calc(100% - 32px);display:flex;flex-direction:column;gap:10px;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+    <p style="font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:900;color:#1C1C2E;text-align:center">⚙️ Nastavitve</p>
+    <button onclick="lonaReset()" style="padding:13px;border-radius:16px;background:#FFF0EE;border:2.5px solid #FF3B30;color:#FF3B30;font-size:.9rem;font-weight:900;font-family:'Nunito',sans-serif;cursor:pointer;box-shadow:0 4px 0 #C0002A">🔄 Reset vse podatke</button>
+    <button onclick="lonaDebug();document.getElementById('settings-panel').style.display='none'" style="padding:13px;border-radius:16px;background:#EFF6FF;border:2.5px solid #007AFF;color:#007AFF;font-size:.9rem;font-weight:900;font-family:'Nunito',sans-serif;cursor:pointer;box-shadow:0 4px 0 #0055B3">🔍 Debug (konzola)</button>
+    <button onclick="document.getElementById('settings-panel').style.display='none'" style="padding:13px;border-radius:16px;background:#F2F2F7;border:2.5px solid rgba(0,0,0,.08);color:#8E8E93;font-size:.9rem;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer">Zapri</button>
   </div>
 </div>
 
@@ -269,7 +270,7 @@ function _initDesktopArena() {
                     display:flex;flex-direction:column;align-items:center;
                     justify-content:center;text-align:center;cursor:pointer;
                     border:2px solid rgba(255,255,255,.15)">
-          <span id="arena-q" style="font-size:${Math.round(circleSize*0.22)}px;display:block;animation:float-q 3s ease-in-out infinite">❓</span>
+          <span id="arena-q" style="font-size:${Math.round(circleSize*0.22)}px;display:block;animation:float-q 3s ease-in-out infinite;filter:drop-shadow(0 2px 6px rgba(0,0,0,.2))">🎯</span>
           <p id="arena-lbl" style="font-size:${Math.max(8,Math.round(circleSize*0.055))}px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);margin:4px 0;padding:0 10%">Naključna misija</p>
           <button id="arena-btn" onclick="_arenaReveal()"
             style="padding:${Math.round(circleSize*0.04)}px ${Math.round(circleSize*0.1)}px;
@@ -354,16 +355,17 @@ function _arenaShowScratch(loc) {
   const labels = {eq:'EQ misija te čaka',indoor:'Misija v hiši te čaka',
     outdoor:'Zunanja misija',mine:'Posebna misija',skupaj:'Skupna misija',all:'Naključna misija'};
 
-  circle.style.background = 'linear-gradient(135deg,#2d1a50,#4a1580,#6a20aa)';
+  circle.style.background = 'linear-gradient(135deg,#7B2FA8,#AF52DE,#BF5AF2)';
+  circle.style.boxShadow = '0 8px 0 rgba(0,0,0,.15), 0 0 0 5px rgba(255,255,255,.9)';
   circle.onclick = _arenaReveal;
   circle.innerHTML = `
-    <span style="font-size:${Math.round(sz*0.22)}px;display:block;animation:float-q 3s ease-in-out infinite">❓</span>
-    <p style="font-size:${Math.max(8,Math.round(sz*0.055))}px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);margin:4px 8px;line-height:1.3">${labels[loc]||'Misija te čaka'}</p>
+    <span style="font-size:${Math.round(sz*0.22)}px;display:block;animation:float-q 3s ease-in-out infinite;filter:drop-shadow(0 2px 6px rgba(0,0,0,.2))">🎯</span>
+    <p style="font-size:${Math.max(8,Math.round(sz*0.055))}px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.9);margin:4px 8px;line-height:1.3;font-family:'Nunito',sans-serif;font-weight:900">${labels[loc]||'Misija te čaka'}</p>
     <button onclick="event.stopPropagation();_arenaReveal()"
       style="padding:${Math.round(sz*0.04)}px ${Math.round(sz*0.1)}px;border-radius:12px;
-             background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);
-             color:#fff;font-size:${Math.max(9,Math.round(sz*0.065))}px;
-             font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px">
+             background:#fff;border:none;
+             color:#7B2FA8;font-size:${Math.max(9,Math.round(sz*0.065))}px;
+             font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:6px;box-shadow:0 3px 0 rgba(0,0,0,.12);border-radius:50px">
       Izvleči 🎲
     </button>`;
 }
@@ -389,29 +391,30 @@ function _arenaReveal() {
   const coins = m.coins || Math.round(xp * (typeof LONA_CONFIG !== 'undefined' ? (LONA_CONFIG.coinsPerXp||0.4) : 0.4));
 
   const CAT_G = {
-    hygiene:['#0d2b0d','#2d7d2d'],cleaning:['#00102d','#0055cc'],
-    kitchen:['#2d1a00','#c47000'],organisation:['#1a002d','#8800cc'],
-    fitness:['#2d1200','#cc5500'],outdoor:['#001a0d','#008844'],
-    eq:['#1a0028','#880099'],fear:['#1a0028','#880099'],
-    creativity:['#001a2d','#0077cc'],social:['#001a2d','#0077cc'],
+    hygiene:['#34C759','#248A3D'],cleaning:['#007AFF','#0055B3'],
+    kitchen:['#FF9500','#C47000'],organisation:['#AF52DE','#7B2FA8'],
+    fitness:['#FF6B00','#C44E00'],outdoor:['#30D158','#1E8F3A'],
+    eq:['#BF5AF2','#8944AB'],fear:['#FF2D55','#C0002E'],
+    creativity:['#FFD60A','#B89800'],social:['#5AC8FA','#0070A8'],
+    custom:['#34C759','#248A3D'],
   };
-  const g = CAT_G[m.category] || ['#1a2a1a','#2d5a2d'];
+  const g = CAT_G[m.category] || ['#007AFF','#0055B3'];
 
   circle.style.background = `linear-gradient(135deg,${g[0]},${g[1]})`;
   circle.onclick = () => { _arenaPickMission(_arenaLoc); _arenaShowScratch(_arenaLoc); };
   circle.innerHTML = `
     <span style="font-size:${Math.round(sz*0.18)}px;margin-bottom:4px">${m.icon||'📋'}</span>
-    <p style="font-family:'DM Serif Display',serif;font-size:${Math.max(10,Math.round(sz*0.075))}px;color:#fff;margin:0 8%;line-height:1.2;font-weight:400">${m.label}</p>
-    <p style="font-size:${Math.max(7,Math.round(sz*0.05))}px;color:rgba(255,255,255,.5);margin:3px 10%;line-height:1.3">${m.desc||''}</p>
+    <p style="font-family:'Nunito',sans-serif;font-size:${Math.max(10,Math.round(sz*0.08))}px;color:#fff;margin:0 6%;line-height:1.2;font-weight:900;text-shadow:0 1px 3px rgba(0,0,0,.2)">${m.label}</p>
+    <p style="font-size:${Math.max(7,Math.round(sz*0.05))}px;color:rgba(255,255,255,.8);margin:2px 10%;line-height:1.3;font-weight:600">${m.desc||''}</p>
     <div style="display:flex;gap:5px;margin-top:6px;justify-content:center">
-      <span style="font-size:${Math.max(8,Math.round(sz*0.055))}px;font-weight:800;color:#72D68A;background:rgba(114,214,138,.2);padding:2px 8px;border-radius:20px">+${xp} XP</span>
-      <span style="font-size:${Math.max(8,Math.round(sz*0.055))}px;font-weight:800;color:#FFD60A;background:rgba(255,214,10,.15);padding:2px 8px;border-radius:20px">🪙${coins}</span>
+      <span style="font-size:${Math.max(8,Math.round(sz*0.055))}px;font-weight:900;color:#fff;background:rgba(0,0,0,.2);padding:3px 9px;border-radius:20px;font-family:'Nunito',sans-serif">+${xp} XP</span>
+      <span style="font-size:${Math.max(8,Math.round(sz*0.055))}px;font-weight:900;color:#FFD60A;background:rgba(0,0,0,.2);padding:3px 9px;border-radius:20px;font-family:'Nunito',sans-serif">🪙${coins}</span>
     </div>
     <button onclick="event.stopPropagation();_arenaDoMission()"
       style="margin-top:6px;padding:${Math.round(sz*0.035)}px ${Math.round(sz*0.09)}px;
-             border-radius:10px;background:#fff;color:#1a1a2e;
-             font-size:${Math.max(8,Math.round(sz*0.06))}px;font-weight:800;
-             border:none;cursor:pointer;font-family:'DM Sans',sans-serif">
+             border-radius:50px;background:#fff;color:${g[0]};
+             font-size:${Math.max(9,Math.round(sz*0.065))}px;font-weight:900;
+             border:none;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 3px 0 rgba(0,0,0,.12)">
       ✓ Opravi
     </button>`;
 }
@@ -444,19 +447,19 @@ window.addEventListener('resize', () => {
 
 <nav class="bottom-nav" aria-label="Navigacija">
   <button class="bottom-nav__item bottom-nav__item--active" aria-current="page">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#72D68A" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
     <span>Baza</span>
   </button>
   <button class="bottom-nav__item" onclick="location.replace('hub.html')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(240,238,248,.45)" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,.3)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
     <span>Hub</span>
   </button>
   <button class="bottom-nav__item" onclick="location.replace('library.html')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(240,238,248,.45)" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,.3)" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
     <span>Knjižnica</span>
   </button>
   <button class="bottom-nav__item" onclick="location.replace('profile.html')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(240,238,248,.45)" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,.3)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     <span>Profil</span>
   </button>
 </nav>
